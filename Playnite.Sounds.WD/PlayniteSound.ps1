@@ -1,107 +1,84 @@
 $global:players = @{}
-$global:DoCheck = $True
 
-function PlayFileName {
-	param (
-		$FileName
-	)
-	
-	#must be done here and only once
-	#so on first try of audio play on first run files will be downloaded
-	if ($global:DoCheck)
+function global:GetMainMenuItems() {
+	param($menuArgs)
+
+	$menuItem1 = New-Object Playnite.SDK.Plugins.ScriptMainMenuItem
+	$menuItem1.Description = "Reload Audio Files"
+	$menuItem1.FunctionName = "ReloadAudioFilesMenu"
+	$menuItem1.MenuSection = "@Playnite Sounds"
+
+	$menuItem2 = New-Object Playnite.SDK.Plugins.ScriptMainMenuItem
+	$menuItem2.Description = "Open Audio Files Folder"
+	$menuItem2.FunctionName = "OpenSoundsFolderMenu"
+	$menuItem2.MenuSection = "@Playnite Sounds"
+
+	$menuItem3 = New-Object Playnite.SDK.Plugins.ScriptMainMenuItem
+	$menuItem3.Description = "Audio Files Help"
+	$menuItem3.FunctionName = "HelpMenu"
+	$menuItem3.MenuSection = "@Playnite Sounds"
+
+	return $menuItem1, $menuItem2, $menuItem3
+}
+
+function global:HelpMenu() {
+	$PlayniteApi.Dialogs.ShowMessage("Playnite Sounds is an extension to play audio files during Playnite events. `r`n`r`n" +
+		"It can only play WAV audio files and nothing else.`r`n" +
+		"There are 2 seperate set of sound files. Audio Files starting with 'D_' and files starting with 'F_'. " +
+		"The 'D_' files are the audio files for desktop mode, the 'F_' files for fullscreen mode.`r`n`r`n" +
+		"If you don't want to hear a certain file you can just delete the wav file of the event you don't want to hear. " +
+		"You can also change the files with your own files. Be sure to use the 'Open Audio Files Folder' menu for doing so. " +
+		"It will make sure loaded audio files get closed so you can overwrite them. Make sure playnite does not play any audio " +
+		"anymore after opening the folder or it's possible you can't overwrite that specific file. With my testings it did seem " +
+		"you could still first erase the files. After changing the audio files use the 'Reload Audio Files' menu to clear any loaded " +
+		"files and use your new files, or just restart Playnite. " +
+		"Do NOT use a long audio file for ApplicationStopped as Playnite will not quit until that audio file has finished playing. " +
+		"The same applies for switching between desktop and fullscreen mode.`r`n`r`n" +
+		"These are the audio files that can be used`r`n`r`n" +
+		"D_ApplicationStarted.wav - F_ApplicationStarted.wav`r`n" +
+		"D_ApplicationStopped.wav - F_ApplicationStopped.wav`r`n" +
+		"D_GameInstalled.wav - F_GameInstalled.wav`r`n" +
+		"D_GameSelected.wav - F_GameSelected.wav`r`n" +
+		"D_GameStarted.wav - F_GameStarted.wav`r`n" +
+		"D_GameStarting.wav - F_GameStarting.wav`r`n" +
+		"D_GameStopped.wav - F_GameStopped.wav`r`n" +
+		"D_GameUninstalled.wav - F_GameUninstalled.wav`r`n" +
+		"D_LibraryUpdated.wav - F_LibraryUpdated.wav")
+}
+
+function global:OpenSoundsFolderMenu() {
+	#need to release them otherwise explorer can't overwrite files even though you can delete them
+	CloseAudioFiles
+	$SoundFilesDataPath = Join-Path -Path $CurrentExtensionInstallPath -ChildPath "Sound Files"
+
+	#just in case user deleted it
+	New-Item -ItemType Directory -Path $SoundFilesDataPath -Force
+	Invoke-Item $SoundFilesDataPath
+}
+
+function global:ReloadAudioFilesMenu() {
+	CloseAudioFiles
+	$PlayniteApi.Dialogs.ShowMessage("Audio files reloaded!", "Audio files reinitialized")
+}
+
+function global:CloseAudioFiles() {
+	foreach ($key in $global:players.keys)
 	{
-		$global:DoCheck = $False;
-
-		$ExtensionDataPath = Join-Path -Path $PlayniteApi.Paths.ExtensionsDataPath -ChildPath "Playnite.Sounds.WD"
-		$SoundFilesDataPath = Join-Path -Path $ExtensionDataPath -ChildPath "Sound Files"
-		$SettingsDataPath = Join-Path -Path $ExtensionDataPath -ChildPath "Settings" 
-		
-		New-Item -ItemType Directory -Path $ExtensionDataPath -Force
-		New-Item -ItemType Directory -Path $SoundFilesDataPath -Force
-		New-Item -ItemType Directory -Path $SettingsDataPath -Force
-
-		$FirstRunPath = Join-Path -Path $SettingsDataPath -ChildPath "firstrundone.dat"
-
-		if ((Test-Path $FirstRunPath) -eq $False)
-		{
-			New-Item -ItemType "file" $FirstRunPath
-
-			$__logger.Info("First Run of extensions detected")
-
-			$file = "Playnite.Sounds.WD.data.zip"
-			$TempDownLoadPath = Join-Path -Path $ExtensionDataPath -ChildPath $file
-			$Uri = "https://github.com/joyrider3774/PlayniteSound/raw/main/data/Sound%20Files.zip"
-
-			$__logger.Info("Downloading " + $Uri)
-
-			try {
-				Invoke-WebRequest $Uri -OutFile $TempDownloadPath
-				$__logger.Info("Audio files succesfully downloaded...")
-
-				#try first extraction method but it seems it can produce errors
-				try	{
-					Expand-Archive -LiteralPath $TempDownloadPath -DestinationPath $ExtensionDataPath -Force 
-					Remove-Item -Force $TempDownloadPath
-					$__logger.Info("Audio Files extracted using Expand-Archive to " + $ExtensionDataPath)
-				}
-				catch {
-					$ErrorMessage = $_.Exception.Message
-					$__logger.Error("Error extracting zipped audio files using Expand-Archive: " + $ErrorMessage)
-					$__logger.Info("Trying alternate extraction method using shell.application...")
-					
-					#try another extraction method
-					try {
-						$shell = new-object -com shell.application
-						$zip = $shell.NameSpace($TempDownLoadPath)
-						foreach($item in $zip.items())
-						{
-							#16+4=20
-							#(4) Do not display a progress dialog box.
-							#(16) Click "Yes to All" in any dialog box displayed.
-							$shell.Namespace($ExtensionDataPath).copyhere($item, 20)
-						}
-						Remove-Item -Force $TempDownloadPath
-						$__logger.Info("Audio Files extracted using shell.application to " + $ExtensionDataPath)
-					}
-					catch {
-						$ErrorMessage2 = $_.Exception.Message
-						$__logger.Error("Error extracting zipped audio files using shell.application: " + $ErrorMessage2)
-						
-						$PlayniteApi.Dialogs.ShowErrorMessage("Method Expand-Archive:`r`n" + $ErrorMessage + "`r`n`r`n" + 
-							"Method shell.application:`r`n" + $ErrorMessage2 + "`r`n`r`n Please Extract " + $file + " manually",
-							"Error extracting zipped audio files");
-						Invoke-Item $ExtensionDataPath
-					}
-				}
-			}
-			catch {
-				$ErrorMessage = $_.Exception.Message
-				$__logger.Error("Error downloading Audio Files... Error: " + $ErrorMessage)
-				$PlayniteApi.Dialogs.ShowErrorMessage($ErrorMessage, "Error downloading audio files");
-			}	
-
-			$MsgBoxResult = $PlayniteApi.Dialogs.ShowMessage( 
-"Welcome to Playnite Sounds.
-				
-Mockup audio files have been succesfully downloaded.
-After making your choice below, the first audio files should start playing if all goes fine
-
-This extension can play wav files when PlayNite events happen...
-Files starting with D_* are audio files played in desktop mode and F_* in fullscreenmode.
-You can delete any wav audio files, if you do not want to hear certain sounds, or you can replace them all.
-Do note you will have to restart the extension or PlayNite in order for new audio files to be loaded.
-
-Do you want to open the folder containing the files ?",	"Playnite Sounds First Run", 4)
-				
-			if($MsgBoxResult -eq "Yes")
-			{
-				Invoke-Item $SoundFilesDataPath
-			}
-			
-			#reset loaded players so audio files get reloaded
-			$global:players = @{}
+		$Entry = $global:players[$key]
+		$Entry[1].Stop()
+		if ($Entry[2] -eq 1) {
+			$Entry[1].Close() #mediaplayer
+			$Entry[1] = $null
 		}
 	}
+	$global:players = @{}
+}
+
+function global:PlayFileName() {
+	param (
+		$FileName,
+		$UseSoundPlayer = $False
+	)
 
 	if ($global:players.ContainsKey($FileName))
 	{
@@ -116,32 +93,48 @@ Do you want to open the folder containing the files ?",	"Playnite Sounds First R
 		{
 			$Prefix = "F_"
 		}
-		
-		$FullFileName = Join-Path -Path $PlayniteApi.Paths.ExtensionsDataPath -ChildPath "Playnite.Sounds.WD" | 
-			Join-Path -ChildPath "Sound Files" | Join-Path -ChildPath ($Prefix + $FileName) 
+
+		$FullFileName = Join-Path -Path $CurrentExtensionInstallPath -ChildPath "Sound Files" |
+			Join-Path -ChildPath ($Prefix + $FileName) 
 
 		#MediaPlayer can play multiple sounds together from mulitple instances SoundPlayer can not
-		#$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Media.SoundPlayer))
+		if($UseSoundPlayer) {
+			$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Media.SoundPlayer), 0)
+		}
+		else
+		{
+			$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Windows.Media.MediaPlayer), 1)
+		}
 
-		$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Windows.Media.MediaPlayer))
-
-		#$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Windows.Controls.MediaElement))
+		#$Entry = @((Test-Path $FullFileName), (New-Object -TypeName System.Windows.Controls.MediaElement), 2)
 
 		if($Entry[0])
 		{
-			$Entry[1].Open([System.Uri]$FullFileName) #System.Windows.Media.MediaPlayer
-		#	$Entry[1].SoundLocation = $FullFileName #System.Media.SoundPlayer
-		#	$Entry[1].Source = $FullFileName      #System.Windows.Controls.MediaElement
-		#	$Entry[1].UnloadedBehavior = "Manual" #System.Windows.Controls.MediaElement
+			if ($Entry[2] -eq 1) {
+				$Entry[1].Open([System.Uri]$FullFileName) #System.Windows.Media.MediaPlayer
+			}
+			if ($Entry[2] -eq 0) {
+				$Entry[1].SoundLocation = $FullFileName #System.Media.SoundPlayer
+				$Entry[1].Load()
+			}
+			#$Entry[1].Source = $FullFileName      #System.Windows.Controls.MediaElement
+			#$Entry[1].UnloadedBehavior = "Manual" #System.Windows.Controls.MediaElement
 		}
 		$global:players[$FileName] = $Entry 
-		
+
 	}
 
 	if ($Entry[0])
 	{
 		$Entry[1].Stop() 
-		$Entry[1].Play()
+		if ($Entry[2] -eq 1)
+		{
+			$Entry[1].Play()
+		}
+		else
+		{
+			$Entry[1].PlaySync()
+		}
 	}
 }
 
@@ -152,7 +145,12 @@ function global:OnApplicationStarted()
 
 function global:OnApplicationStopped()
 {
-	PlayFileName "ApplicationStopped.wav"
+	#last parameter makes it use soundplayer and played synced 
+	#so that the audio file is fully played before quiting
+	PlayFileName "ApplicationStopped.wav" $True
+	#need to release them here otherwise we might have problems
+	#switching to fullscreen.
+	CloseAudioFiles
 }
 
 function global:OnLibraryUpdated()
@@ -162,55 +160,55 @@ function global:OnLibraryUpdated()
 
 function global:OnGameStarting()
 {
-    param(
-        $game
-    )
+	param(
+		$game
+	)
 
 	PlayFileName "GameStarting.wav"
 }
 
 function global:OnGameStarted()
 {
-    param(
-        $game
-    )
+	param(
+		$game
+	)
 
-	PlayFileName  "GameStarted.wav"
+	PlayFileName "GameStarted.wav"
 }
 
 function global:OnGameStopped()
 {
-    param(
-        $game,
-        $elapsedSeconds
-    )
+	param(
+		$game,
+	$elapsedSeconds
+	)
 
 	PlayFileName "GameStopped.wav"
 }
 
 function global:OnGameInstalled()
 {
-    param(
-        $game
-    )
+	param(
+		$game
+	)
 
 	PlayFileName "GameInstalled.wav"
 }
 
 function global:OnGameUninstalled()
 {
-    param(
-        $game
-    )
+	param(
+		$game
+	)
 
 	PlayFileName "GameUninstalled.wav"
 }
 
 function global:OnGameSelected()
 {
-    param(
-        $args
-    )
+	param(
+		$args
+	)
 
 	PlayFileName "GameSelected.wav"
 }

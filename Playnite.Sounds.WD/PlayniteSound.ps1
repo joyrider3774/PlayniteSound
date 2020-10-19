@@ -1,4 +1,5 @@
 $global:players = @{}
+$global:closeaudiofilesnextplay = $False
 
 function global:GetMainMenuItems() {
 	param($menuArgs)
@@ -62,6 +63,7 @@ function global:ReloadAudioFilesMenu() {
 }
 
 function global:CloseAudioFiles() {
+
 	foreach ($key in $global:players.keys)
 	{
 		$Entry = $global:players[$key]
@@ -79,6 +81,12 @@ function global:PlayFileName() {
 		$FileName,
 		$UseSoundPlayer = $False
 	)
+
+	if ($global:closeaudiofilesnextplay)
+	{
+		CloseAudioFiles
+		$global:closeaudiofilesnextplay = $False
+	}
 
 	if ($global:players.ContainsKey($FileName))
 	{
@@ -138,8 +146,26 @@ function global:PlayFileName() {
 	}
 }
 
+function StartSystemEvents {
+	$null = Register-ObjectEvent -InputObject ([Microsoft.Win32.SystemEvents]) -EventName "PowerModeChanged" -Action {
+		if ($Event.SourceEventArgs.Mode -eq 'Resume')
+		{
+			$global:closeaudiofilesnextplay = $True
+		}
+	}
+}
+
+function StopSystemEvents {
+	$events = Get-EventSubscriber | Where-Object { $_.SourceObject -eq [Microsoft.Win32.SystemEvents] } 
+	$jobs = $events | Select-Object -ExpandProperty Action
+	$events | Unregister-Event
+	$jobs | Remove-Job
+}
+
+
 function global:OnApplicationStarted()
 {
+	StartSystemEvents
 	PlayFileName "ApplicationStarted.wav"
 }
 
@@ -151,6 +177,7 @@ function global:OnApplicationStopped()
 	#need to release them here otherwise we might have problems
 	#switching to fullscreen.
 	CloseAudioFiles
+	StopSystemEvents
 }
 
 function global:OnLibraryUpdated()
@@ -180,7 +207,7 @@ function global:OnGameStopped()
 {
 	param(
 		$game,
-	$elapsedSeconds
+		$elapsedSeconds
 	)
 
 	PlayFileName "GameStopped.wav"

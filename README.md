@@ -32,3 +32,6 @@ A very simple and free tool to create (game) sounds is SFXR, you can use it to c
 SFXR: https://www.drpetter.se/project_sfxr.html
 
 Audacity: https://www.audacityteam.org/
+
+### Example video
+[![Playnite Sound Example Video](http://img.youtube.com/vi/zXzSdLrOmtw/0.jpg)](http://www.youtube.com/watch?v=zXzSdLrOmtw "Playnite Sound Example Video")

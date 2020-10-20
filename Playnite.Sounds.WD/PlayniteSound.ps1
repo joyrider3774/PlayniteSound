@@ -1,3 +1,5 @@
+Add-Type -AssemblyName PresentationCore
+
 $global:players = @{}
 $global:closeaudiofilesnextplay = $False
 
@@ -161,7 +163,6 @@ function StopSystemEvents {
 	$events | Unregister-Event
 	$jobs | Remove-Job
 }
-
 
 function global:OnApplicationStarted()
 {

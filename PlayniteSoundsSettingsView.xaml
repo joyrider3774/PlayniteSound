@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="PlayniteSounds.PlayniteSoundsSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="400">
+    <StackPanel Margin="2">
+        <GroupBox Name="GrpSettings" Header="{DynamicResource LOC_PLAYNITESOUNDS_Settings}" Margin="0,5,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment" HorizontalAlignment="Left"/>
+                <ComboBox Grid.Row="0" Name="CmbSoundWhere" Width="331" SelectedIndex="{Binding SoundWhere}" HorizontalAlignment="Left" Height="20" Margin="140,3,0,3">
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen}"/>
+                </ComboBox>
+                <Label Grid.Row="1"  Name="LblMsuicWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicWhere}" d:LayoutOverrides="VerticalAlignment" HorizontalAlignment="Left"/>
+                <ComboBox Grid.Row="1" Name="CmbMusicWhere" Width="331" SelectedIndex="{Binding MusicWhere}" HorizontalAlignment="Left" Height="20" Margin="140,3,0,3">
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen}"/>
+                </ComboBox>
+                <Label Grid.Row="2" Name="LblMusicType" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicType}" d:LayoutOverrides="VerticalAlignment" HorizontalAlignment="Left"/>
+                <ComboBox Grid.Row="2" Name="CmbMusicType" Width="331" SelectedIndex="{Binding MusicType}" HorizontalAlignment="Left" Height="20" Margin="140,3,0,3">
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
+                </ComboBox>
+            </Grid>
+        </GroupBox>
+        <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">
+            <StackPanel Orientation="Horizontal">
+                <Button Name="ButReloadAudio" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Width="148" Click="ButReloadAudio_Click"/>
+                <Button Name="ButOpenSoundsFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Width="148" Click="ButOpenSoundsFolder_Click"/>
+                <Button Name="ButOpenMusicFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Width="148" Click="ButOpenMusicFolder_Click"/>
+                <Button Name="ButOpenInfo" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsHelp}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Width="148" Click="ButOpenInfo_Click"/>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+
+</UserControl>

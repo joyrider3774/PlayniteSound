@@ -250,6 +250,15 @@ namespace PlayniteSounds
                 new MainMenuItem {
                     MenuSection = "@Playnite Sounds",
                     Icon = Path.Combine(pluginFolder, "icon.png"),
+                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles"),
+                    Action = (MainMenuItem) =>
+                    {
+                        ReloadAudioFiles();
+                    }
+                },
+                new MainMenuItem {
+                    MenuSection = "@Playnite Sounds",
+                    Icon = Path.Combine(pluginFolder, "icon.png"),
                     Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsHelp"),
                     Action = (MainMenuItem) =>
                     {
@@ -362,23 +371,23 @@ namespace PlayniteSounds
                         //MediaPlayer can play multiple sounds together from mulitple instances SoundPlayer can not
                         if (UseSoundPlayer)
                         {
-                            Entry = new PlayerEntry(File.Exists(FullFileName), new SoundPlayer(), 0);
+                            Entry = new PlayerEntry(File.Exists(FullFileName), null, new SoundPlayer(), 0);
                         }
                         else
                         {
-                            Entry = new PlayerEntry(File.Exists(FullFileName), new MediaPlayer(), 1);
+                            Entry = new PlayerEntry(File.Exists(FullFileName), new MediaPlayer(), null, 1);
                         }
 
                         if (Entry.FileExists)
                         {
                             if (Entry.TypePlayer == 1)
                             {
-                                ((MediaPlayer)Entry.Player).Open(new Uri(FullFileName));
+                                Entry.MediaPlayer.Open(new Uri(FullFileName));
                             }
                             else
                             {
-                                ((SoundPlayer)Entry.Player).SoundLocation = FullFileName;
-                                ((SoundPlayer)Entry.Player).Load();
+                                Entry.SoundPlayer.SoundLocation = FullFileName;
+                                Entry.SoundPlayer.Load();
                             }
                         }
                         players[FileName] = Entry;
@@ -388,14 +397,13 @@ namespace PlayniteSounds
                     {
                         if (Entry.TypePlayer == 1)
                         {
-                            ((MediaPlayer)Entry.Player).Stop();
-                            ((MediaPlayer)Entry.Player).Play();
-
+                            Entry.MediaPlayer.Stop();
+                            Entry.MediaPlayer.Play();
                         }
                         else
                         {
-                            ((SoundPlayer)Entry.Player).Stop();
-                            ((SoundPlayer)Entry.Player).PlaySync();
+                            Entry.SoundPlayer.Stop();
+                            Entry.SoundPlayer.PlaySync();
                         }
                     }
                 }
@@ -417,14 +425,14 @@ namespace PlayniteSounds
                     PlayerEntry Entry = players[keyname];
                     if (Entry.TypePlayer == 1)
                     {
-                        ((MediaPlayer)Entry.Player).Stop();
-                        ((MediaPlayer)Entry.Player).Close();
-                        Entry.Player = null;
+                        Entry.MediaPlayer.Stop();
+                        Entry.MediaPlayer.Close();
+                        Entry.MediaPlayer = null;
                     }
                     else
                     {
-                        ((SoundPlayer)Entry.Player).Stop();
-                        Entry.Player = null;
+                        Entry.SoundPlayer.Stop();
+                        Entry.SoundPlayer = null;
                     }
                 }
                 players.Clear();

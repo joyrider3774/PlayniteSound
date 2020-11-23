@@ -10,10 +10,10 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nigdy</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Pulpit</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Pełny ekran</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Pulpit + Pełny ekran</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Settings</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>

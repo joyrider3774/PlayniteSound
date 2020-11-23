@@ -2,35 +2,35 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Jouer le son où:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Jouer la musique où:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Type de musique:</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Une seule musique pour tous les jeux et toutes les plateformes</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Une musique par plateforme</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Une musique par plateforme et par jeu</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Jamais</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureau</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Plein écran</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Bureau + Plein écran</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Settings</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Paramètres</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Reload Audio Files</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Open Sounds Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Open Music Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Show Music Filename</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Recharger les fichiers audio</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Ouvrir le dossier Sons</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir le dossier Musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom du fichier musique</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Fichiers audio rechargés!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Veuillez sélectionner un seule jeu!</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds is an extension to play audio files during Playnite events.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">It can only play WAV audio files, mp3 files for music and nothing else.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">There are 2 seperate set of sound files. Audio Files starting with 'D_' and files starting with 'F_'.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">The 'D_' files are the audio files for desktop mode, the 'F_' files for fullscreen mode.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">If you don't want to hear a certain file you can just delete the wav file of the event you don't want to hear. You can change the files with your own files. Be sure to use the 'Open Audio Files Folder' menu for doing so. It will make sure loaded audio files get closed so you can overwrite them. Make sure playnite does not play any audio anymore after opening the folder or it's possible you can't overwrite that specific file. With my testings it did seem you could still first erase the files. After changing the audio files use the 'Reload Audio Files' menu to clear any loaded files and use your new files, or just restart Playnite. Do NOT use a long audio file for ApplicationStopped as Playnite will not quit until that audio file has finished playing. The same applies for switching between desktop and fullscreen mode.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">These are the audio files that can be used</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Music files need to be mp3 files, depending on the settings be named &quot;_music_.mp3&quot; or have the name of the game with invalid characters removed and be placed in a folder per platform. If you are not exactly sure of the filename and location you can right click on a game and choose the &quot;Show music filename&quot; option. Be Aware, filenames and locations of music files change depending on the settings chosen!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds est une extension permettant de jouer des fichiers audio pendant les événements Playnite.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Il ne peut jouer que des fichiers audio WAV, des fichiers MP3 pour la musique et rien d'autre.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">Il y a 2 fichiers audio séparés commençant par 'D_' et les fichiers commençant par 'F_'.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">Les fichiers 'D_' sont les fichiers audio pour le mode bureau, les fichiers 'F_' pour le mode plein écran.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">Si vous ne voulez pas entendre un certain fichier, vous pouvez simplement supprimer le fichier wav de l'événement que vous ne voulez pas entendre. Vous pouvez modifier les fichiers avec vos propres fichiers. Assurez-vous d'utiliser le menu 'Ouvrir le dossier Sons' pour ce faire. Il s'assurera que les fichiers audio chargés sont fermés afin que vous puissiez les écraser. Assurez-vous que playnite ne joue plus d'audio après l'ouverture du dossier ou il est possible que vous ne puissiez pas écraser ce fichier spécifique. Avec mes tests, il semblait que vous pouviez d'abord effacer les fichiers. Après avoir changé les fichiers audio, utilisez le menu 'Recharger les fichiers audio' pour effacer tous les fichiers chargés et utiliser vos nouveaux fichiers, ou juste redémarrer Playnite. N'utilisez PAS de fichier audio long pour l'événement&quot; Application arreter&quot; car Playnite ne quittera pas avant que le fichier audio n'ait fini de jouer. Il en va de même pour le basculement entre le bureau et le mode plein écran.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">Ces fichiers audio peuvent être utilisés</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Les fichiers musicaux doivent être des fichiers mp3, selon les paramètres nommés &quot;_music_.mp3&quot; ou avoir le nom du jeu avec des caractères invalides supprimés et être placés dans un dossier par plateforme. Si vous n'êtes pas exactement sûr du nom du fichier et de son emplacement, vous pouvez faire un clic droit sur un jeu et choisir l'option &quot;Afficher le nom du fichier musique&quot;. Le nom de fichier et l'emplacement des fichiers musicaux changent selon les paramètres choisis!</sys:String>
 </ResourceDictionary>

@@ -17,9 +17,9 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Paramètres</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Recharger les fichiers audio</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Ouvrir le dossier Sons</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir le dossier Musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Recharger fichiers audio</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Ouvrir dossier Sons</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir dossier Musique</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom du fichier musique</sys:String>
 

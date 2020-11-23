@@ -9,11 +9,12 @@
         <GroupBox Name="GrpSettings" Header="{DynamicResource LOC_PLAYNITESOUNDS_Settings}" Margin="0,5,0,0">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="160"/>
                     <ColumnDefinition Width="*"/>
-
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="5"/>
                     <RowDefinition/>
                     <RowDefinition Height="5"/>
                     <RowDefinition/>
@@ -40,6 +41,13 @@
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
                 </ComboBox>
+                <StackPanel Grid.Row="6" Orientation="Horizontal">
+                    <Label Name="LblMusicVolume" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicVolume}" d:LayoutOverrides="VerticalAlignment"/>
+                    <Label Name="lblSpace" Content=" "/>
+                    <Label Name="Percentage" Content="{Binding MusicVolume}" />
+                    <Label Name="PercentageSign" Content="%"/>
+                </StackPanel>
+                <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
             </Grid>
         </GroupBox>
         <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">

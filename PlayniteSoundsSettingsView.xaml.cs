@@ -44,5 +44,10 @@ namespace PlayniteSounds
         {
             plugin.HelpMenu();
         }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            plugin.ResetMusicVolume();
+        }
     }
 }

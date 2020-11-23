@@ -15,6 +15,7 @@ namespace PlayniteSounds
         public int MusicWhere { get; set; } = 3;
         public int SoundWhere { get; set; } = 3; 
         public int MusicType { get; set; } = 2;
+        public int MusicVolume { get; set; } = 25;
 
         // Parameterless constructor must exist if you want to use LoadPluginSettings method.
         public PlayniteSoundsSettings()
@@ -48,6 +49,7 @@ namespace PlayniteSounds
             // This method should revert any changes made to Option1 and Option2.
             RestoreSettings(EditDataSettings);
             plugin.ReplayMusic();
+            plugin.ResetMusicVolume();
         }
 
         public void EndEdit()
@@ -57,6 +59,7 @@ namespace PlayniteSounds
             plugin.SavePluginSettings(this);
             plugin.MusicNeedsReload = plugin.MusicNeedsReload || ((EditDataSettings.MusicType != MusicType) || (EditDataSettings.MusicWhere != MusicWhere));
             plugin.ReplayMusic();
+            plugin.ResetMusicVolume();
         }
 
         public bool VerifySettings(out List<string> errors)
@@ -73,6 +76,7 @@ namespace PlayniteSounds
             MusicWhere = source.MusicWhere;
             MusicType = source.MusicType;
             SoundWhere = source.SoundWhere;
+            MusicVolume = source.MusicVolume;
         }
     }
 }

@@ -68,7 +68,7 @@ namespace PlayniteSounds
         public override void OnGameStarted(Game game)
         {
             // Add code to be executed when game is started running.
-            PlayFileName("GameStarted.wav");
+            PlayFileName("GameStarted.wav", true);
         }
 
         public override void OnGameStarting(Game game)
@@ -116,6 +116,11 @@ namespace PlayniteSounds
                 logger.Error(E, "OnPowerMode_Changed");
                 PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
             }
+        }
+
+        public void ResetMusicVolume()
+        {
+            musicplayer.Volume = (double)Settings.MusicVolume / 100;
         }
 
         public void ReplayMusic()
@@ -537,8 +542,10 @@ namespace PlayniteSounds
                         {
                             prevmusicfilename = MusicFileName;
                             timeLine.Source = new Uri(MusicFileName);
+                            musicplayer.Volume = (double)Settings.MusicVolume / 100;
                             musicplayer.Clock = timeLine.CreateClock();
                             musicplayer.Clock.Controller.Begin();
+                            
                         }
                     }
                 }

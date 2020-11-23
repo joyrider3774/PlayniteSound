@@ -47,6 +47,7 @@ namespace PlayniteSounds
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
             // This method should revert any changes made to Option1 and Option2.
             RestoreSettings(EditDataSettings);
+            plugin.ReplayMusic();
         }
 
         public void EndEdit()
@@ -54,7 +55,7 @@ namespace PlayniteSounds
             // Code executed when user decides to confirm changes made since BeginEdit was called.
             // This method should save settings made to Option1 and Option2.
             plugin.SavePluginSettings(this);
-            plugin.MusicNeedsReload = (EditDataSettings.MusicType != MusicType) || (EditDataSettings.MusicWhere != MusicWhere);
+            plugin.MusicNeedsReload = plugin.MusicNeedsReload || ((EditDataSettings.MusicType != MusicType) || (EditDataSettings.MusicWhere != MusicWhere));
             plugin.ReplayMusic();
         }
 

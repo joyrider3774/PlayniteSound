@@ -35,3 +35,15 @@ Audacity: https://www.audacityteam.org/
 
 ### Example video
 [![Playnite Sound Example Video](http://img.youtube.com/vi/zXzSdLrOmtw/0.jpg)](http://www.youtube.com/watch?v=zXzSdLrOmtw "Playnite Sound Example Video")
+
+## Translation
+The project is translatable on [Crowdin](https://crowdin.com/project/playnite-game-speak)
+
+Thanks to the following people who have contributed with translations:
+* Spanish: Darklinpower
+* French: M0ylik
+* Polish: Renia
+
+## Credits
+* Used Icon made by [Freepik](http://www.freepik.com/)
+* Original Localization file loader by [Lacro59](https://github.com/Lacro59)

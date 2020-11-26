@@ -104,7 +104,7 @@ namespace PlayniteSounds
             try
             { 
                 if (e.Mode == PowerModes.Resume)
-		        {
+                {
                     closeaudiofilesnextplay = true;
                     MusicNeedsReload = true;
                     //Restart music:
@@ -166,8 +166,9 @@ namespace PlayniteSounds
         public override void OnGameSelected(GameSelectionEventArgs args)
         {
             PlayFileName("GameSelected.wav");
-            if (args.NewValue.Count == 1) {
-		        foreach(Game game in args.NewValue)
+            if (args.NewValue.Count == 1) 
+            {
+                foreach(Game game in args.NewValue)
                 {
                     if (Settings.MusicType == 2)
                     {
@@ -455,12 +456,12 @@ namespace PlayniteSounds
             try
             { 
                 string SoundFilesInstallPath = Path.Combine(pluginFolder, "Sound Files");
-	            string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
+                string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
 
                 if (!Directory.Exists(SoundFilesDataPath))
-	            {
+                {
                     if (Directory.Exists(SoundFilesInstallPath))
-		            {
+                    {
                         CloseAudioFiles();
 
                         Directory.CreateDirectory(SoundFilesDataPath);
@@ -485,7 +486,7 @@ namespace PlayniteSounds
             try
             { 
                 if (musicplayer.Clock != null)
-	            {
+                {
                     musicplayer.Clock.Controller.Resume();
                 }
             }
@@ -501,7 +502,7 @@ namespace PlayniteSounds
             try
             { 
                 if (musicplayer.Clock != null)
-	            {
+                {
                     musicplayer.Clock.Controller.Pause();
                 }
             }

@@ -36,7 +36,7 @@ Audacity: https://www.audacityteam.org/
 ### Example video
 [![Playnite Sound Example Video](http://img.youtube.com/vi/zXzSdLrOmtw/0.jpg)](http://www.youtube.com/watch?v=zXzSdLrOmtw "Playnite Sound Example Video")
 
-### Example video
+### Playnite Sound V2.0 Release Video
 [![Playnite Sound V2.0 Release Video](http://img.youtube.com/vi/iTZ9JbswN3M/0.jpg)](https://youtu.be/iTZ9JbswN3M "Playnite Sound V2.0 Release Video")
 
 

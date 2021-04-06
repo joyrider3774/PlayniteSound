@@ -16,6 +16,8 @@ using Playnite.SDK.Events;
 using System.Windows.Media.Animation;
 using System.Diagnostics;
 using Microsoft.Win32;
+using System.Windows;
+using System.IO.Compression;
 
 namespace PlayniteSounds
 {
@@ -603,6 +605,182 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "OpenMusicFolder");
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+            }
+        }
+
+        public void SaveSounds()
+        {
+            Window windowExtension = PlayniteApi.Dialogs.CreateWindow(new WindowCreationOptions
+            {
+                ShowMinimizeButton = false,
+                ShowMaximizeButton = false,
+                ShowCloseButton = true
+            });
+
+            windowExtension.ShowInTaskbar = false;
+            windowExtension.ResizeMode = ResizeMode.NoResize;
+            windowExtension.Owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
+            windowExtension.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            StackPanel stackPanel = new StackPanel();
+            stackPanel.Orientation = Orientation.Horizontal;
+
+            TextBox saveNameBox = new TextBox();
+            saveNameBox.Margin = new Thickness(5, 5, 10, 5);
+            saveNameBox.Width = 200;
+            stackPanel.Children.Add(saveNameBox);
+
+            Button saveNameButton = new Button();
+            saveNameButton.Margin = new Thickness(0, 5, 5, 5);
+            saveNameButton.SetResourceReference(Button.ContentProperty, "LOC_PLAYNITESOUNDS_ManagerSave");
+            saveNameButton.IsEnabled = false;
+            saveNameButton.IsDefault = true;
+            stackPanel.Children.Add(saveNameButton);
+
+            saveNameBox.KeyUp += (object sender, System.Windows.Input.KeyEventArgs e) =>
+            {
+                // Only allow saving if filename is larger than 3 characters
+                saveNameButton.IsEnabled = saveNameBox.Text.Trim().Length > 3;
+            };
+
+            saveNameButton.Click += (object sender, RoutedEventArgs e) =>
+            {
+                // Create ZIP file in sound manager folder
+                try
+                {
+                    string soundPackName = saveNameBox.Text;
+                    string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
+                    //just in case user deleted it
+                    Directory.CreateDirectory(SoundFilesDataPath);
+                    string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
+                    //just in case user deleted it
+                    Directory.CreateDirectory(SoundManagerFilesDataPath);
+                    ZipFile.CreateFromDirectory(SoundFilesDataPath, SoundManagerFilesDataPath + "\\" + soundPackName + ".zip");
+                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerSaveConfirm").ToString() + " " + soundPackName);
+                    windowExtension.Close();
+                }
+                catch (Exception E)
+                {
+                    logger.Error(E, "SaveSounds");
+                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                }
+            };
+
+            windowExtension.Content = stackPanel;
+            windowExtension.SizeToContent = SizeToContent.WidthAndHeight;
+            // Workaround for WPF bug which causes black sections to be displayed in the window
+            windowExtension.ContentRendered += (s, e) => windowExtension.InvalidateMeasure();
+            windowExtension.Loaded += (s, e) => saveNameBox.Focus();
+            windowExtension.ShowDialog();
+        }
+
+        public void LoadSounds()
+        {
+            try
+            {
+                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
+                //just in case user deleted it
+                Directory.CreateDirectory(SoundManagerFilesDataPath);
+
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Filter = "ZIP archive|*.zip";
+                dialog.InitialDirectory = SoundManagerFilesDataPath;
+                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
+                if (result == true)
+                {
+                    string targetPath = dialog.FileName;
+                    string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
+                    //just in case user deleted it
+                    Directory.CreateDirectory(SoundFilesDataPath);
+                    // Have to extract each file one at a time to enabled overwrites
+                    using (ZipArchive archive = ZipFile.OpenRead(targetPath))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        {
+                            // If it's a directory, it doesn't have a "Name".
+                            if (!String.IsNullOrEmpty(entry.Name))
+                            {
+                                string entryDestination = Path.Combine(SoundFilesDataPath, entry.FullName);
+                                entry.ExtractToFile(entryDestination, true);
+                            }
+                        }
+                    }
+                    CloseAudioFiles();
+                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerLoadConfirm").ToString() + " " + Path.GetFileNameWithoutExtension(targetPath));
+                }
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "LoadSounds");
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+            }
+
+
+        }
+
+        public void ImportSounds()
+        {
+            List<string> targetPaths = PlayniteApi.Dialogs.SelectFiles("ZIP archive|*.zip");
+
+            if (targetPaths.HasNonEmptyItems())
+            {
+                try
+                {
+                    string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
+                    //just in case user deleted it
+                    Directory.CreateDirectory(SoundManagerFilesDataPath);
+                    foreach (string targetPath in targetPaths)
+                    {
+                        File.Copy(targetPath, SoundManagerFilesDataPath + "\\" + Path.GetFileName(targetPath));
+                    }
+                }
+                catch (Exception E)
+                {
+                    logger.Error(E, "ImportSounds");
+                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                }
+            }
+        }
+
+        public void RemoveSounds()
+        {
+            try
+            {
+                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
+                //just in case user deleted it
+                Directory.CreateDirectory(SoundManagerFilesDataPath);
+
+                OpenFileDialog dialog = new OpenFileDialog();
+                dialog.Filter = "ZIP archive|*.zip";
+                dialog.InitialDirectory = SoundManagerFilesDataPath;
+                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
+                if (result == true)
+                {
+                    string targetPath = dialog.FileName;
+                    File.Delete(targetPath);
+                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerDeleteConfirm").ToString() + " " + Path.GetFileNameWithoutExtension(targetPath));
+                }
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "RemoveSounds");
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+            }
+        }
+
+        public void OpenSoundManagerFolder()
+        {
+            try
+            {
+                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
+                //just in case user deleted it
+                Directory.CreateDirectory(SoundManagerFilesDataPath);
+                Process.Start(SoundManagerFilesDataPath);
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "OpenSoundManagerFolder");
                 PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
             }
         }

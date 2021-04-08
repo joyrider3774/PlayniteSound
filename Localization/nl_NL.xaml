@@ -35,5 +35,15 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Muziek bestanden moeten mp3 bestanden zijn, afhankelijk van de instellingen, &quot;_music_.mp3&quot; of de naam van het spel met ongeldige tekens verwijderd en moeten geplaatst worden in een map per platform. Als je niet precies zeker bent van de bestandsnaam en locatie kun je met de rechtermuisknop op een spel klikken en de optie &quot;Muziek bestandsnaam weergeven&quot; kiezen. Opgelet, bestandsnamen en locaties van muziekbestanden wijzigen afhankelijk van de gekozen instellingen!</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Muziek Volume:</sys:String>
+
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Geluidsmanager</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Laden</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Opslaan</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Geluidspakket succesvol opgeslagen:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Geluidspakket succesvol geladen:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Geluidspakket succesvol verwijderd:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Verwijderen</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importeren</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Geluidsbeheer map openen</sys:String>
     
 </ResourceDictionary>

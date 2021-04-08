@@ -47,6 +47,10 @@ Thanks to the following people who have contributed with translations:
 * Spanish: Darklinpower
 * French: M0ylik
 * Polish: Renia
+* Italian: Federico Pezzuolo (3XistencE-STUDIO)
+* German: kristheb
+* Hungarian: myedition8
+* Porutgese, Brazillian: atemporal_ (Atemporal)
 
 ## Credits
 * Used Icon made by [Freepik](http://www.freepik.com/)

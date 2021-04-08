@@ -17,23 +17,33 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Einstellungen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Aktionen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Reload Audio Files</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Open Sounds Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Open Music Folder</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Audiodateien neuladen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Töne Ordner öffnen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Musikordner öffnen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Hilfe</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Show Music Filename</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Zeige den Dateinamen der Musik</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Die Audiodateien wurden neu geladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Bitte wähle ein einziges Spiel!</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds is an extension to play audio files during Playnite events.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">It can only play WAV audio files, mp3 files for music and nothing else.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">There are 2 seperate set of sound files. Audio Files starting with 'D_' and files starting with 'F_'.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">The 'D_' files are the audio files for desktop mode, the 'F_' files for fullscreen mode.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds ist eine Erweiterung um Audiodateien zu bestimmten Playnite Aktionen abzuspielen.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Nur WAV oder MP3 Dateien als Musik unterstützt.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">Es gibt zwei separate Soundsets. Audiodateien starten mit 'D_', Dateien starten mit 'F_'.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">'D_' Dateien sind Audiodaten für den Modus &quot;Desktop&quot;, 'F_' Dateien für den Modus &quot;Fullscreen&quot;.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">If you don't want to hear a certain file you can just delete the wav file of the event you don't want to hear. You can change the files with your own files. Be sure to use the 'Open Audio Files Folder' menu for doing so. It will make sure loaded audio files get closed so you can overwrite them. Make sure playnite does not play any audio anymore after opening the folder or it's possible you can't overwrite that specific file. With my testings it did seem you could still first erase the files. After changing the audio files use the 'Reload Audio Files' menu to clear any loaded files and use your new files, or just restart Playnite. Do NOT use a long audio file for ApplicationStopped as Playnite will not quit until that audio file has finished playing. The same applies for switching between desktop and fullscreen mode.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">These are the audio files that can be used</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">Folgende Audio Dateien können benutzt werden</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Music files need to be mp3 files, depending on the settings be named &quot;_music_.mp3&quot; or have the name of the game with invalid characters removed and be placed in a folder per platform. If you are not exactly sure of the filename and location you can right click on a game and choose the &quot;Show music filename&quot; option. Be Aware, filenames and locations of music files change depending on the settings chosen!</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Musik-Lautstärke:</sys:String>
+
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
     
 </ResourceDictionary>

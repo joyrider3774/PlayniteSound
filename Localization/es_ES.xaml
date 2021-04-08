@@ -35,5 +35,15 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Los archivos de música deben ser archivos mp3, dependiendo de la configuración, deben llamarse &quot;_music_.mp3&quot; o deben eliminarse el nombre del juego con caracteres no válidos y colocarse en una carpeta por plataforma. Si no estas exactamente seguro del nombre del archivo y la ubicación, puedes hacer clic derecho en un juego y elegir la opción &quot;Mostrar nombre de archivo de música&quot;. ¡Ten en cuenta que los nombres de archivo y la ubicación de los archivos de música cambian según la configuración elegida!</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Volumen de la música:</sys:String>
+
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
     
 </ResourceDictionary>

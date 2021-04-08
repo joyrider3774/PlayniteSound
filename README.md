@@ -51,6 +51,7 @@ Thanks to the following people who have contributed with translations:
 ## Credits
 * Used Icon made by [Freepik](http://www.freepik.com/)
 * Original Localization file loader by [Lacro59](https://github.com/Lacro59)
+* Sound Manager by [dfirsht](https://github.com/dfirsht)
 
 ## Donations
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/joyrider3774)

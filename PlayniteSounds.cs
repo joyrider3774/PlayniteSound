@@ -689,6 +689,7 @@ namespace PlayniteSounds
                 bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
                 if (result == true)
                 {
+                    CloseAudioFiles();
                     string targetPath = dialog.FileName;
                     string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
                     //just in case user deleted it
@@ -706,7 +707,6 @@ namespace PlayniteSounds
                             }
                         }
                     }
-                    CloseAudioFiles();
                     PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerLoadConfirm").ToString() + " " + Path.GetFileNameWithoutExtension(targetPath));
                 }
             }

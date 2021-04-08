@@ -49,5 +49,30 @@ namespace PlayniteSounds
         {
             plugin.ResetMusicVolume();
         }
+
+        private void ButSaveSounds_Click(object sender, RoutedEventArgs e)
+        {
+            plugin.SaveSounds();
+        }
+
+        private void ButLoadSounds_Click(object sender, RoutedEventArgs e)
+        {
+            plugin.LoadSounds();
+        }
+
+        private void ButImportSounds_Click(object sender, RoutedEventArgs e)
+        {
+            plugin.ImportSounds();
+        }
+
+        private void ButRemoveSounds_Click(object sender, RoutedEventArgs e)
+        {
+            plugin.RemoveSounds();
+        }
+
+        private void ButOpenSoundManagerFolder_Click(object sender, RoutedEventArgs e)
+        {
+            plugin.OpenSoundManagerFolder();
+        }
     }
 }

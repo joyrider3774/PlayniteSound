@@ -50,13 +50,35 @@
                 <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
             </Grid>
         </GroupBox>
-        <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">
-            <StackPanel Orientation="Horizontal">
-                <Button Name="ButReloadAudio" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButReloadAudio_Click"/>
-                <Button Name="ButOpenSoundsFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenSoundsFolder_Click"/>
-                <Button Name="ButOpenMusicFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenMusicFolder_Click"/>
-                <Button Name="ButOpenInfo" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsHelp}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenInfo_Click"/>
+      <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">
+        <StackPanel Orientation="Horizontal">
+          <Button Name="ButReloadAudio" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButReloadAudio_Click"/>
+          <Button Name="ButOpenSoundsFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenSoundsFolder_Click"/>
+          <Button Name="ButOpenMusicFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenMusicFolder_Click"/>
+          <Button Name="ButOpenInfo" Content="{DynamicResource LOC_PLAYNITESOUNDS_ActionsHelp}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenInfo_Click"/>
+        </StackPanel>
+      </GroupBox>
+        <GroupBox Name="GrpManager" Header="{DynamicResource LOC_PLAYNITESOUNDS_Manager}" Margin="0,5,0,0">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition/>
+              <RowDefinition Height="10"/>
+              <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+              <Button Name="ButLoadSounds" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManagerLoad}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButLoadSounds_Click"/>
+              <Button Name="ButSaveSounds" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManagerSave}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButSaveSounds_Click"/>
+              <Button Name="ButRemoveSounds" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManagerRemove}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButRemoveSounds_Click"/>
             </StackPanel>
+            <Separator Grid.Row="1"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal">
+              <Button Name="ButImportSounds" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManagerImport}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButImportSounds_Click"/>
+              <Button Name="ButOpenSoundManagerFolder" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder}" HorizontalAlignment="Left" Margin="2" VerticalAlignment="Center" Click="ButOpenSoundManagerFolder_Click"/>
+            </StackPanel>
+          </Grid>
         </GroupBox>
     </StackPanel>
 

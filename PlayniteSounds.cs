@@ -18,6 +18,7 @@ using System.Diagnostics;
 using Microsoft.Win32;
 using System.Windows;
 using System.IO.Compression;
+using System.Threading;
 
 namespace PlayniteSounds
 {
@@ -38,6 +39,28 @@ namespace PlayniteSounds
 
         private Dictionary<string, PlayerEntry> players = new Dictionary<string, PlayerEntry>();
         private bool closeaudiofilesnextplay = false;
+
+        protected virtual bool IsFileLocked(FileInfo file)
+        {
+            try
+            {
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Write, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
+            }
+
+            //file is not locked
+            return false;
+        }
 
         public PlayniteSounds(IPlayniteAPI api) : base(api)
         {
@@ -428,9 +451,21 @@ namespace PlayniteSounds
                     PlayerEntry Entry = players[keyname];
                     if (Entry.TypePlayer == 1)
                     {
+                        string filename = Entry.MediaPlayer.Source.LocalPath;
                         Entry.MediaPlayer.Stop();
                         Entry.MediaPlayer.Close();
                         Entry.MediaPlayer = null;
+                       if (File.Exists(filename))
+                        {
+                            int count = 0;
+                            while (IsFileLocked(new FileInfo(filename)))
+                            {
+                                Thread.Sleep(5);
+                                count += 5;
+                                if (count > 500)
+                                    break;
+                            }
+                        }
                     }
                     else
                     {
@@ -623,16 +658,22 @@ namespace PlayniteSounds
             windowExtension.Owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
             windowExtension.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
-            StackPanel stackPanel = new StackPanel();
-            stackPanel.Orientation = Orientation.Horizontal;
+            StackPanel stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal
+            };
 
-            TextBox saveNameBox = new TextBox();
-            saveNameBox.Margin = new Thickness(5, 5, 10, 5);
-            saveNameBox.Width = 200;
+            TextBox saveNameBox = new TextBox
+            {
+                Margin = new Thickness(5, 5, 10, 5),
+                Width = 200
+            };
             stackPanel.Children.Add(saveNameBox);
 
-            Button saveNameButton = new Button();
-            saveNameButton.Margin = new Thickness(0, 5, 5, 5);
+            Button saveNameButton = new Button
+            {
+                Margin = new Thickness(0, 5, 5, 5)
+            };
             saveNameButton.SetResourceReference(Button.ContentProperty, "LOC_PLAYNITESOUNDS_ManagerSave");
             saveNameButton.IsEnabled = false;
             saveNameButton.IsDefault = true;
@@ -656,7 +697,7 @@ namespace PlayniteSounds
                     string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
                     //just in case user deleted it
                     Directory.CreateDirectory(SoundManagerFilesDataPath);
-                    ZipFile.CreateFromDirectory(SoundFilesDataPath, SoundManagerFilesDataPath + "\\" + soundPackName + ".zip");
+                    ZipFile.CreateFromDirectory(SoundFilesDataPath, Path.Combine(SoundManagerFilesDataPath, soundPackName + ".zip"));
                     PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerSaveConfirm").ToString() + " " + soundPackName);
                     windowExtension.Close();
                 }
@@ -683,9 +724,11 @@ namespace PlayniteSounds
                 //just in case user deleted it
                 Directory.CreateDirectory(SoundManagerFilesDataPath);
 
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.Filter = "ZIP archive|*.zip";
-                dialog.InitialDirectory = SoundManagerFilesDataPath;
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Filter = "ZIP archive|*.zip",
+                    InitialDirectory = SoundManagerFilesDataPath
+                };
                 bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
                 if (result == true)
                 {
@@ -702,7 +745,7 @@ namespace PlayniteSounds
                             // If it's a directory, it doesn't have a "Name".
                             if (!String.IsNullOrEmpty(entry.Name))
                             {
-                                string entryDestination = Path.Combine(SoundFilesDataPath, entry.FullName);
+                                string entryDestination = Path.GetFullPath(Path.Combine(SoundFilesDataPath, entry.Name));
                                 entry.ExtractToFile(entryDestination, true);
                             }
                         }
@@ -732,7 +775,11 @@ namespace PlayniteSounds
                     Directory.CreateDirectory(SoundManagerFilesDataPath);
                     foreach (string targetPath in targetPaths)
                     {
-                        File.Copy(targetPath, SoundManagerFilesDataPath + "\\" + Path.GetFileName(targetPath));
+                        //just in case user selects a file from the soundmanager location
+                        if (! Path.GetDirectoryName(targetPath).Equals(SoundManagerFilesDataPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            File.Copy(targetPath, Path.Combine(SoundManagerFilesDataPath, Path.GetFileName(targetPath)), true);
+                        }
                     }
                 }
                 catch (Exception E)
@@ -751,9 +798,11 @@ namespace PlayniteSounds
                 //just in case user deleted it
                 Directory.CreateDirectory(SoundManagerFilesDataPath);
 
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.Filter = "ZIP archive|*.zip";
-                dialog.InitialDirectory = SoundManagerFilesDataPath;
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Filter = "ZIP archive|*.zip",
+                    InitialDirectory = SoundManagerFilesDataPath
+                };
                 bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
                 if (result == true)
                 {

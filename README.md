@@ -39,6 +39,8 @@ Audacity: https://www.audacityteam.org/
 ### Playnite Sound V2.0 Release Video
 [![Playnite Sound V2.0 Release Video](http://img.youtube.com/vi/iTZ9JbswN3M/0.jpg)](https://youtu.be/iTZ9JbswN3M "Playnite Sound V2.0 Release Video")
 
+### Playnite Sound V3.0 Release Video
+[![Playnite Sound V2.0 Release Video](http://img.youtube.com/vi/NL1c7puTPz8/0.jpg)](https://youtu.be/NL1c7puTPz8 "Playnite Sound V3.0 Release Video")
 
 ## Translation
 The project is translatable on [Crowdin](https://crowdin.com/project/playnite-game-speak)

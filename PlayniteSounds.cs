@@ -449,28 +449,31 @@ namespace PlayniteSounds
                 foreach (string keyname in players.Keys)
                 {
                     PlayerEntry Entry = players[keyname];
-                    if (Entry.TypePlayer == 1)
+                    if (Entry.FileExists)
                     {
-                        string filename = Entry.MediaPlayer.Source.LocalPath;
-                        Entry.MediaPlayer.Stop();
-                        Entry.MediaPlayer.Close();
-                        Entry.MediaPlayer = null;
-                       if (File.Exists(filename))
+                        if (Entry.TypePlayer == 1)
                         {
-                            int count = 0;
-                            while (IsFileLocked(new FileInfo(filename)))
+                            string filename = Entry.MediaPlayer.Source.LocalPath;
+                            Entry.MediaPlayer.Stop();
+                            Entry.MediaPlayer.Close();
+                            Entry.MediaPlayer = null;
+                            if (File.Exists(filename))
                             {
-                                Thread.Sleep(5);
-                                count += 5;
-                                if (count > 500)
-                                    break;
+                                int count = 0;
+                                while (IsFileLocked(new FileInfo(filename)))
+                                {
+                                    Thread.Sleep(5);
+                                    count += 5;
+                                    if (count > 500)
+                                        break;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        Entry.SoundPlayer.Stop();
-                        Entry.SoundPlayer = null;
+                        else
+                        {
+                            Entry.SoundPlayer.Stop();
+                            Entry.SoundPlayer = null;
+                        }
                     }
                 }
                 players.Clear();

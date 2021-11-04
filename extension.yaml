@@ -1,7 +1,7 @@
 ﻿Id: Playnite.Sounds.WD
 Name: Playnite Sounds
 Author: Joyrider3774
-Version: 3.1
+Version: 4.0
 Module: PlayniteSounds.dll
 Type: GenericPlugin
 Icon: icon.png
@@ -10,3 +10,5 @@ Links:
       Url: https://github.com/joyrider3774/PlayniteSound
     - Name: Forum Thread
       Url: https://playnite.link/forum/thread-432.html
+    - Name: Translate
+      Url: https://crowdin.com/project/playnite-game-speak

@@ -2,48 +2,48 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Kde přehrávat zvuk:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Kde přehrávat hudbu:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Typ hudby:</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Jedna hudba pro všechny hry a platformy</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Jedna hudba pro každou platformu</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Jedna hudba pro každou platformu a hru</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nikdy</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Plocha</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Celá obrazovka</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Plocha + Celá obrazovka</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Settings</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Reload Audio Files</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Open Sounds Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Open Music Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Show Music Filename</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Nastavení</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Nástroje</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Znovu načíst zvukové soubory</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Otevřít složku se zvuky</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Otevřít složku s hudbou</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Pomoc</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Zobrazit název souboru hudby</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Zvukové soubory byly načteny!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Zvolte prosím jednu hru!</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds is an extension to play audio files during Playnite events.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">It can only play WAV audio files, mp3 files for music and nothing else.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">There are 2 seperate set of sound files. Audio Files starting with 'D_' and files starting with 'F_'.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">The 'D_' files are the audio files for desktop mode, the 'F_' files for fullscreen mode.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">If you don't want to hear a certain file you can just delete the wav file of the event you don't want to hear. You can change the files with your own files. Be sure to use the 'Open Audio Files Folder' menu for doing so. It will make sure loaded audio files get closed so you can overwrite them. Make sure playnite does not play any audio anymore after opening the folder or it's possible you can't overwrite that specific file. With my testings it did seem you could still first erase the files. After changing the audio files use the 'Reload Audio Files' menu to clear any loaded files and use your new files, or just restart Playnite. Do NOT use a long audio file for ApplicationStopped as Playnite will not quit until that audio file has finished playing. The same applies for switching between desktop and fullscreen mode.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">These are the audio files that can be used</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Music files need to be mp3 files, depending on the settings be named &quot;_music_.mp3&quot; or have the name of the game with invalid characters removed and be placed in a folder per platform. If you are not exactly sure of the filename and location you can right click on a game and choose the &quot;Show music filename&quot; option. Be Aware, filenames and locations of music files change depending on the settings chosen!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds je rozšíření pro přehrávání zvukových souborů během používání Playnite.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Dokáže přehrávat pouze WAV soubory, mp3 soubory pro hudbu a žádné jiné.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">Jsou 2 oddělené sady zvukových souborů. Soubory začínající s 'D_' a s 'F_'.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">Soubory na 'D_' jsou zvuky pro režim plochy, 'F_' jsou zvuky pro celoobrazovkový režim.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">Pokud nechcete slyšet určitý soubor, můžete jednoduše odstranit WAV soubor události, kterou nechcete slyšet. Rovněž je můžete nahradit vlastními soubory. Nezapomeňte možnost 'Otevřít složku se zvuky'. Zajistíte tak, že použité zvukové soubory budou uzavřeny, aby je bylo možné přepsat. Ujistěte se, že Playnite již po otevření složky nepřehrává žádné zvuky, jinak může systém odmítnout soubor přepsat. S mým testováním to vypadalo, že soubory přesto lze nejdřív odstranit. Po změně zvukových souborů použijte menu 'Znovu načíst zvukové soubory' pro vymazání všech nahraných souborů a použití nových souborů, nebo Playnite restartujte. NEPOUŽÍVEJTE delší zvukový soubor pro událost ApplicationStopped, protože se Playnite nezavře, dokud nebude přehrávání zvukového souboru dokončeno. Totéž platí pro přepínání mezi režimy plochy a celé obrazovky.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">Toto jsou zvukové soubory které lze použít</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Soubory hudby musí být ve formátu mp3, a dle nastavení musí mít název &quot;_music_.mp3&quot; nebo nést název hry bez neplatných znaků, přičemž musí být umístěny pro každou platformu zvlášť. Pokud si nejste přesně jisti názvem souboru a jeho umístěním, můžete na hru kliknout pravým tlačítkem myši a zvolit &quot;Zobrazit název souboru hudby&quot;. Mějte na vědomí, že názvy a umíštění souuborů hudby se mění v závislosti na zvoleném nastavení!</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Music Volume:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Hlasitost hudby:</sys:String>
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Správce zvuku</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Načíst</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Uložit</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Balíček zvuků byl úspěšně uložen:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Balíček zvuků byl úspěšně načten:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Balíček zvuků byl úspěšně odstraněn:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Odstranit</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importovat</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Otevřít složku správce zvuku</sys:String>
     
 </ResourceDictionary>

@@ -22,21 +22,21 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment"/>
-                <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding SoundWhere}" Height="20">
+                <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundWhere}" Height="20">
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen}"/>
                 </ComboBox>
                 <Label Grid.Row="2"  Name="LblMsuicWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicWhere}" d:LayoutOverrides="VerticalAlignment"/>
-                <ComboBox Grid.Row="2" Grid.Column="1" Name="CmbMusicWhere" SelectedIndex="{Binding MusicWhere}" Height="20">
+                <ComboBox Grid.Row="2" Grid.Column="1" Name="CmbMusicWhere" SelectedIndex="{Binding Settings.MusicWhere}" Height="20">
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen}"/>
                 </ComboBox>
                 <Label Grid.Row="4" Name="LblMusicType" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicType}" d:LayoutOverrides="VerticalAlignment"/>
-                <ComboBox Grid.Row="4" Grid.Column="1" Name="CmbMusicType" SelectedIndex="{Binding MusicType}" Height="20">
+                <ComboBox Grid.Row="4" Grid.Column="1" Name="CmbMusicType" SelectedIndex="{Binding Settings.MusicType}" Height="20">
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
@@ -44,10 +44,10 @@
                 <StackPanel Grid.Row="6" Orientation="Horizontal">
                     <Label Name="LblMusicVolume" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicVolume}" d:LayoutOverrides="VerticalAlignment"/>
                     <Label Name="lblSpace" Content=" "/>
-                    <Label Name="Percentage" Content="{Binding MusicVolume}" />
+                    <Label Name="Percentage" Content="{Binding Settings.MusicVolume}" />
                     <Label Name="PercentageSign" Content="%"/>
                 </StackPanel>
-                <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
+                <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding Settings.MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
             </Grid>
         </GroupBox>
       <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">

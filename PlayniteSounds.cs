@@ -22,13 +22,12 @@ using System.Threading;
 
 namespace PlayniteSounds
 {
-    public class PlayniteSounds : Plugin
+    public class PlayniteSounds : GenericPlugin
     {
-        private static readonly string AppName = "Playnite Sounds";
         private static readonly IResourceProvider resources = new ResourceProvider();
         private static readonly ILogger logger = LogManager.GetLogger();
         public bool MusicNeedsReload { get; set; } = false;
-        private PlayniteSoundsSettings Settings { get; set; }
+        private PlayniteSoundsSettingsViewModel Settings { get; set; }
         private string prevmusicfilename = "";
         private MediaPlayer musicplayer; 
         private readonly MediaTimeline timeLine;
@@ -66,7 +65,11 @@ namespace PlayniteSounds
         {
             try
             {
-                Settings = new PlayniteSoundsSettings(this);
+                Settings = new PlayniteSoundsSettingsViewModel(this);
+                Properties = new GenericPluginProperties
+                {
+                    HasSettings = true
+                };
 
                 pluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -80,43 +83,43 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "PlayniteSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
-        public override void OnGameInstalled(Game game)
+        public override void OnGameInstalled(OnGameInstalledEventArgs args)
         {
             // Add code to be executed when game is finished installing.
             PlayFileName("GameInstalled.wav");
         }
 
-        public override void OnGameStarted(Game game)
+        public override void OnGameStarted(OnGameStartedEventArgs args)
         {
             // Add code to be executed when game is started running.
             PlayFileName("GameStarted.wav", true);
         }
 
-        public override void OnGameStarting(Game game)
+        public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             // Add code to be executed when game is preparing to be started.
             PlayFileName("GameStarting.wav");
             PauseMusic();
         }
 
-        public override void OnGameStopped(Game game, long elapsedSeconds)
+        public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
             // Add code to be executed when game is preparing to be started.
             PlayFileName("GameStopped.wav");
             ResumeMusic();
         }
 
-        public override void OnGameUninstalled(Game game)
+        public override void OnGameUninstalled(OnGameUninstalledEventArgs args)
         {
             // Add code to be executed when game is uninstalled.
             PlayFileName("GameUninstalled.wav");
         }
 
-        public override void OnApplicationStarted()
+        public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
             // Add code to be executed when Playnite is initialized.
             PlayFileName("ApplicationStarted.wav");
@@ -139,13 +142,13 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "OnPowerMode_Changed");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
         public void ResetMusicVolume()
         {
-            musicplayer.Volume = (double)Settings.MusicVolume / 100;
+            musicplayer.Volume = (double)Settings.Settings.MusicVolume / 100;
         }
 
         public void ReplayMusic()
@@ -154,15 +157,16 @@ namespace PlayniteSounds
             {
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
                 {
-                    if (Settings.MusicType == 2)
+                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    if (Settings.Settings.MusicType == 2)
                     {
-                        PlayMusic(game.Name, game.Platform == null ? "No Platform" : game.Platform.ToString());
+                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name);
                     }
                     else
                     {
-                        if (Settings.MusicType == 1)
+                        if (Settings.Settings.MusicType == 1)
                         {
-                            PlayMusic("_music_", game.Platform == null ? "No Platform" : game.Platform.ToString());
+                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name);
                         }
                         else
                         {
@@ -173,7 +177,7 @@ namespace PlayniteSounds
             }
         }
 
-        public override void OnApplicationStopped()
+        public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
             // Add code to be executed when Playnite is shutting down.
             PlayFileName("ApplicationStopped.wav", true);
@@ -182,28 +186,29 @@ namespace PlayniteSounds
             musicplayer = null;
         }
 
-        public override void OnLibraryUpdated()
+        public override void OnLibraryUpdated(OnLibraryUpdatedEventArgs args)
         {
             // Add code to be executed when library is updated.
             PlayFileName("LibraryUpdated.wav");
         }
 
-        public override void OnGameSelected(GameSelectionEventArgs args)
+        public override void OnGameSelected(OnGameSelectedEventArgs args)
         {
             PlayFileName("GameSelected.wav");
             if (args.NewValue.Count == 1) 
             {
                 foreach(Game game in args.NewValue)
                 {
-                    if (Settings.MusicType == 2)
+                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    if (Settings.Settings.MusicType == 2)
                     {
-                        PlayMusic(game.Name, game.Platform == null ? "No Platform" : game.Platform.ToString());
+                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name);
                     }
                     else
                     {
-                        if (Settings.MusicType == 1)
+                        if (Settings.Settings.MusicType == 1)
                         {
-                            PlayMusic("_music_", game.Platform == null ? "No Platform" : game.Platform.ToString());
+                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name);
                         }
                         else
                         {
@@ -225,7 +230,7 @@ namespace PlayniteSounds
             return new PlayniteSoundsSettingsView(this);
         }
 
-        public override List<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
+        public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
         {
             List<GameMenuItem> MainMenuItems = new List<GameMenuItem>
             {
@@ -242,7 +247,7 @@ namespace PlayniteSounds
             return MainMenuItems;
         }
 
-        public override List<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
+        public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
         {
             List<MainMenuItem> MainMenuItems = new List<MainMenuItem>
             {                
@@ -312,7 +317,7 @@ namespace PlayniteSounds
                 "D_GameStopped.wav - F_GameStopped.wav\n" +
                 "D_GameUninstalled.wav - F_GameUninstalled.wav\n" +
                 "D_LibraryUpdated.wav - F_LibraryUpdated.wav\n\n" +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp7"), AppName);
+                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp7"), Constants.AppName);
         }
 
         public string GetMusicFilename(string gamename, string platform)
@@ -329,7 +334,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "GetMusicFilename");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
                 return "";
             }
         }
@@ -341,27 +346,28 @@ namespace PlayniteSounds
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
                 {
                     string MusicFileName;
-                    if (Settings.MusicType == 2)
+                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    if (Settings.Settings.MusicType == 2)
                     {
-                        MusicFileName = GetMusicFilename(game.Name, game.Platform == null ? "No Platform" : game.Platform.ToString());
+                        MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name);
                     }
                     else
                     {
-                        if (Settings.MusicType == 1)
+                        if (Settings.Settings.MusicType == 1)
                         {
-                            MusicFileName = GetMusicFilename("_music_", game.Platform == null ? "No Platform" : game.Platform.ToString());
+                            MusicFileName = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name);
                         }
                         else
                         {
                             MusicFileName = GetMusicFilename("_music_", "");
                         }
                     }
-                    PlayniteApi.Dialogs.ShowMessage(MusicFileName, "Playnite Sounds");
+                    PlayniteApi.Dialogs.ShowMessage(MusicFileName, Constants.AppName);
                 }
             }
             else
             {
-                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), AppName);
+                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
             }
         }
 
@@ -378,8 +384,8 @@ namespace PlayniteSounds
                 }
 
                 bool DesktopMode = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
-                bool DoPlay = (DesktopMode && ((Settings.SoundWhere == 1) || (Settings.SoundWhere == 3))) ||
-                    (!DesktopMode && ((Settings.SoundWhere == 2) || (Settings.SoundWhere == 3)));
+                bool DoPlay = (DesktopMode && ((Settings.Settings.SoundWhere == 1) || (Settings.Settings.SoundWhere == 3))) ||
+                    (!DesktopMode && ((Settings.Settings.SoundWhere == 2) || (Settings.Settings.SoundWhere == 3)));
 
                 if (DoPlay)
                 {
@@ -437,7 +443,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "PlayFileName");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -481,14 +487,14 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "CloseAudioFiles");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
         public void ReloadAudioFiles()
         {
             CloseAudioFiles();
-            PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded"), AppName);
+            PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded"), Constants.AppName);
         }
 
         public void InitialCopyAudioFiles()
@@ -517,7 +523,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "InitialCopyAudioFiles");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -533,7 +539,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "ResumeMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -549,7 +555,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "PauseMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -567,7 +573,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "CloseMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
 }
 
@@ -576,8 +582,8 @@ namespace PlayniteSounds
             try
             { 
                 bool DesktopMode = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
-                bool DoPlay = (DesktopMode && ((Settings.MusicWhere == 1) || (Settings.MusicWhere == 3))) ||
-                    (!DesktopMode && ((Settings.MusicWhere == 2) || (Settings.MusicWhere == 3)));
+                bool DoPlay = (DesktopMode && ((Settings.Settings.MusicWhere == 1) || (Settings.Settings.MusicWhere == 3))) ||
+                    (!DesktopMode && ((Settings.Settings.MusicWhere == 2) || (Settings.Settings.MusicWhere == 3)));
 
                 if (DoPlay)
                 {
@@ -591,7 +597,7 @@ namespace PlayniteSounds
                         {
                             prevmusicfilename = MusicFileName;
                             timeLine.Source = new Uri(MusicFileName);
-                            musicplayer.Volume = (double)Settings.MusicVolume / 100;
+                            musicplayer.Volume = (double)Settings.Settings.MusicVolume / 100;
                             musicplayer.Clock = timeLine.CreateClock();
                             musicplayer.Clock.Controller.Begin();
                             
@@ -606,7 +612,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "PlayMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -624,7 +630,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "OpenSoundsFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -643,7 +649,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "OpenMusicFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -707,7 +713,7 @@ namespace PlayniteSounds
                 catch (Exception E)
                 {
                     logger.Error(E, "SaveSounds");
-                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
                 }
             };
 
@@ -759,7 +765,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "LoadSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
 
 
@@ -788,7 +794,7 @@ namespace PlayniteSounds
                 catch (Exception E)
                 {
                     logger.Error(E, "ImportSounds");
-                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
                 }
             }
         }
@@ -817,7 +823,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "RemoveSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
 
@@ -833,7 +839,7 @@ namespace PlayniteSounds
             catch (Exception E)
             {
                 logger.Error(E, "OpenSoundManagerFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, AppName);
+                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
         }
     }

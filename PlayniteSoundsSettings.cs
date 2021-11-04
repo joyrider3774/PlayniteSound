@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Playnite.SDK;
+﻿using Playnite.SDK;
+using Playnite.SDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,58 +8,94 @@ using System.Threading.Tasks;
 
 namespace PlayniteSounds
 {
-    public class PlayniteSoundsSettings : ISettings
+    public class PlayniteSoundsSettings
     {
-        private readonly PlayniteSounds plugin;
-        private PlayniteSoundsSettings EditDataSettings;
         public int MusicWhere { get; set; } = 3;
-        public int SoundWhere { get; set; } = 3; 
+        public int SoundWhere { get; set; } = 3;
         public int MusicType { get; set; } = 2;
         public int MusicVolume { get; set; } = 25;
+    }
+    public class PlayniteSoundsSettingsViewModel : ObservableObject, ISettings
+    {
+        private static readonly ILogger logger = LogManager.GetLogger();
+        private readonly PlayniteSounds plugin;
+        private PlayniteSoundsSettings editingClone { get; set; }
 
-        // Parameterless constructor must exist if you want to use LoadPluginSettings method.
-        public PlayniteSoundsSettings()
+        private PlayniteSoundsSettings settings;
+        public PlayniteSoundsSettings Settings
         {
+            get => settings;
+            set
+            {
+                settings = value;
+                OnPropertyChanged();
+            }
         }
 
-        public PlayniteSoundsSettings(PlayniteSounds plugin)
+        public PlayniteSoundsSettingsViewModel(PlayniteSounds plugin)
         {
-            // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
-            this.plugin = plugin;
-
-            // Load saved settings.
-            var savedSettings = plugin.LoadPluginSettings<PlayniteSoundsSettings>();
-
-            // LoadPluginSettings returns null if not saved data is available.
-            if (savedSettings != null)
+            try
             {
-                RestoreSettings(savedSettings);               
+                // Injecting your plugin instance is required for Save/Load method because Playnite saves data to a location based on what plugin requested the operation.
+                this.plugin = plugin;
+
+                // Load saved settings.
+                var savedSettings = plugin.LoadPluginSettings<PlayniteSoundsSettings>();
+
+                // LoadPluginSettings returns null if not saved data is available.
+                if (savedSettings != null)
+                {
+                    Settings = savedSettings;
+                }
+                else
+                {
+                    Settings = new PlayniteSoundsSettings();
+                }
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "PlayniteSoundSettingsViewModel()");
+                plugin.PlayniteApi.Dialogs.ShowErrorMessage(E.ToString(), Constants.AppName);
             }
         }
 
         public void BeginEdit()
         {
             // Code executed when settings view is opened and user starts editing values.
-            EditDataSettings = new PlayniteSoundsSettings(plugin);
+            try
+            {
+                editingClone = Serialization.GetClone(Settings);
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "BeginEdit()");
+                plugin.PlayniteApi.Dialogs.ShowErrorMessage(E.ToString(), Constants.AppName);
+            }
         }
 
         public void CancelEdit()
         {
             // Code executed when user decides to cancel any changes made since BeginEdit was called.
             // This method should revert any changes made to Option1 and Option2.
-            RestoreSettings(EditDataSettings);
-            plugin.ReplayMusic();
-            plugin.ResetMusicVolume();
+            Settings = editingClone;
         }
 
         public void EndEdit()
         {
             // Code executed when user decides to confirm changes made since BeginEdit was called.
-            // This method should save settings made to Option1 and Option2.
-            plugin.SavePluginSettings(this);
-            plugin.MusicNeedsReload = plugin.MusicNeedsReload || ((EditDataSettings.MusicType != MusicType) || (EditDataSettings.MusicWhere != MusicWhere));
-            plugin.ReplayMusic();
-            plugin.ResetMusicVolume();
+            try
+            {
+                plugin.SavePluginSettings(Settings);
+                plugin.MusicNeedsReload = plugin.MusicNeedsReload || ((Settings.MusicType != editingClone.MusicType) || (Settings.MusicWhere != editingClone.MusicWhere));
+                plugin.ReplayMusic();
+                plugin.ResetMusicVolume();
+            }
+            catch (Exception E)
+            {
+                logger.Error(E, "EndEdit()");
+                plugin.PlayniteApi.Dialogs.ShowErrorMessage(E.ToString(), Constants.AppName);
+            }
+           
         }
 
         public bool VerifySettings(out List<string> errors)
@@ -71,12 +107,5 @@ namespace PlayniteSounds
             return true;
         }
 
-        private void RestoreSettings(PlayniteSoundsSettings source)
-        {
-            MusicWhere = source.MusicWhere;
-            MusicType = source.MusicType;
-            SoundWhere = source.SoundWhere;
-            MusicVolume = source.MusicVolume;
-        }
     }
 }

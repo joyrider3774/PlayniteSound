@@ -4,24 +4,24 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound where:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">음악 유형:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">안 함</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">데스크톱</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">전체 화면</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">데스크톱 + 전체 화면</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Settings</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Reload Audio Files</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Open Sounds Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Open Music Folder</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Show Music Filename</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">설정</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">작업</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">음성 파일 새로고침</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">사운드 폴더 열기</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">음악 폴더 열기</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">도움말</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">음악 파일 이름 보기</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>
@@ -34,16 +34,16 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">These are the audio files that can be used</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Music files need to be mp3 files, depending on the settings be named &quot;_music_.mp3&quot; or have the name of the game with invalid characters removed and be placed in a folder per platform. If you are not exactly sure of the filename and location you can right click on a game and choose the &quot;Show music filename&quot; option. Be Aware, filenames and locations of music files change depending on the settings chosen!</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Music Volume:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">음악 볼륨:</sys:String>
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">사운드 관리자</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">불러오기</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">저장</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">제거</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">가져오기</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">사운드 관리자 폴더 열기</sys:String>
     
 </ResourceDictionary>

@@ -31,14 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Playnite.SDK, Version=5.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\PlayniteSDK.5.5.0\lib\net462\Playnite.SDK.dll</HintPath>
+    <Reference Include="Playnite.SDK, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\PlayniteSDK.6.1.0\lib\net462\Playnite.SDK.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -56,6 +51,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="PlayerEntry.cs" />
     <Compile Include="Localization.cs" />
     <Compile Include="PlayniteSounds.cs" />
@@ -334,4 +330,8 @@
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

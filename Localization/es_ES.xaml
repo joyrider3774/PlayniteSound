@@ -36,14 +36,14 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Volumen de la música:</sys:String>
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Gestor de Sonidos</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Cargar</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Guardar</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Paquete de sonido guardado con éxito:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Paquete de sonido cargado con éxito:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Paquete de sonido eliminado con éxito:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Quitar</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importar</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Abrir carpeta de gestor de sonido</sys:String>
     
 </ResourceDictionary>

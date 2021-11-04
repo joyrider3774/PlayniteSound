@@ -1,6 +1,6 @@
 # Playnite Sounds Extension
 Playnite Sounds is an extension to play audio files during Playnite events. 
-It can only play WAV audio files and nothing else.
+It can only play WAV audio files and mp3 for music, nothing else.
 
 [Latest Release](https://github.com/joyrider3774/PlayniteSound/releases/latest)
 
@@ -44,6 +44,13 @@ Audacity: https://www.audacityteam.org/
 ### Playnite Sound V3.0 Release Video
 [![Playnite Sound V2.0 Release Video](http://img.youtube.com/vi/NL1c7puTPz8/0.jpg)](https://youtu.be/NL1c7puTPz8 "Playnite Sound V3.0 Release Video")
 
+### Playnite Sound V4.0 Release
+* Playnite 9 Support
+* First Platform will be used for games having multiple platforms set !!!
+* Be aware platform "PC" changed to "PC (Windows)" in playnite 9 so change your music folder for that platform accordingly in extension data folder.
+* Updated Localizations
+
+
 ## Translation
 The project is translatable on [Crowdin](https://crowdin.com/project/playnite-game-speak)
 
@@ -51,10 +58,13 @@ Thanks to the following people who have contributed with translations:
 * Spanish: Darklinpower
 * French: M0ylik
 * Polish: Renia
-* Italian: Federico Pezzuolo (3XistencE-STUDIO)
+* Italian: Federico Pezzuolo (3XistencE-STUDIO), StarFang208
 * German: kristheb
 * Hungarian: myedition8
-* Porutgese, Brazillian: atemporal_ (Atemporal)
+* Porutgese, Brazillian: atemporal_ (Atemporal), JCraftPlay 
+* Ukrainian: SmithMD24
+* Norwegian: MeatBoy 
+* Czech: SilverRoll (silveroll) 
 
 ## Credits
 * Used Icon made by [Freepik](http://www.freepik.com/)

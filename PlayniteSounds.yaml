@@ -4,6 +4,7 @@ Packages:
     RequiredApiVersion: 6.1.0
     ReleaseDate: 2021-11-05
     PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/V4.0/Playnite.Sounds.WD_4_0.pext
+    Changelog:
       - Playnite 9 Support
       - First Platform will be used for games having multiple platforms set !!!
       - Be aware platform "PC" changed to "PC (Windows)" in playnite 9 so change your music folder for that platform accordingly in extension data folder.

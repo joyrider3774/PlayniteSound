@@ -10,6 +10,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">一个平台一个音乐</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">一个平台和游戏一种音乐</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">永不</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">桌面</sys:String>

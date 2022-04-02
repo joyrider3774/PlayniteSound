@@ -10,6 +10,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>

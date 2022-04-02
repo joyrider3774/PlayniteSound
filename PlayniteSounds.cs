@@ -127,7 +127,45 @@ namespace PlayniteSounds
         {
             // Add code to be executed when Playnite is initialized.
             PlayFileName("ApplicationStarted.wav");
-            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(OnPowerMode_Changed);
+            SystemEvents.PowerModeChanged += OnPowerMode_Changed;
+            Application.Current.Deactivated += onApplicationDeactivate;
+            Application.Current.Activated += onApplicationActivate;
+            Application.Current.MainWindow.StateChanged += onWindowStateChanged;
+        }
+
+        private void onWindowStateChanged(object sender, EventArgs e)
+        {
+            if (Settings.Settings.PauseOnDeactivate)
+            {
+                switch (Application.Current?.MainWindow?.WindowState)
+                {
+                    case WindowState.Maximized:
+                        ResumeMusic();
+                        break;
+                    case WindowState.Minimized:
+                        PauseMusic();
+                        break;
+                    case WindowState.Normal:
+                        ResumeMusic();
+                        break;
+                }
+            }
+        }
+
+        public void onApplicationDeactivate(object sender, EventArgs e)
+        {
+            if (Settings.Settings.PauseOnDeactivate)
+            {
+                PauseMusic();
+            }
+        }
+
+        public void onApplicationActivate(object sender, EventArgs e)
+        {
+            if (Settings.Settings.PauseOnDeactivate)
+            {
+                ResumeMusic();
+            }
         }
 
         //fix sounds not playing after system resume
@@ -189,6 +227,10 @@ namespace PlayniteSounds
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
             // Add code to be executed when Playnite is shutting down.
+            SystemEvents.PowerModeChanged -= OnPowerMode_Changed;
+            Application.Current.Deactivated -= onApplicationDeactivate;
+            Application.Current.Activated -= onApplicationActivate;
+            Application.Current.MainWindow.StateChanged -= onWindowStateChanged;
             PlayFileName("ApplicationStopped.wav", true);
             CloseAudioFiles();
             CloseMusic();
@@ -555,7 +597,12 @@ namespace PlayniteSounds
         public void ResumeMusic()
         {
             try
-            { 
+            {
+                if (gamerunning)
+                {
+                    return;
+                }
+
                 if (musicplayer.Clock != null)
                 {
                     musicplayer.Clock.Controller.Resume();
@@ -572,6 +619,11 @@ namespace PlayniteSounds
         {
             try
             { 
+                if (gamerunning)
+                {
+                    return;
+                }
+
                 if (musicplayer.Clock != null)
                 {
                     musicplayer.Clock.Controller.Pause();

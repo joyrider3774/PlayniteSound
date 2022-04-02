@@ -9,8 +9,8 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Eine Musik für alle Spiele und Plattformen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Eine Musik pro Plattform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Eine Musik pro Plattform und Spiele</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Überspringe das erste 'Wähle Ton' nach dem Start des Playnite</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Musik anhalten, wenn Playnite deaktiviert oder minimiert wird</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nie</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
@@ -24,6 +24,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Musikordner öffnen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Hilfe</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Zeige den Dateinamen der Musik</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Wähle Musikdatei</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Die Audiodateien wurden neu geladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Bitte wähle ein einziges Spiel!</sys:String>
@@ -38,14 +39,14 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Musik-Lautstärke:</sys:String>
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Tonmanager</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Lade</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Speichern</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Tonpaket erfolgreich gespeichert:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Tonpaket erfolgreich geladen:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Tonpaket erfolgreich gelöscht:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Entfernen</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importieren</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Tonmanager Ordner öffnen</sys:String>
     
 </ResourceDictionary>

@@ -24,6 +24,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">음악 폴더 열기</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">도움말</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">음악 파일 이름 보기</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Select Music File</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>

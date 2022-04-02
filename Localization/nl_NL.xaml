@@ -24,6 +24,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Muziek map openen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Muziek bestandsnaam weergeven</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Selecteer Muziekbestand</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Geluidsbestanden herladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Selecteer één spel alstublieft!</sys:String>

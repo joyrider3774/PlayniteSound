@@ -305,7 +305,16 @@ namespace PlayniteSounds
                     {
                         ShowMusicFilename();
                     }
-                }                
+                },
+                new GameMenuItem {
+                    MenuSection = "Playnite Sounds",
+                    Icon = Path.Combine(pluginFolder, "icon.png"),
+                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile"),
+                    Action = (MainMenuItem) =>
+                    {
+                        SelectMusicFilename();
+                    }
+                }
              };
             return MainMenuItems;
         }
@@ -321,6 +330,15 @@ namespace PlayniteSounds
                     Action = (MainMenuItem) =>
                     {
                         ShowMusicFilename();
+                    }
+                },
+                new MainMenuItem {
+                    MenuSection = "@Playnite Sounds",
+                    Icon = Path.Combine(pluginFolder, "icon.png"),
+                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile"),
+                    Action = (MainMenuItem) =>
+                    {
+                        SelectMusicFilename();
                     }
                 },
                 new MainMenuItem {
@@ -399,6 +417,42 @@ namespace PlayniteSounds
                 logger.Error(E, "GetMusicFilename");
                 PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
                 return "";
+            }
+        }
+
+        public void SelectMusicFilename()
+        {
+            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
+            {
+                foreach (Game game in PlayniteApi.MainView.SelectedGames)
+                {
+                    string MusicFileName;
+                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    if (Settings.Settings.MusicType == 2)
+                    {
+                        MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name);
+                    }
+                    else
+                    {
+                        if (Settings.Settings.MusicType == 1)
+                        {
+                            MusicFileName = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name);
+                        }
+                        else
+                        {
+                            MusicFileName = GetMusicFilename("_music_", "");
+                        }
+                    }
+                    CloseMusic();
+                    string NewMusicFileName = PlayniteApi.Dialogs.SelectFile("MP3 File|*.mp3");
+                    File.Copy(NewMusicFileName, MusicFileName, true);
+                    MusicNeedsReload = true;
+                    ReplayMusic();
+                }
+            }
+            else
+            {
+                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
             }
         }
 

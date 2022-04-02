@@ -9,8 +9,8 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Una musica per tutti i giochi e le piattaforme</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Distinto file musicale per ogni piattaforma</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Distinto file musicale per ogni piattaforma ed ogni gioco</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Salta prima 'seleziona suono' dopo l'avvio del playnite</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pausa musica quando Playnite disattiva o minimizza</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Mai</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">In Finestra</sys:String>
@@ -24,6 +24,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Apri la cartella delle Musiche</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aiuto</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Mostra il nome del file musicale</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Seleziona file musicale</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio Files Ricaricati!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Seleziona un singolo gioco!</sys:String>

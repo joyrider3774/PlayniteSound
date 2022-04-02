@@ -24,6 +24,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir dossier Musique</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom du fichier musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Sélectionnez le fichier de musique</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Fichiers audio rechargés!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Veuillez sélectionner un seule jeu!</sys:String>

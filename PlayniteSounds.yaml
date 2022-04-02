@@ -1,5 +1,12 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
+  - Version: 4.3
+    RequiredApiVersion: 6.1.0
+    ReleaseDate: 2022-04-02
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v4.3/PlayniteSounds-v4.3.pext
+    Changelog:
+      - Add option to "select / Copy" currently active music file(name)
+      - Add option to pause music when Playnite deactivates or minimizes
   - Version: 4.2
     RequiredApiVersion: 6.1.0
     ReleaseDate: 2022-04-02

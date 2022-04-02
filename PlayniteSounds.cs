@@ -459,7 +459,11 @@ namespace PlayniteSounds
                     {
                         if (Entry.TypePlayer == 1)
                         {
-                            string filename = Entry.MediaPlayer.Source.LocalPath;
+                            string filename = "";
+                            if (Entry.MediaPlayer.Source != null)
+                            {
+                                filename = Entry.MediaPlayer.Source.LocalPath;
+                            }
                             Entry.MediaPlayer.Stop();
                             Entry.MediaPlayer.Close();
                             Entry.MediaPlayer = null;

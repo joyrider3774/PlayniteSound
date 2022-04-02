@@ -14,7 +14,9 @@ namespace PlayniteSounds
         public int SoundWhere { get; set; } = 3;
         public int MusicType { get; set; } = 2;
         public int MusicVolume { get; set; } = 25;
+        public bool SkipFirstSelectSound { get; set; } = false;
     }
+
     public class PlayniteSoundsSettingsViewModel : ObservableObject, ISettings
     {
         private static readonly ILogger logger = LogManager.GetLogger();

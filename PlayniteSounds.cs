@@ -30,7 +30,7 @@ namespace PlayniteSounds
         private PlayniteSoundsSettingsViewModel Settings { get; set; }
         private string prevmusicfilename = "";
         private MediaPlayer musicplayer; 
-        private readonly MediaTimeline timeLine;
+        private MediaTimeline timeLine;
         
         public static string pluginFolder;
 
@@ -38,6 +38,8 @@ namespace PlayniteSounds
 
         private Dictionary<string, PlayerEntry> players = new Dictionary<string, PlayerEntry>();
         private bool closeaudiofilesnextplay = false;
+        private bool gamerunning = false;
+        private bool firstselectsound = true;
 
         protected virtual bool IsFileLocked(FileInfo file)
         {
@@ -97,6 +99,7 @@ namespace PlayniteSounds
         {
             // Add code to be executed when game is started running.
             PlayFileName("GameStarted.wav", true);
+            gamerunning = true;
         }
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
@@ -108,6 +111,7 @@ namespace PlayniteSounds
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
+            gamerunning = false;
             // Add code to be executed when game is preparing to be started.
             PlayFileName("GameStopped.wav");
             ResumeMusic();
@@ -153,6 +157,11 @@ namespace PlayniteSounds
 
         public void ReplayMusic()
         {
+            if (gamerunning)
+            {
+                return;
+            }
+            
             if (PlayniteApi.MainView.SelectedGames.Count() == 1)
             {
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
@@ -194,7 +203,19 @@ namespace PlayniteSounds
 
         public override void OnGameSelected(OnGameSelectedEventArgs args)
         {
-            PlayFileName("GameSelected.wav");
+            if (firstselectsound)
+            {
+                firstselectsound = false;
+                if (!Settings.Settings.SkipFirstSelectSound)
+                {
+                    PlayFileName("GameSelected.wav");
+                }
+            }
+            else
+            {
+                PlayFileName("GameSelected.wav");
+            }
+
             if (args.NewValue.Count == 1) 
             {
                 foreach(Game game in args.NewValue)
@@ -586,8 +607,8 @@ namespace PlayniteSounds
             try
             { 
                 bool DesktopMode = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
-                bool DoPlay = (DesktopMode && ((Settings.Settings.MusicWhere == 1) || (Settings.Settings.MusicWhere == 3))) ||
-                    (!DesktopMode && ((Settings.Settings.MusicWhere == 2) || (Settings.Settings.MusicWhere == 3)));
+                bool DoPlay = (!gamerunning) && ((DesktopMode && ((Settings.Settings.MusicWhere == 1) || (Settings.Settings.MusicWhere == 3))) ||
+                    (!DesktopMode && ((Settings.Settings.MusicWhere == 2) || (Settings.Settings.MusicWhere == 3))));
 
                 if (DoPlay)
                 {

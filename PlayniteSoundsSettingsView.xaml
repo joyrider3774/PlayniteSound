@@ -20,6 +20,8 @@
                     <RowDefinition/>
                     <RowDefinition Height="5"/>
                     <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment"/>
                 <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundWhere}" Height="20">
@@ -48,6 +50,7 @@
                     <Label Name="PercentageSign" Content="%"/>
                 </StackPanel>
                 <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding Settings.MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
+                <CheckBox Name="ChkSkipFirstSelectSound" Grid.Row="8" Grid.ColumnSpan="2" IsChecked="{Binding Settings.SkipFirstSelectSound}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound}"/> 
             </Grid>
         </GroupBox>
       <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">

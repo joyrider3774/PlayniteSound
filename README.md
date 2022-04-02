@@ -69,7 +69,10 @@ Thanks to the following people who have contributed with translations:
 * Porutgese, Brazillian: atemporal_ (Atemporal), JCraftPlay 
 * Ukrainian: SmithMD24
 * Norwegian: MeatBoy 
-* Czech: SilverRoll (silveroll) 
+* Czech: SilverRoll (silveroll)
+* Korean: Min-Ki Jeong
+* Chinese Simplified: ATNewHope
+* Arabic: X4Lo
 
 ## Credits
 * Used Icon made by [Freepik](http://www.freepik.com/)

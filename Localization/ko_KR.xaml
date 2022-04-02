@@ -9,6 +9,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">안 함</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">데스크톱</sys:String>
@@ -39,9 +40,9 @@
   <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">사운드 관리자</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">불러오기</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">저장</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">성공적으로 사운드 팩을 저장:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">성공적으로 사운드 팩을 로드:</sys:String>
+  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">성공적으로 사운드 팩을 제거:</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">제거</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">가져오기</sys:String>
   <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">사운드 관리자 폴더 열기</sys:String>

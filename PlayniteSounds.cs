@@ -99,10 +99,10 @@ namespace PlayniteSounds
         {
             // Add code to be executed when game is started running.
             PlayFileName("GameStarted.wav", true);
-            gamerunning = true;
             if (Settings.Settings.StopMusic == 1)
             {
                 PauseMusic();
+                gamerunning = true;
             }
         }
 
@@ -113,6 +113,7 @@ namespace PlayniteSounds
             if (Settings.Settings.StopMusic == 0)
             {
                 PauseMusic();
+                gamerunning = true;
             }
         }
 

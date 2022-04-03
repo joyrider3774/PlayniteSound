@@ -14,6 +14,7 @@ namespace PlayniteSounds
         public int SoundWhere { get; set; } = 3;
         public int MusicType { get; set; } = 2;
         public int MusicVolume { get; set; } = 25;
+        public int StopMusic { get; set; } = 1;
         public bool SkipFirstSelectSound { get; set; } = false;
         public bool PauseOnDeactivate { get; set; } = true;
     }

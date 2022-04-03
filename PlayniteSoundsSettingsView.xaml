@@ -24,6 +24,8 @@
                     <RowDefinition/>
                     <RowDefinition Height="5"/>
                     <RowDefinition/>
+                    <RowDefinition Height="5"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment"/>
                 <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundWhere}" Height="20">
@@ -45,15 +47,20 @@
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
                     <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
                 </ComboBox>
-                <StackPanel Grid.Row="6" Orientation="Horizontal">
+                <Label Grid.Row="6" Name="LblStopMusic" Content="{DynamicResource LOC_PLAYNITESOUNDS_StopMusic}" d:LayoutOverrides="VerticalAlignment"/>
+                <ComboBox Grid.Row="6" Grid.Column="1" Name="CmbStopMusic" SelectedIndex="{Binding Settings.StopMusic}" Height="20">
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbStopItemIsStarting}"/>
+                    <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbStopItemHasStarted}"/>
+                </ComboBox>
+                <StackPanel Grid.Row="8" Orientation="Horizontal">
                     <Label Name="LblMusicVolume" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicVolume}" d:LayoutOverrides="VerticalAlignment"/>
                     <Label Name="lblSpace" Content=" "/>
                     <Label Name="Percentage" Content="{Binding Settings.MusicVolume}" />
                     <Label Name="PercentageSign" Content="%"/>
                 </StackPanel>
-                <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding Settings.MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
-                <CheckBox Name="ChkSkipFirstSelectSound" Grid.Row="8" Grid.ColumnSpan="2" IsChecked="{Binding Settings.SkipFirstSelectSound}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound}"/>
-                <CheckBox Name="ChkPauseOnDeactivate" Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnDeactivate}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate}"/>
+                <Slider Name="VolumeSlider" Grid.Row="8" Grid.Column="1" Maximum="100" Value="{Binding Settings.MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"></Slider>
+                <CheckBox Name="ChkSkipFirstSelectSound" Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding Settings.SkipFirstSelectSound}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound}"/>
+                <CheckBox Name="ChkPauseOnDeactivate" Grid.Row="12" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnDeactivate}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate}"/>
             </Grid>
         </GroupBox>
       <GroupBox Name="GrpActions" Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions}" Margin="0,5,0,0">

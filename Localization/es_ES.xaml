@@ -9,13 +9,17 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Una sola música para todos los juegos y plataformas</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Una música por plataforma</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Una música por plataforma y juego</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Omitir primero 'seleccionar sonido' después del inicio de playnite</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pausar música cuando Playnite desactive o minimice</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Detener música cuando</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nunca</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Escritorio</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Pantalla completa</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Escritorio + Pantalla completa</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">El juego está comenzando</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">El juego ha comenzado</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Configuración</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Acciones</sys:String>
@@ -24,7 +28,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Abrir carpeta de música</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Ayuda</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Mostrar nombre de archivo de música</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Select Music File</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Seleccionar archivo de música</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">¡Archivos de audio recargados!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">¡Por favor, selecciona un solo juego!</sys:String>

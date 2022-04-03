@@ -11,11 +11,15 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Uma música por plataforma e jogo</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Pular primeiro 'som selecionado' após a inicialização do Playnite</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pausar música quando o Playnite desativa ou minimiza</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Parar música quando</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nunca</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Área de Trabalho</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Tela cheia</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Área de trabalho + Tela cheia</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">O jogo está começando</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">O jogo começou</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Configurações</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Ações</sys:String>

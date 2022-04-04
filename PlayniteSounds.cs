@@ -30,7 +30,7 @@ namespace PlayniteSounds
         private PlayniteSoundsSettingsViewModel Settings { get; set; }
         private string prevmusicfilename = "";
         private MediaPlayer musicplayer; 
-        private MediaTimeline timeLine;
+        private readonly MediaTimeline timeLine;
         
         public static string pluginFolder;
 
@@ -98,23 +98,23 @@ namespace PlayniteSounds
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
             // Add code to be executed when game is started running.
-            PlayFileName("GameStarted.wav", true);
             if (Settings.Settings.StopMusic == 1)
             {
                 PauseMusic();
                 gamerunning = true;
             }
+            PlayFileName("GameStarted.wav", true);
         }
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             // Add code to be executed when game is preparing to be started.
-            PlayFileName("GameStarting.wav");
             if (Settings.Settings.StopMusic == 0)
             {
                 PauseMusic();
                 gamerunning = true;
             }
+            PlayFileName("GameStarting.wav");
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)

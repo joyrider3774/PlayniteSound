@@ -1,5 +1,11 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
+  - Version: 4.6
+    RequiredApiVersion: 6.1.0
+    ReleaseDate: 2022-04-03
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v4.6/PlayniteSounds-v4.6.pext
+    Changelog:
+      - Fix Music not always stopping anymore when a game is launched
   - Version: 4.4
     RequiredApiVersion: 6.1.0
     ReleaseDate: 2022-04-03

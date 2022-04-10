@@ -1,4 +1,6 @@
 # Playnite Sounds Extension
+![DownloadCountTotal](https://img.shields.io/github/downloads/joyrider3774/PlayniteSound/total?label=total%20downloads&style=plastic) ![DownloadCountLatest](https://img.shields.io/github/downloads/joyrider3774/PlayniteSound/latest/total?style=plastic) ![LatestVersion](https://img.shields.io/github/v/tag/joyrider3774/PlayniteSound?label=Latest%20version&style=plastic) ![License](https://img.shields.io/github/license/joyrider3774/PlayniteSound?style=plastic)
+
 Playnite Sounds is an extension to play audio files during Playnite events. 
 It can only play WAV audio files and mp3 for music, nothing else.
 

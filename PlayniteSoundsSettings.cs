@@ -17,6 +17,9 @@ namespace PlayniteSounds
         public int StopMusic { get; set; } = 1;
         public bool SkipFirstSelectSound { get; set; } = false;
         public bool PauseOnDeactivate { get; set; } = true;
+        public bool TagMissingEntries { get; set; } = false;
+        public bool AutoDownload { get; set; } = false;
+        public DateTime LastAutoLibUpdateAssetsDownload { get; set; } = DateTime.Now;
     }
 
     public class PlayniteSoundsSettingsViewModel : ObservableObject, ISettings

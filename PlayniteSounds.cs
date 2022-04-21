@@ -212,7 +212,7 @@ namespace PlayniteSounds
             {
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
                 {
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
                     if (Settings.Settings.MusicType == 2)
                     {
                         PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name);
@@ -270,7 +270,7 @@ namespace PlayniteSounds
             {
                 foreach(Game game in args.NewValue)
                 {
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
                     if (Settings.Settings.MusicType == 2)
                     {
                         PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name);
@@ -435,7 +435,7 @@ namespace PlayniteSounds
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
                 {
                     string MusicFileName;
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
                     if (Settings.Settings.MusicType == 2)
                     {
                         MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name);
@@ -471,7 +471,7 @@ namespace PlayniteSounds
                 foreach (Game game in PlayniteApi.MainView.SelectedGames)
                 {
                     string MusicFileName;
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
+                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
                     if (Settings.Settings.MusicType == 2)
                     {
                         MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name);

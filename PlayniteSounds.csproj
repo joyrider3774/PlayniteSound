@@ -51,7 +51,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\StringManipulation.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Downloaders\DownloadManager.cs" />
+    <Compile Include="Downloaders\IDownloader.cs" />
+    <Compile Include="Downloaders\IDownloadManager.cs" />
+    <Compile Include="Downloaders\KHDownloader.cs" />
     <Compile Include="PlayerEntry.cs" />
     <Compile Include="Localization.cs" />
     <Compile Include="PlayniteSounds.cs" />

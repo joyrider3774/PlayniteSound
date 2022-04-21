@@ -19,6 +19,10 @@ using Microsoft.Win32;
 using System.Windows;
 using System.IO.Compression;
 using System.Threading;
+using System.Net.Http;
+using HtmlAgilityPack;
+using PlayniteSounds.Downloaders;
+using PlayniteSounds.Common;
 
 namespace PlayniteSounds
 {
@@ -31,7 +35,12 @@ namespace PlayniteSounds
         private string prevmusicfilename = "";
         private MediaPlayer musicplayer; 
         private readonly MediaTimeline timeLine;
-        
+
+        private static readonly HttpClient httpclient = new HttpClient();
+        private static readonly HtmlWeb web = new HtmlWeb();
+
+        private static readonly IDownloadManager downloadmanager = new DownloadManager(httpclient, web);
+
         public static string pluginFolder;
 
         public override Guid Id { get; } = Guid.Parse("9c960604-b8bc-4407-a4e4-e291c6097c7d");
@@ -39,7 +48,7 @@ namespace PlayniteSounds
         private Dictionary<string, PlayerEntry> players = new Dictionary<string, PlayerEntry>();
         private bool closeaudiofilesnextplay = false;
         private bool gamerunning = false;
-        private bool firstselectsound = true;
+        private bool firstselectsound = true; 
 
         protected virtual bool IsFileLocked(FileInfo file)
         {
@@ -249,6 +258,21 @@ namespace PlayniteSounds
         {
             // Add code to be executed when library is updated.
             PlayFileName("LibraryUpdated.wav");
+
+            if (Settings.Settings.AutoDownload)
+            {
+                var progressTitle = ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload");
+                var progressOptions = new GlobalProgressOptions(progressTitle, true);
+                progressOptions.IsIndeterminate = false;
+                PlayniteApi.Dialogs.ActivateGlobalProgress((a) =>
+                {
+                    var games = PlayniteApi.Database.Games.Where(x => x.Added != null && x.Added > Settings.Settings.LastAutoLibUpdateAssetsDownload);
+                    DownloadMusicForGames(a, games, false, false, false, progressTitle);
+                }, progressOptions);
+            }
+
+            Settings.Settings.LastAutoLibUpdateAssetsDownload = DateTime.Now;
+            SavePluginSettings(Settings.Settings);
         }
 
         public override void OnGameSelected(OnGameSelectedEventArgs args)
@@ -322,6 +346,15 @@ namespace PlayniteSounds
                     {
                         SelectMusicFilename();
                     }
+                },
+                new GameMenuItem {
+                    MenuSection = "Playnite Sounds",
+                    Icon = Path.Combine(pluginFolder, "icon.png"),
+                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames"),
+                    Action = (GameMenuItem) =>
+                    {
+                        DownloadMusicForSelectedGames();
+                    }
                 }
              };
             return MainMenuItems;
@@ -347,6 +380,15 @@ namespace PlayniteSounds
                     Action = (MainMenuItem) =>
                     {
                         SelectMusicFilename();
+                    }
+                },
+                new MainMenuItem {
+                    MenuSection = "@Playnite Sounds",
+                    Icon = Path.Combine(pluginFolder, "icon.png"),
+                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames"),
+                    Action = (MainMenuItem) =>
+                    {
+                        DownloadMusicForSelectedGames();
                     }
                 },
                 new MainMenuItem {
@@ -462,6 +504,208 @@ namespace PlayniteSounds
             {
                 PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
             }
+        }
+
+        private void DownloadMusicForSelectedGames()
+        {
+            var albumSelect = PromptForAlbumSelect();
+            var songSelect = PromptForSongSelect();
+            var overwriteSelect = PromptForOverwriteSelect();
+
+
+            CloseMusic();
+
+            var progressTitle = ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles");
+            var progressOptions = new GlobalProgressOptions(progressTitle, true)
+            {
+                IsIndeterminate = false
+            };
+            PlayniteApi.Dialogs.ActivateGlobalProgress((a) =>
+            {
+                DownloadMusicForGames(a, PlayniteApi.MainView.SelectedGames, albumSelect, songSelect, overwriteSelect, progressTitle);
+            }, progressOptions);
+
+            MusicNeedsReload = true;
+            ReplayMusic();
+        }
+
+        public void DownloadMusicForGames(GlobalProgressActionArgs args, IEnumerable<Game> games, bool albumSelect, bool songSelect, bool overwrite, string progressTitle)
+        {
+            args.ProgressMaxValue = games.Count();
+            try
+            {
+                foreach (var game in games)
+                {
+                    if (args.CancelToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+
+                    var gameName = StringManipulation.StripStrings(game.Name);
+
+                    args.Text = $"{progressTitle}\n\n{args.CurrentProgressValue}/{args.ProgressMaxValue}\n{gameName}";
+
+                    var platform = GetPlatformName(game.Platforms);
+                    var MusicFileName = GetMusicFilename(gameName, platform);
+
+                    var fileExists = FileExists(MusicFileName);
+                    if (overwrite || !fileExists.Value)
+                    {
+                        DownloadSongFromGame(gameName, MusicFileName, songSelect, albumSelect);
+                    }
+
+                    UpdateMissingTag(game, gameName, fileExists);
+
+                    args.CurrentProgressValue++;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"An error occured while updating music: {ex.Message}");
+            }
+
+            PlayniteApi.Dialogs.ShowMessage(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageDone"), "Playnite Sounds");
+        }
+
+        Lazy<bool> FileExists(string filePath)
+            => new Lazy<bool>(() => File.Exists(filePath));
+
+        private void DownloadSongFromGame(string gameName, string filePath, bool songSelect, bool albumSelect)
+        {
+            logger.Info($"Starting album search for game '{gameName}'");
+
+            GenericItemOption album;
+            var regexGameName = songSelect && albumSelect ? string.Empty: StringManipulation.ReplaceStrings(gameName);
+            if (albumSelect)
+            {
+                album = PromptForAlbum(gameName);
+            }
+            else
+            {
+                var albums = downloadmanager.GetAlbumsForGame(gameName);
+                if (!albums.Any())
+                {
+                    logger.Info($"Did not find any albums for game '{gameName}'");
+                }
+
+                album = downloadmanager.BestAlbumPick(albums, gameName, regexGameName);
+            }
+
+            if (album == null)
+            {
+                return;
+            }
+
+            logger.Info($"Selected album '{album.Name}' for game '{gameName}'");
+
+            var songs = downloadmanager.GetSongsFromAlbum(album).ToList();
+            if (!songs.Any())
+            {
+                logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
+                return;
+            }
+
+            logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
+
+            var songToPartialUrl = songSelect
+                ? PromptForSong(songs, album.Name)
+                : downloadmanager.BestSongPick(songs, regexGameName);
+            if (songToPartialUrl == null)
+            {
+                return;
+            }
+
+            if (!downloadmanager.DownloadSong(songToPartialUrl, filePath))
+            {
+                logger.Info($"Failed to download song '{songToPartialUrl.Name} for album '{album.Name}' of game '{gameName}' from url '{songToPartialUrl.Description}'");
+                return;
+            }
+
+            logger.Info($"Found file for song '{songToPartialUrl.Name}' in album '{album.Name}' of game '{gameName}'");
+        }
+
+        private void UpdateMissingTag(Game game, string gameName, Lazy<bool> fileExists)
+        {
+            if (Settings.Settings.TagMissingEntries)
+            {
+                var missingTageString = ResourceProvider.GetString("LOC_PLAYNITESOUNDS_MissingTag");
+                var missingTag = PlayniteApi.Database.Tags.Add(missingTageString);
+                if (fileExists.Value)
+                {
+                    if (RemoveTagFromGame(game, missingTag))
+                    {
+                        logger.Info($"Removed tag from '{gameName}'");
+                    }
+                }
+                else
+                {
+                    if (AddTagToGame(game, missingTag))
+                    {
+                        logger.Info($"Added tag to '{gameName}'");
+                    }
+                }
+            }
+        }
+
+        private bool AddTagToGame(Game game, Tag tag)
+        {
+            if (game.Tags == null)
+            {
+                game.TagIds = new List<Guid> { tag.Id };
+                PlayniteApi.Database.Games.Update(game);
+                return true;
+            }
+            else if (!game.TagIds.Contains(tag.Id))
+            {
+                game.TagIds.Add(tag.Id);
+                PlayniteApi.Database.Games.Update(game);
+                return true;
+            }
+            return false;
+        }
+
+        private bool RemoveTagFromGame(Game game, Tag tag)
+        {
+            if (game.Tags != null && game.TagIds.Remove(tag.Id))
+            {
+                PlayniteApi.Database.Games.Update(game);
+                return true;
+            }
+            return false;
+        }
+
+        private GenericItemOption PromptForAlbum(string gameName)
+        {
+            var caption = string.Format(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum"), gameName);
+            return PlayniteApi.Dialogs.ChooseItemWithSearch(
+                new List<GenericItemOption>(), a => downloadmanager.GetAlbumsForGame(a).ToList(), gameName, caption);
+        }
+
+        private GenericItemOption PromptForSong(List<GenericItemOption> songsToPartialUrls, string albumName)
+        {
+            var caption = string.Format(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageCaptionSong"), albumName);
+            return PlayniteApi.Dialogs.ChooseItemWithSearch(
+                songsToPartialUrls, (a) => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a)).ToList(), "", caption: caption);
+        }
+
+        private bool PromptForAlbumSelect()
+            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect"));
+
+        private bool PromptForSongSelect()
+            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageSongSelect"));
+
+        private bool PromptForOverwriteSelect()
+            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect"));
+
+
+        private bool GetBoolFromYesNoDialog(string caption)
+        {
+            var selection = PlayniteApi.Dialogs.ShowMessage(caption,
+                ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogCaptionSelectOption"),
+                MessageBoxButton.YesNo);
+
+            return selection == MessageBoxResult.Yes;
         }
 
         public void ShowMusicFilename()
@@ -980,6 +1224,11 @@ namespace PlayniteSounds
                 logger.Error(E, "OpenSoundManagerFolder");
                 PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
             }
+        }
+        public string GetPlatformName(IEnumerable<Platform> platforms)
+        {
+            var platform = platforms?.FirstOrDefault(o => o != null);
+            return platform == null ? "No Platform" : platform.Name;
         }
     }
 }

@@ -329,8 +329,11 @@ namespace PlayniteSounds
                             PlayMusic("_music_", "", -1);
                         }
                     }
-                    
                 }
+            }
+            else if (args.NewValue.Count == 0 && Settings.Settings.PlayBackgroundWhenNoneSelected)
+            {
+                PlayMusic("_music_", "");
             }
         }
 

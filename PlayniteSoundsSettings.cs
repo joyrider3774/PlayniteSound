@@ -16,6 +16,7 @@ namespace PlayniteSounds
         public int MusicVolume { get; set; } = 25;
         public int StopMusic { get; set; } = 1;
         public bool SkipFirstSelectSound { get; set; } = false;
+        public bool PlayBackgroundWhenNoneSelected { get; set; } = false;
         public bool PauseOnDeactivate { get; set; } = true;
         public bool RandomizeOnEverySelect { get; set; } = false;
         public bool RandomizeOnMusicEnd { get; set; } = true;

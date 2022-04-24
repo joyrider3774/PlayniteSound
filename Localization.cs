@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Markup;
+using PlayniteSounds.Common.Constants;
 
 namespace PlayniteSounds
 
@@ -15,16 +16,10 @@ namespace PlayniteSounds
     {
         private static readonly ILogger logger = LogManager.GetLogger();
 
-        public static void SetPluginLanguage(string pluginFolder, string language, bool DefaultLoad = false)
+        public static void SetPluginLanguage(string pluginFolder, string language = SoundFile.LocalizationSource)
         {
-            // Load default for missing
-            if (!DefaultLoad)
-            {
-                SetPluginLanguage(pluginFolder, "LocSource", true);
-            }
-
             var dictionaries = Application.Current.Resources.MergedDictionaries;
-            var langFile = Path.Combine(pluginFolder, "Localization\\" + language + ".xaml");
+            var langFile = Path.Combine(pluginFolder, SoundDirectory.Localization, language + ".xaml");
 
             // Load localization
             if (File.Exists(langFile))

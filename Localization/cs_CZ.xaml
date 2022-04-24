@@ -1,6 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Kde přehrávat zvuk:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Kde přehrávat hudbu:</sys:String>
@@ -15,7 +17,18 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music file on music end</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music file on every 'musictype' selection</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nikdy</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Plocha</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Celá obrazovka</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Plocha + Celá obrazovka</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -28,14 +41,6 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Select option</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Done</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Automatically Downloading files...</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nikdy</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Plocha</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Celá obrazovka</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Plocha + Celá obrazovka</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Nastavení</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Nástroje</sys:String>
@@ -50,6 +55,7 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Zvukové soubory byly načteny!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Zvolte prosím jednu hru!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds je rozšíření pro přehrávání zvukových souborů během používání Playnite.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Dokáže přehrávat pouze WAV soubory, mp3 soubory pro hudbu a žádné jiné.</sys:String>

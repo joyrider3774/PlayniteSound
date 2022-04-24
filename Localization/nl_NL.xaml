@@ -1,6 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Waar geluid afspelen:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Waar muziek afspelen:</sys:String>
@@ -15,7 +17,18 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Download automatisch muziek voor nieuw toegevoegde spellen bij bibliotheek update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Willekeurig muziekbestand op muziek einde</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Willekeurig muziekbestand op elke 'muziektype' selectie</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop muziek wanneer</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nooit</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureaublad</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Volledig scherm</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Bureaublad + Volledig scherm</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Het spel begint</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Spel is begonnen</sys:String>
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Ontbrekende achtergrondmuziek</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download bestanden</sys:String>
@@ -28,14 +41,6 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Selecteer optie</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Voltooid</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Bestanden automatisch downloaden...</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nooit</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureaublad</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Volledig scherm</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Bureaublad + Volledig scherm</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Het spel begint</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Spel is begonnen</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Instellingen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Acties</sys:String>
@@ -50,6 +55,7 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Geluidsbestanden herladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Selecteer één spel alstublieft!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds is een extensie om audiobestanden af te spelen tijdens Playnite gebeurtenissen.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Het kan alleen WAV audiobestanden, mp3 bestanden voor muziek en niets anders afspelen.</sys:String>

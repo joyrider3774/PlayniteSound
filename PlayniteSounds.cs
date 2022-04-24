@@ -6,1199 +6,1209 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Media;
 using Playnite.SDK.Events;
-using System.Windows.Media.Animation;
 using System.Diagnostics;
 using Microsoft.Win32;
 using System.Windows;
 using System.IO.Compression;
 using System.Threading;
-using System.Net.Http;
-using HtmlAgilityPack;
 using PlayniteSounds.Downloaders;
 using PlayniteSounds.Common;
+using PlayniteSounds.Common.Constants;
+using PlayniteSounds.Models;
 
 namespace PlayniteSounds
 {
     public class PlayniteSounds : GenericPlugin
     {
-        private static readonly IResourceProvider resources = new ResourceProvider();
-        private static readonly ILogger logger = LogManager.GetLogger();
-        public bool MusicNeedsReload { get; set; } = false;
-        public bool MusicFilenameNeedsReload { get; set; } = false;
-        private PlayniteSoundsSettingsViewModel Settings { get; set; }
-        private string prevmusicfilename = "";   //used to prevent same file being restarted 
-        private string prevmusicfilename2 = "";  //used with the new don't randomize on every select option in case of multiple files
-        private string prevmusicgamedata = "";  //used with the new don't randomize on every select option in case of multiple files
+        public bool MusicNeedsReload { get; set; }
+        public bool MusicFilenameNeedsReload { get; set; }
 
-        private MediaPlayer musicplayer; 
-        private readonly MediaTimeline timeLine;
+        private static readonly string PluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static readonly string IconPath = Path.Combine(PluginFolder, "icon.png");
 
-        private static readonly HttpClient httpclient = new HttpClient();
-        private static readonly HtmlWeb web = new HtmlWeb();
+        private static readonly Lazy<string> HelpMessage = new Lazy<string>(() =>
+                    Resource.MsgHelp1 + "\n\n" +
+                    Resource.MsgHelp2 + "\n\n" +
+                    Resource.MsgHelp3 + " " +
+                    Resource.MsgHelp4 + " " +
+                    Resource.MsgHelp5 + "\n\n" +
+                    Resource.MsgHelp6 + "\n\n" +
+                    HelpLine(SoundFile.BaseApplicationStartedSound) +
+                    HelpLine(SoundFile.BaseApplicationStoppedSound) +
+                    HelpLine(SoundFile.BaseGameInstalledSound) +
+                    HelpLine(SoundFile.BaseGameSelectedSound) +
+                    HelpLine(SoundFile.BaseGameStartedSound) +
+                    HelpLine(SoundFile.BaseGameStartingSound) +
+                    HelpLine(SoundFile.BaseGameStoppedSound) +
+                    HelpLine(SoundFile.BaseGameUninstalledSound) +
+                    HelpLine(SoundFile.BaseLibraryUpdatedSound) +
+                    Resource.MsgHelp7);
 
-        private static readonly IDownloadManager downloadmanager = new DownloadManager(httpclient, web);
+        private static readonly ILogger Logger = LogManager.GetLogger();
 
-        public static string pluginFolder;
+        private static readonly IDownloadManager DownloadManager = new DownloadManager();
+        private PlayniteSoundsSettingsViewModel SettingsModel { get; set; }
+        private PlayniteSoundsSettings Settings => SettingsModel.Settings;
 
-        public override Guid Id { get; } = Guid.Parse("9c960604-b8bc-4407-a4e4-e291c6097c7d");
+        private bool _gameRunning = false;
+        private bool _firstSelectSound = true;
+        private bool _closeAudioFilesNextPlay = false;
 
-        private Dictionary<string, PlayerEntry> players = new Dictionary<string, PlayerEntry>();
-        private bool closeaudiofilesnextplay = false;
-        private bool gamerunning = false;
-        private bool firstselectsound = true; 
+        private string _prevMusicFileName = string.Empty;   //used to prevent same file being restarted 
+        private string _prevMusicFileName2 = string.Empty;   //used with the new 'don't randomize on every select' option in case of multiple files
+        private string _prevMusicGameData = string.Empty;    //used with the new 'don't randomize on every select' option in case of multiple files
 
-        protected virtual bool IsFileLocked(FileInfo file)
-        {
-            try
-            {
-                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Write, FileShare.None))
-                {
-                    stream.Close();
-                }
-            }
-            catch (IOException)
-            {
-                //the file is unavailable because it is:
-                //still being written to
-                //or being processed by another thread
-                //or does not exist (has already been processed)
-                return true;
-            }
+        private readonly string _musicFilesDataPath;
+        private readonly string _soundFilesDataPath;
+        private readonly string _soundManagerFilesDataPath;
 
-            //file is not locked
-            return false;
-        }
+        private readonly Dictionary<string, PlayerEntry> _players = new Dictionary<string, PlayerEntry>();
 
+        private MediaPlayer _musicPlayer;
+        private readonly MediaTimeline _timeLine;
+
+        private readonly List<GameMenuItem> _gameMenuItems;
+        private readonly List<MainMenuItem> _mainMenuItems;
+
+        #region Constructor
         public PlayniteSounds(IPlayniteAPI api) : base(api)
         {
             try
             {
-                Settings = new PlayniteSoundsSettingsViewModel(this);
+                SoundFile.PlayniteApi = PlayniteApi;
+
+                _musicFilesDataPath = Path.Combine(GetPluginUserDataPath(), SoundDirectory.Music);
+                _soundFilesDataPath = Path.Combine(GetPluginUserDataPath(), SoundDirectory.Sound);
+                _soundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), SoundDirectory.SoundManager);
+
+                SettingsModel = new PlayniteSoundsSettingsViewModel(this);
                 Properties = new GenericPluginProperties
                 {
                     HasSettings = true
                 };
 
-                pluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-                Localization.SetPluginLanguage(pluginFolder, api.ApplicationSettings.Language);
-                musicplayer = new MediaPlayer();
-                musicplayer.MediaEnded += MediaEnded;
-                timeLine = new MediaTimeline();
+                Localization.SetPluginLanguage(PluginFolder, api.ApplicationSettings.Language);
+                _musicPlayer = new MediaPlayer();
+                _musicPlayer.MediaEnded += MediaEnded;
+                _timeLine = new MediaTimeline();
                 //{
                 //    RepeatBehavior = RepeatBehavior.Forever                    
                 //};
+
+                _gameMenuItems = new List<GameMenuItem>
+                {
+                    ConstructGameMenuItem(Resource.ActionsShowMusicFilename, ShowMusicFilename),
+                    ConstructGameMenuItem(Resource.ActionsDownloadMusicForGames, PromptUserToDownload)
+                };
+
+                _mainMenuItems = new List<MainMenuItem>
+                {
+                    ConstructMainMenuItem(Resource.ActionsShowMusicFilename, ShowMusicFilename),
+                    ConstructMainMenuItem(Resource.ActionsDownloadMusicForGames, PromptUserToDownload),
+                    ConstructMainMenuItem(Resource.ActionsOpenMusicFolder, OpenMusicFolder),
+                    ConstructMainMenuItem(Resource.ActionsOpenSoundsFolder, OpenSoundsFolder),
+                    ConstructMainMenuItem(Resource.ActionsReloadAudioFiles, ReloadAudioFiles),
+                    ConstructMainMenuItem(Resource.ActionsHelp, HelpMenu)
+                };
             }
+
+
             catch (Exception E)
             {
-                logger.Error(E, "PlayniteSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
+                HandleException(E);
             }
         }
 
+        private static string HelpLine(string baseMessage)
+            => $"{SoundFile.DesktopPrefix}{baseMessage} - {SoundFile.FullScreenPrefix}{baseMessage}\n";
+
+        #endregion
+
+        #region Playnite Interface
+
+        public override Guid Id { get; } = Guid.Parse("9c960604-b8bc-4407-a4e4-e291c6097c7d");
+
+        public override ISettings GetSettings(bool firstRunSettings) => SettingsModel;
+
+        public override UserControl GetSettingsView(bool firstRunSettings) => new PlayniteSoundsSettingsView(this);
+
+        // Add code to be executed when game is finished installing.
         public override void OnGameInstalled(OnGameInstalledEventArgs args)
+            => PlaySoundFileFromName(SoundFile.GameInstalledSound);
+
+        // Add code to be executed when game is uninstalled.
+        public override void OnGameUninstalled(OnGameUninstalledEventArgs args)
+            => PlaySoundFileFromName(SoundFile.GameUninstalledSound);
+
+        public override void OnGameSelected(OnGameSelectedEventArgs args)
         {
-            // Add code to be executed when game is finished installing.
-            PlayFileName("GameInstalled.wav");
+            if (!(_firstSelectSound && Settings.SkipFirstSelectSound))
+            {
+                PlaySoundFileFromName(SoundFile.GameSelectedSound);
+            }
+            _firstSelectSound = false;
+
+            if (ShouldPlayMusicOrClose())
+            {
+                if (args.NewValue.Count == 1)
+                {
+                    PlayMusicOnSelect(args.NewValue);
+                }
+                else if (args.NewValue.Count == 0 && Settings.PlayBackgroundWhenNoneSelected)
+                {
+                    var filePath = GetMusicFileName(SoundFile.DefaultMusicName, string.Empty);
+                    PlayMusicFromPath(filePath);
+                }
+            }
         }
 
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
             // Add code to be executed when game is started running.
-            if (Settings.Settings.StopMusic == 1)
+            if (Settings.StopMusic)
             {
                 PauseMusic();
-                gamerunning = true;
+                _gameRunning = true;
             }
-            PlayFileName("GameStarted.wav", true);
+            PlaySoundFileFromName(SoundFile.GameStartedSound);
         }
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             // Add code to be executed when game is preparing to be started.
-            if (Settings.Settings.StopMusic == 0)
+            if (!Settings.StopMusic)
             {
                 PauseMusic();
-                gamerunning = true;
+                _gameRunning = true;
             }
-            PlayFileName("GameStarting.wav");
+            PlaySoundFileFromName(SoundFile.GameStartingSound);
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
-            gamerunning = false;
+            _gameRunning = false;
             // Add code to be executed when game is preparing to be started.
-            PlayFileName("GameStopped.wav");
+            PlaySoundFileFromName(SoundFile.GameStoppedSound);
             ResumeMusic();
-        }
-
-        public override void OnGameUninstalled(OnGameUninstalledEventArgs args)
-        {
-            // Add code to be executed when game is uninstalled.
-            PlayFileName("GameUninstalled.wav");
         }
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
             // Add code to be executed when Playnite is initialized.
-            PlayFileName("ApplicationStarted.wav");
-            SystemEvents.PowerModeChanged += OnPowerMode_Changed;
-            Application.Current.Deactivated += onApplicationDeactivate;
-            Application.Current.Activated += onApplicationActivate;
-            Application.Current.MainWindow.StateChanged += onWindowStateChanged;
+            PlaySoundFileFromName(SoundFile.ApplicationStartedSound);
+            SystemEvents.PowerModeChanged += OnPowerModeChanged;
+            Application.Current.Deactivated += OnApplicationDeactivate;
+            Application.Current.Activated += OnApplicationActivate;
+            Application.Current.MainWindow.StateChanged += OnWindowStateChanged;
+
+            InitialCopyAudioFiles();
         }
 
-        private void onWindowStateChanged(object sender, EventArgs e)
+        public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
-            if (Settings.Settings.PauseOnDeactivate)
+            // Add code to be executed when Playnite is shutting down.
+            SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+            Application.Current.Deactivated -= OnApplicationDeactivate;
+            Application.Current.Activated -= OnApplicationActivate;
+
+            if (Application.Current.MainWindow != null)
+            {
+                Application.Current.MainWindow.StateChanged -= OnWindowStateChanged;
+            }
+
+            PlaySoundFileFromName(SoundFile.ApplicationStoppedSound);
+            CloseAudioFiles();
+            CloseMusic();
+            _musicPlayer.MediaEnded -= MediaEnded;
+            _musicPlayer = null;
+        }
+
+        public override void OnLibraryUpdated(OnLibraryUpdatedEventArgs args)
+        {
+            // Add code to be executed when library is updated.
+            PlaySoundFileFromName(SoundFile.LibraryUpdatedSound);
+
+            if (Settings.AutoDownload)
+            {
+                var games = PlayniteApi.Database.Games.Where(x => x.Added != null && x.Added > Settings.LastAutoLibUpdateAssetsDownload);
+                CreateDownloadDialogue(games);
+            }
+
+            Settings.LastAutoLibUpdateAssetsDownload = DateTime.Now;
+            SavePluginSettings(Settings);
+        }
+
+        public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
+            => GetMenuItems(_gameMenuItems, ConstructGameMenuItem);
+
+        public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
+            => GetMenuItems(_mainMenuItems, ConstructMainMenuItem);
+
+        #endregion
+
+        #region State Changes
+
+        private void OnWindowStateChanged(object sender, EventArgs e)
+        {
+            if (Settings.PauseOnDeactivate)
             {
                 switch (Application.Current?.MainWindow?.WindowState)
                 {
+                    case WindowState.Normal:
                     case WindowState.Maximized:
                         ResumeMusic();
                         break;
                     case WindowState.Minimized:
                         PauseMusic();
                         break;
-                    case WindowState.Normal:
-                        ResumeMusic();
-                        break;
                 }
             }
         }
 
-        public bool canPlayMusic()
+        private void OnApplicationDeactivate(object sender, EventArgs e)
         {
-            bool DesktopMode = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
-            return (!gamerunning) && ((DesktopMode && ((Settings.Settings.MusicWhere == 1) || (Settings.Settings.MusicWhere == 3))) ||
-                (!DesktopMode && ((Settings.Settings.MusicWhere == 2) || (Settings.Settings.MusicWhere == 3))));
-        }
-
-        public void onApplicationDeactivate(object sender, EventArgs e)
-        {
-            if (Settings.Settings.PauseOnDeactivate)
+            if (Settings.PauseOnDeactivate)
             {
                 PauseMusic();
             }
         }
 
-        public void onApplicationActivate(object sender, EventArgs e)
+        private void OnApplicationActivate(object sender, EventArgs e)
         {
-            if (Settings.Settings.PauseOnDeactivate)
+            if (Settings.PauseOnDeactivate)
             {
                 ResumeMusic();
             }
         }
 
         //fix sounds not playing after system resume
-        public void OnPowerMode_Changed(object sender, PowerModeChangedEventArgs e)
+        private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
         {
+            if (e.Mode != PowerModes.Resume) return;
+
             try
-            { 
-                if (e.Mode == PowerModes.Resume)
-                {
-                    closeaudiofilesnextplay = true;
-                    MusicNeedsReload = true;
-                    //Restart music:
-                    ReplayMusic();
-                }
+            {
+                _closeAudioFilesNextPlay = true;
+                MusicNeedsReload = true;
+                //Restart music:
+                ReplayMusic();
             }
             catch (Exception E)
             {
-                logger.Error(E, "OnPowerMode_Changed");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
+                HandleException(E);
             }
         }
 
+        #endregion
+
+        #region Audio Player
+
         public void ResetMusicVolume()
         {
-            if (musicplayer != null)
+            if (_musicPlayer != null)
             {
-                musicplayer.Volume = (double)Settings.Settings.MusicVolume / 100;
+                _musicPlayer.Volume = Settings.MusicVolume / 100.0;
             }
         }
 
         public void ReplayMusic()
         {
-            if (gamerunning)
+            if (SingleGame() && ShouldPlayMusicOrClose())
             {
-                return;
-            }
-
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
-            {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
-                {
-                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name, -1);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name, -1);
-                        }
-                        else
-                        {
-                            PlayMusic("_music_", "", -1);
-                        }
-                    }
-                }
+                PlayMusicOnSelect(PlayniteApi.MainView.SelectedGames);
             }
         }
 
-        public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
+        private void PlayMusicOnSelect(IEnumerable<Game> games)
         {
-            // Add code to be executed when Playnite is shutting down.
-            SystemEvents.PowerModeChanged -= OnPowerMode_Changed;
-            Application.Current.Deactivated -= onApplicationDeactivate;
-            Application.Current.Activated -= onApplicationActivate;
-            if (Application.Current.MainWindow != null)
-            {
-                Application.Current.MainWindow.StateChanged -= onWindowStateChanged;
-            }
-            PlayFileName("ApplicationStopped.wav", true);
-            CloseAudioFiles();
-            CloseMusic();
-            musicplayer.MediaEnded -= MediaEnded;
-            musicplayer = null;
+            var (gameName, platform) = GetGameInfoFromGames(games);
+            var filePath = MusicTypeToFilePath(gameName, platform);
+
+            PlayMusicFromPath(filePath);
         }
 
-        public override void OnLibraryUpdated(OnLibraryUpdatedEventArgs args)
+        private void ResumeMusic()
         {
-            // Add code to be executed when library is updated.
-            PlayFileName("LibraryUpdated.wav");
+            if (!ShouldPlayMusic() || _musicPlayer.Clock == null) return;
 
-            if (Settings.Settings.AutoDownload)
-            {
-                var progressTitle = Constants.AppName + " - " + ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload");
-                var progressOptions = new GlobalProgressOptions(progressTitle, true);
-                progressOptions.IsIndeterminate = false;
-                PlayniteApi.Dialogs.ActivateGlobalProgress((a) =>
-                {
-                    var games = PlayniteApi.Database.Games.Where(x => x.Added != null && x.Added > Settings.Settings.LastAutoLibUpdateAssetsDownload);
-                    DownloadMusicForGames(a, games, false, false, false, true, progressTitle);
-                }, progressOptions);
-            }
-
-            Settings.Settings.LastAutoLibUpdateAssetsDownload = DateTime.Now;
-            SavePluginSettings(Settings.Settings);
-        }
-
-        public override void OnGameSelected(OnGameSelectedEventArgs args)
-        {
-            if (firstselectsound)
-            {
-                firstselectsound = false;
-                if (!Settings.Settings.SkipFirstSelectSound)
-                {
-                    PlayFileName("GameSelected.wav");
-                }
-            }
-            else
-            {
-                PlayFileName("GameSelected.wav");
-            }
-
-            if (args.NewValue.Count == 1) 
-            {
-                foreach(Game game in args.NewValue)
-                {
-                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name, -1);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name, -1);
-                        }
-                        else
-                        {
-                            PlayMusic("_music_", "", -1);
-                        }
-                    }
-                }
-            }
-            else if (args.NewValue.Count == 0 && Settings.Settings.PlayBackgroundWhenNoneSelected)
-            {
-                PlayMusic("_music_", "");
-            }
-        }
-
-        public override ISettings GetSettings(bool firstRunSettings)
-        {
-            return Settings;
-        }
-
-        public override UserControl GetSettingsView(bool firstRunSettings)
-        {
-            return new PlayniteSoundsSettingsView(this);
-        }
-
-        public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
-        {
-            List<GameMenuItem> MainMenuItems = new List<GameMenuItem>();
-            MainMenuItems.Add(new GameMenuItem {
-                MenuSection = "Playnite Sounds",
-                Icon = Path.Combine(pluginFolder, "icon.png"),
-                Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsShowMusicFilename"),
-                Action = (MainMenuItem) =>
-                {
-                    ShowMusicFilename();
-                }
-            });
-
-            MainMenuItems.Add(new GameMenuItem
-            {
-                MenuSection = "Playnite Sounds",
-                Icon = Path.Combine(pluginFolder, "icon.png"),
-                Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames"),
-                Action = (GameMenuItem) =>
-                {
-                    DownloadMusicForSelectedGames();
-                }
-            });
-
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
-            {
-                MainMenuItems.Add(new GameMenuItem
-                {
-                    MenuSection = "Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 1 " + (GetMusicFilenameExists(0) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(0);
-                    }
-                });
-
-                MainMenuItems.Add(new GameMenuItem
-                {
-                    MenuSection = "Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 2 " + (GetMusicFilenameExists(1) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(1);
-                    }
-                });
-
-                MainMenuItems.Add(new GameMenuItem
-                {
-                    MenuSection = "Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 3 " + (GetMusicFilenameExists(2) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(2);
-                    }
-                });
-
-                MainMenuItems.Add(new GameMenuItem
-                {
-                    MenuSection = "Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 4 " + (GetMusicFilenameExists(3) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(3);
-                    }
-                });
-
-                MainMenuItems.Add(new GameMenuItem
-                {
-                    MenuSection = "Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 5 " + (GetMusicFilenameExists(4) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(4);
-                    }
-                });
-
-                if (GetMusicFilenameExists(0))
-                {
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 1",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(0);
-                        }
-                    });
-
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 1",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(0);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(1))
-                {
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 2",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(1);
-                        }
-                    });
-
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 2",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(1);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(2))
-                {
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 3",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(2);
-                        }
-                    });
-
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 3",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(2);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(3))
-                {
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 4",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(3);
-                        }
-                    });
-
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 4",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(3);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(4))
-                {
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 5",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(4);
-                        }
-                    });
-
-                    MainMenuItems.Add(new GameMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 5",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(4);
-                        }
-                    });
-                }
-            }
-        
-            return MainMenuItems;
-        }
-
-        public override IEnumerable<MainMenuItem> GetMainMenuItems(GetMainMenuItemsArgs args)
-        {
-            List<MainMenuItem> MainMenuItems = new List<MainMenuItem>();
-            MainMenuItems.Add(new MainMenuItem
-            {
-                MenuSection = "@Playnite Sounds",
-                Icon = Path.Combine(pluginFolder, "icon.png"),
-                Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsShowMusicFilename"),
-                Action = (MainMenuItem) =>
-                {
-                    ShowMusicFilename();
-                }
-            });
-            MainMenuItems.Add(new MainMenuItem
-            {
-                MenuSection = "@Playnite Sounds",
-                Icon = Path.Combine(pluginFolder, "icon.png"),
-                Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames"),
-                Action = (MainMenuItem) =>
-                {
-                    DownloadMusicForSelectedGames();
-                }
-            });
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
-            {
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 1 " + (GetMusicFilenameExists(0) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(0);
-                    }
-                });
-
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 2 " + (GetMusicFilenameExists(1) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(1);
-                    }
-                });
-
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 3 " + (GetMusicFilenameExists(2) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(2);
-                    }
-                });
-
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 4 " + (GetMusicFilenameExists(3) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(3);
-                    }
-                });
-
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile") + " 5 " + (GetMusicFilenameExists(4) ? "[*]" : "[ ]"),
-                    Action = (MainMenuItem) =>
-                    {
-                        SelectMusicFilename(4);
-                    }
-                });
-
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder"),
-                    Action = (MainMenuItem) =>
-                    {
-                        OpenMusicFolder();
-                    }
-                });
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder"),
-                    Action = (MainMenuItem) =>
-                    {
-                        OpenSoundsFolder();
-                    }
-                });
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles"),
-                    Action = (MainMenuItem) =>
-                    {
-                        ReloadAudioFiles();
-                    }
-                });
-                MainMenuItems.Add(new MainMenuItem
-                {
-                    MenuSection = "@Playnite Sounds",
-                    Icon = Path.Combine(pluginFolder, "icon.png"),
-                    Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsHelp"),
-                    Action = (MainMenuItem) =>
-                    {
-                        HelpMenu();
-                    }
-                });
-
-                if (GetMusicFilenameExists(0))
-                {
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 1",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(0);
-                        }
-                    });
-
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 1",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(0);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(1))
-                {
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 2",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(1);
-                        }
-                    });
-
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 2",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(1);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(2))
-                {
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 3",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(2);
-                        }
-                    });
-
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 3",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(2);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(3))
-                {
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 4",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(3);
-                        }
-                    });
-
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 4",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(3);
-                        }
-                    });
-                }
-
-                if (GetMusicFilenameExists(4))
-                {
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile") + " 5",
-                        Action = (MainMenuItem) =>
-                        {
-                            PlayMusicFile(4);
-                        }
-                    });
-
-                    MainMenuItems.Add(new MainMenuItem
-                    {
-                        MenuSection = "@Playnite Sounds",
-                        Icon = Path.Combine(pluginFolder, "icon.png"),
-                        Description = resources.GetString("LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile") + " 5",
-                        Action = (MainMenuItem) =>
-                        {
-                            DeleteMusicFilename(4);
-                        }
-                    });
-                }
-            }
-            return MainMenuItems;
-        }
-
-        public void HelpMenu()
-        {
-            PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp1") + "\n\n" +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp2") + "\n\n" +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp3") + " " +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp4") + " " +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp5") + "\n\n" +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp6") + "\n\n" +
-                "D_ApplicationStarted.wav - F_ApplicationStarted.wav\n" +
-                "D_ApplicationStopped.wav - F_ApplicationStopped.wav\n" +
-                "D_GameInstalled.wav - F_GameInstalled.wav\n" +
-                "D_GameSelected.wav - F_GameSelected.wav\n" +
-                "D_GameStarted.wav - F_GameStarted.wav\n" +
-                "D_GameStarting.wav - F_GameStarting.wav\n" +
-                "D_GameStopped.wav - F_GameStopped.wav\n" +
-                "D_GameUninstalled.wav - F_GameUninstalled.wav\n" +
-                "D_LibraryUpdated.wav - F_LibraryUpdated.wav\n\n" +
-                resources.GetString("LOC_PLAYNITESOUNDS_MsgHelp7"), Constants.AppName);
-        }
-        
-        public bool GetMusicFilenameExists(int fileNr)
-        {
-
-            string MusicFileName = "";
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
-            {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
-                {
-
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name, fileNr, true);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            MusicFileName = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name, fileNr, true);
-                        }
-                        else
-                        {
-                            MusicFileName = GetMusicFilename("_music_", "", fileNr, true);
-                        }
-                    }
-                }
-            }
-            return File.Exists(MusicFileName);
-        }
-
-        public string GetMusicFilename(string gamename, string platform, int forceFileNr = -1, bool dontsetprevmusicfilename2 = false)
-        {
             try
-            { 
-                
-                string musicdir = Path.Combine(GetPluginUserDataPath(), "Music Files", platform);
-                Directory.CreateDirectory(musicdir);
-                string invalidChars = new string(Path.GetInvalidFileNameChars());
-                Regex r = new Regex(string.Format("[{0}]", Regex.Escape(invalidChars)));
-                string sanitizedgamename = r.Replace(gamename, "");
-                string filename = "-";
-                if (forceFileNr == -1)
-                {
-                    if (MusicFilenameNeedsReload || Settings.Settings.RandomizeOnEverySelect || (prevmusicgamedata != (platform + sanitizedgamename).ToLower()))
-                    {
-                        MusicFilenameNeedsReload = false;
-                        List<string> dirs = Directory.GetFiles(musicdir, sanitizedgamename + ".?.mp3").ToList();
-                        if (File.Exists(Path.Combine(musicdir, sanitizedgamename + ".mp3")))
-                        {
-                            dirs.Add(Path.Combine(musicdir, sanitizedgamename + ".mp3"));
-                        }
-                        if (dirs.Count > 0)
-                        {
-                            var rand = new Random();
-                            filename = Path.GetFileName(dirs[rand.Next(dirs.Count)]);
-                        }
-                    }
-                    else
-                    {
-                        filename = prevmusicfilename2;
-                    }
-                    prevmusicgamedata = (platform + sanitizedgamename).ToLower();
-                }
-
-                if (forceFileNr > -1)
-                {
-                    filename = sanitizedgamename + ".mp3";
-                    if (forceFileNr > 0)
-                    {
-                        filename = sanitizedgamename + "." + forceFileNr.ToString() + ".mp3";
-                    }
-                }
-
-                if (!dontsetprevmusicfilename2)
-                {
-                    prevmusicfilename2 = filename;
-                }
-                return Path.Combine(musicdir, filename);
+            {
+                _musicPlayer.Clock.Controller.Resume();
             }
             catch (Exception E)
             {
-                logger.Error(E, "GetMusicFilename");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-                return "";
+                HandleException(E);
             }
         }
 
-        public void PlayMusicFile(int fileNr)
+        private void PauseMusic()
         {
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
+            if (!ShouldPlayMusic() || _musicPlayer.Clock == null) return;
+
+            try
             {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
+                _musicPlayer.Clock.Controller.Pause();
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private void CloseMusic()
+        {
+            if (_musicPlayer.Clock == null) return;
+
+            try
+            {
+                _musicPlayer.Clock.Controller.Stop();
+                _musicPlayer.Clock = null;
+                _musicPlayer.Close();
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private void PlayMusicFromIndex(int fileNumber)
+        {
+            if (SingleGame())
+            {
+                var musicFileName = GetSelectedGameFileName(fileNumber);
+
+                PlayMusicFromPath(musicFileName);
+
+            }
+            else
+            {
+                ShowMessage(Resource.MsgSelectSingleGame);
+            }
+        }
+
+        private void PlayMusicFromPath(string filePath)
+        {
+            if (!MusicNeedsReload && filePath == _prevMusicFileName) return;
+
+            try
+            {
+                CloseMusic();
+                MusicNeedsReload = false;
+                _prevMusicFileName = string.Empty;
+                if (File.Exists(filePath))
                 {
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
+                    _prevMusicFileName = filePath;
+                    _timeLine.Source = new Uri(filePath);
+                    _musicPlayer.Volume = Settings.MusicVolume / 100.0;
+                    _musicPlayer.Clock = _timeLine.CreateClock();
+                    _musicPlayer.Clock.Controller.Begin();
+                }
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private void PlaySoundFileFromName(string fileName)
+        {
+            if (!ShouldPlaySound()) return;
+
+            try
+            {
+                if (_closeAudioFilesNextPlay)
+                {
+                    CloseAudioFiles();
+                    _closeAudioFilesNextPlay = false;
+                }
+
+                _players.TryGetValue(fileName, out var entry);
+                if (entry == null)
+                {
+                    entry = CreatePlayerEntry(fileName);
+                }
+
+                if (entry.FileExists)
+                {
+                    if (entry.MediaPlayer != null)
                     {
-                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name, fileNr);
+                        entry.MediaPlayer.Stop();
+                        entry.MediaPlayer.Play();
                     }
                     else
                     {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name, fileNr);
-                        }
-                        else
-                        {
-                            PlayMusic("_music_", "", fileNr);
-                        }
+                        entry.SoundPlayer.Stop();
+                        entry.SoundPlayer.PlaySync();
+                    }
+                }
+                else 
+                { 
+                }
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private PlayerEntry CreatePlayerEntry(string fileName, bool useSoundPlayer = false)
+        {
+            string FullFileName = Path.Combine(GetPluginUserDataPath(), SoundDirectory.Sound, fileName);
+
+            var fileExists = File.Exists(FullFileName);
+
+            var entry = new PlayerEntry { FileExists = fileExists };
+            _players[fileName] = entry;
+
+            if (fileExists)
+            {
+                // MediaPlayer can play multiple sounds together from mulitple instances, but the SoundPlayer can not
+                if (useSoundPlayer)
+                {
+                    entry.SoundPlayer = new SoundPlayer();
+                    entry.SoundPlayer.SoundLocation = FullFileName;
+                    entry.SoundPlayer.Load();
+                }
+                else
+                {
+                    entry.MediaPlayer = new MediaPlayer();
+                    entry.MediaPlayer.Open(new Uri(FullFileName));
+                }
+            }
+
+            return entry;
+        }
+
+        private void CloseAudioFiles()
+        {
+            try
+            {
+                foreach (string keyname in _players.Keys)
+                {
+                    PlayerEntry Entry = _players[keyname];
+                    ClosePlayerEntry(Entry);
+                }
+                _players.Clear();
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private void ClosePlayerEntry(PlayerEntry entry)
+        {
+            if (!entry.FileExists) return;
+
+            if (entry.MediaPlayer != null)
+            {
+                string filename = entry.MediaPlayer.Source != null
+                    ? string.Empty
+                    : entry.MediaPlayer.Source.LocalPath;
+
+                entry.MediaPlayer.Stop();
+                entry.MediaPlayer.Close();
+                entry.MediaPlayer = null;
+                if (File.Exists(filename))
+                {
+                    var fileInfo = new FileInfo(filename);
+                    for (var count = 0; IsFileLocked(fileInfo) && count < 100; count++)
+                    {
+                        Thread.Sleep(5);
                     }
                 }
             }
             else
             {
-                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
+                entry.SoundPlayer.Stop();
+                entry.SoundPlayer = null;
             }
         }
 
-        public void DeleteMusicFilename(int fileNr)
+        public void ReloadAudioFiles()
         {
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
+            CloseAudioFiles();
+            ShowMessage(Resource.ActionsReloadAudioFiles);
+        }
+
+        private void MediaEnded(object sender, EventArgs e)
+        {
+            if (Settings.RandomizeOnMusicEnd)
             {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
+                //will play random song on case of multiple (could be same song)
+                CloseMusic();
+                MusicNeedsReload = true;
+                MusicFilenameNeedsReload = true;
+                ReplayMusic();
+            }
+            else if (_musicPlayer.Clock != null)
+            {
+                _musicPlayer.Clock.Controller.Stop();
+                _musicPlayer.Clock.Controller.Begin();
+            }
+        }
+
+        #endregion
+
+        #region UI
+
+        #region Menu UI
+
+        private IEnumerable<TMenuItem> GetMenuItems<TMenuItem>(
+            IEnumerable<TMenuItem> defaultMenuItems, 
+            Func<string, Action, TMenuItem> 
+            menuItemConstructor)
+        {
+            var mainMenuItems = new List<TMenuItem>(defaultMenuItems);
+
+            if (!SingleGame()) return mainMenuItems;
+
+            for (var i = 0; i < 5; i++)
+            {
+                var fileExists = MusicFileNameExists(i);
+
+                var fileExistsStr = fileExists ? "[*]" : "[ ]";
+                var description = $"{Resource.ActionsCopySelectMusicFile} {i} {fileExistsStr}";
+
+                AddMenuItem(description, mainMenuItems, menuItemConstructor, SelectMusicFilename, i);
+
+                if (fileExists)
                 {
-                    string MusicFileName;
-                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name, fileNr, true);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            MusicFileName = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name, fileNr, true);
-                        }
-                        else
-                        {
-                            MusicFileName = GetMusicFilename("_music_", "", fileNr, true);
-                        }
-                    }
-
-                    CloseMusic();
-                    File.Delete(MusicFileName);
-                    Thread.Sleep(250);
-                    //need to force getting new music filename
-                    //if we were playing music 1 we delete music 2
-                    //the music type data would remain the same
-                    //and it would not load another music and start playing it again
-                    //because we closed the music above
-                    MusicFilenameNeedsReload = true;
-                    MusicNeedsReload = true;
-
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name, -1);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name, -1);
-                        }
-                        else
-                        {
-                            PlayMusic("_music_", "", -1);
-                        }
-                    }
+                    AddMenuItem($"{Resource.ActionsCopyPlayMusicFile} {i}",
+                        mainMenuItems, menuItemConstructor, PlayMusicFromIndex, i);
+                    AddMenuItem($"{Resource.ActionsCopyDeleteMusicFile} {i}",
+                        mainMenuItems, menuItemConstructor, DeleteMusicFileName, i);
                 }
             }
-            else
-            {
-                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
-            }
+
+            return mainMenuItems;
         }
 
-        public void SelectMusicFilename(int fileNr)
-        {
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
+        private static void AddMenuItem<TMenuItem>(
+            string description,
+            List<TMenuItem> menuItems,
+            Func<string, Action, TMenuItem> menuItemConstructor,
+            Action<int> action,
+            int index)
+            => menuItems.Add(menuItemConstructor(description, () => { action(index); }));
+
+        private static GameMenuItem ConstructGameMenuItem(string resource, Action action)
+            => ConstructGameMenuItem(resource, _ => action());
+
+        private static GameMenuItem ConstructGameMenuItem(string resource, Action<GameMenuItemActionArgs> action)
+            => new GameMenuItem
             {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
-                {
-                    string MusicFileName;
-                    Platform platform = game.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        MusicFileName = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name, fileNr, true);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            MusicFileName = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name, fileNr, true);
-                        }
-                        else
-                        {
-                            MusicFileName = GetMusicFilename("_music_", "", fileNr, true);
-                        }
-                    }
-                    
-                    CloseMusic();
-                    string NewMusicFileName = PlayniteApi.Dialogs.SelectFile("MP3 File|*.mp3");
-                    if (!string.IsNullOrEmpty(NewMusicFileName))
-                    {
-                        File.Copy(NewMusicFileName, MusicFileName, true);
-                    }
-                    MusicNeedsReload = true;
-
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        PlayMusic(game.Name, platform == null ? "No Platform" : platform.Name, fileNr);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            PlayMusic("_music_", platform == null ? "No Platform" : platform.Name, fileNr);
-                        }
-                        else
-                        {
-                            PlayMusic("_music_", "", fileNr);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
-            }
-        }
-
-        private void DownloadMusicForSelectedGames()
-        {
-            var albumSelect = PromptForAlbumSelect();
-            var songSelect = PromptForSongSelect();
-            var overwriteSelect = PromptForOverwriteSelect();
-
-
-            CloseMusic();
-
-            var progressTitle = ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles");
-            var progressOptions = new GlobalProgressOptions(progressTitle, true)
-            {
-                IsIndeterminate = false
+                MenuSection = App.AppName,
+                Icon = IconPath,
+                Description = resource,
+                Action = action
             };
-            PlayniteApi.Dialogs.ActivateGlobalProgress((a) =>
-            {
-                DownloadMusicForGames(a, PlayniteApi.MainView.SelectedGames, albumSelect, songSelect, overwriteSelect, false, progressTitle);
-            }, progressOptions);
 
+        private static MainMenuItem ConstructMainMenuItem(string resource, Action action)
+            => ConstructMainMenuItem(resource, _ => action());
+
+        private static MainMenuItem ConstructMainMenuItem(string resource, Action<MainMenuItemActionArgs> action)
+            => new MainMenuItem
+            {
+                MenuSection = App.MainMenuName,
+                Icon = IconPath,
+                Description = resource,
+                Action = action
+            };
+
+        public void ShowMusicFilename()
+        {
+            if (SingleGame())
+            {
+                var musicFileName = GetSelectedGameFileName(0, true);
+                PlayniteApi.Dialogs.ShowSelectableString(Resource.MsgMusicPath, App.AppName, musicFileName + "\n\n" + musicFileName.Replace(".mp3", ".<1-9>.mp3"));
+            }
+            else
+            {
+                ShowMessage(Resource.MsgSelectSingleGame);
+            }
+                
+        }
+
+        #endregion
+
+        #region Download UI
+
+        private GenericItemOption PromptForAlbum(string gameName)
+            => PromptForSelect(Resource.DialogMessageCaptionAlbum,
+                gameName, a => DownloadManager.GetAlbumsForGame(a).ToList(), gameName);
+
+        private GenericItemOption PromptForSong(List<GenericItemOption> songsToPartialUrls, string albumName)
+            => PromptForSelect(Resource.DialogMessageCaptionSong,
+                albumName, a => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a)).ToList(), string.Empty);
+
+        private GenericItemOption PromptForSelect(
+            string captionFormat,
+            string formatArg,
+            Func<string, List<GenericItemOption>> search,
+            string defaultSearch)
+            => PlayniteApi.Dialogs.ChooseItemWithSearch(
+                new List<GenericItemOption>(), search, defaultSearch, string.Format(captionFormat, formatArg));
+
+        #endregion
+
+        #region Settings UI
+
+        #region Actions UI
+
+        public void OpenMusicFolder() => OpenFolder(_musicFilesDataPath);
+
+        public void OpenSoundsFolder() => OpenFolder(_soundFilesDataPath);
+
+        private void OpenFolder(string folderPath)
+        {
+            try
+            {
+                //need to release them otherwise explorer can't overwrite files even though you can delete them
+                CloseAudioFiles();
+                // just in case user deleted it
+                Directory.CreateDirectory(folderPath);
+                Process.Start(folderPath);
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        public void HelpMenu() => PlayniteApi.Dialogs.ShowMessage(HelpMessage.Value, App.AppName);
+
+        #endregion
+
+        #region Sound Manager
+
+        public void LoadSounds()
+        {
+            try
+            {
+                //just in case user deleted it
+                Directory.CreateDirectory(_soundManagerFilesDataPath);
+
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Filter = "ZIP archive|*.zip",
+                    InitialDirectory = _soundManagerFilesDataPath
+                };
+                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
+                if (result == true)
+                {
+                    CloseAudioFiles();
+                    string targetPath = dialog.FileName;
+                    //just in case user deleted it
+                    Directory.CreateDirectory(_soundFilesDataPath);
+                    // Have to extract each file one at a time to enabled overwrites
+                    using (ZipArchive archive = ZipFile.OpenRead(targetPath))
+                    {
+                        foreach (ZipArchiveEntry entry in archive.Entries)
+                        {
+                            // If it's a directory, it doesn't have a "Name".
+                            if (!String.IsNullOrEmpty(entry.Name))
+                            {
+                                string entryDestination = Path.GetFullPath(Path.Combine(_soundFilesDataPath, entry.Name));
+                                entry.ExtractToFile(entryDestination, true);
+                            }
+                        }
+                    }
+                    PlayniteApi.Dialogs.ShowMessage($"{Resource.ManagerLoadConfirm} {Path.GetFileNameWithoutExtension(targetPath)}");
+                }
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        public void SaveSounds()
+        {
+            Window windowExtension = PlayniteApi.Dialogs.CreateWindow(
+                new WindowCreationOptions
+                {
+                    ShowMinimizeButton = false,
+                    ShowMaximizeButton = false,
+                    ShowCloseButton = true
+                });
+
+            windowExtension.ShowInTaskbar = false;
+            windowExtension.ResizeMode = ResizeMode.NoResize;
+            windowExtension.Owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
+            windowExtension.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+            StackPanel stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal
+            };
+
+            TextBox saveNameBox = new TextBox
+            {
+                Margin = new Thickness(5, 5, 10, 5),
+                Width = 200
+            };
+            stackPanel.Children.Add(saveNameBox);
+
+            Button saveNameButton = new Button
+            {
+                Margin = new Thickness(0, 5, 5, 5)
+            };
+            saveNameButton.Content = Resource.ManagerSave;
+            saveNameButton.IsEnabled = false;
+            saveNameButton.IsDefault = true;
+            stackPanel.Children.Add(saveNameButton);
+
+            saveNameBox.KeyUp += (sender, _) =>
+            {
+                // Only allow saving if filename is larger than 3 characters
+                saveNameButton.IsEnabled = saveNameBox.Text.Trim().Length > 3;
+            };
+
+            saveNameButton.Click += (sender, _) =>
+            {
+                // Create ZIP file in sound manager folder
+                try
+                {
+                    string soundPackName = saveNameBox.Text;
+                    //just in case user deleted it
+                    Directory.CreateDirectory(_soundFilesDataPath);
+                    //just in case user deleted it
+                    Directory.CreateDirectory(_soundManagerFilesDataPath);
+                    ZipFile.CreateFromDirectory(_soundFilesDataPath, Path.Combine(_soundManagerFilesDataPath, soundPackName + ".zip"));
+                    PlayniteApi.Dialogs.ShowMessage($"{Resource.ManagerSaveConfirm} {soundPackName}");
+                    windowExtension.Close();
+                }
+                catch (Exception E)
+                {
+                    HandleException(E);
+                }
+            };
+
+            windowExtension.Content = stackPanel;
+            windowExtension.SizeToContent = SizeToContent.WidthAndHeight;
+            // Workaround for WPF bug which causes black sections to be displayed in the window
+            windowExtension.ContentRendered += (s, e) => windowExtension.InvalidateMeasure();
+            windowExtension.Loaded += (s, e) => saveNameBox.Focus();
+            windowExtension.ShowDialog();
+        }
+
+        public void RemoveSounds()
+        {
+            try
+            {
+                //just in case user deleted it
+                Directory.CreateDirectory(_soundManagerFilesDataPath);
+
+                OpenFileDialog dialog = new OpenFileDialog
+                {
+                    Filter = "ZIP archive|*.zip",
+                    InitialDirectory = _soundManagerFilesDataPath
+                };
+                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
+                if (result == true)
+                {
+                    string targetPath = dialog.FileName;
+                    File.Delete(targetPath);
+                    PlayniteApi.Dialogs.ShowMessage($"{Resource.ManagerDeleteConfirm} {Path.GetFileNameWithoutExtension(targetPath)}");
+                }
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        public void ImportSounds()
+        {
+            List<string> targetPaths = PlayniteApi.Dialogs.SelectFiles("ZIP archive|*.zip");
+
+            if (targetPaths.HasNonEmptyItems())
+            {
+                try
+                {
+                    //just in case user deleted it
+                    Directory.CreateDirectory(_soundManagerFilesDataPath);
+                    foreach (string targetPath in targetPaths)
+                    {
+                        //just in case user selects a file from the soundmanager location
+                        if (!Path.GetDirectoryName(targetPath).Equals(_soundManagerFilesDataPath, StringComparison.OrdinalIgnoreCase))
+                        {
+                            File.Copy(targetPath, Path.Combine(_soundManagerFilesDataPath, Path.GetFileName(targetPath)), true);
+                        }
+                    }
+                }
+                catch (Exception E)
+                {
+                    HandleException(E);
+                }
+            }
+        }
+
+        public void OpenSoundManagerFolder()
+        {
+            try
+            {
+                //just in case user deleted it
+                Directory.CreateDirectory(_soundManagerFilesDataPath);
+                Process.Start(_soundManagerFilesDataPath);
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        public void HandleException(Exception e)
+        {
+            Logger.Error(e, new StackFrame(1).GetMethod().Name);
+            PlayniteApi.Dialogs.ShowErrorMessage(e.Message, App.AppName);
+        }
+
+        private bool GetBoolFromYesNoDialog(string caption)
+        {
+            var selection = PlayniteApi.Dialogs.ShowMessage(
+                caption, Resource.DialogCaptionSelectOption, MessageBoxButton.YesNo);
+
+            return selection == MessageBoxResult.Yes;
+        }
+
+        #endregion
+
+        #region File Management
+
+        private void InitialCopyAudioFiles()
+        {
+            try
+            {
+                string soundFilesInstallPath = Path.Combine(PluginFolder, SoundDirectory.Sound);
+
+                if (Directory.Exists(soundFilesInstallPath) && !Directory.Exists(_soundFilesDataPath))
+                {
+                    CloseAudioFiles();
+
+                    Directory.CreateDirectory(_soundFilesDataPath);
+                    string[] files = Directory.GetFiles(soundFilesInstallPath);
+                    foreach (string file in files)
+                    {
+                        string destPath = Path.Combine(_soundFilesDataPath, Path.GetFileName(file));
+                        File.Copy(file, destPath, true);
+                    }
+                }
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+            }
+        }
+
+        private void SelectMusicFilename(int forceFileNumber = 0)
+        {
+            if (SingleGame())
+            {
+                var musicFileName = GetSelectedGameFileName(forceFileNumber, false);
+
+                ReplaceMusicFile(musicFileName);
+            }
+            else
+            {
+                ShowMessage(Resource.MsgSelectSingleGame);
+            }
+        }
+
+        private void ReplaceMusicFile(string musicFileName)
+        {
+            CloseMusic();
+            string NewMusicFileName = PlayniteApi.Dialogs.SelectFile("MP3 File|*.mp3");
+            File.Copy(NewMusicFileName, musicFileName, true);
             MusicNeedsReload = true;
-            MusicFilenameNeedsReload = true;
             ReplayMusic();
         }
 
-        public void DownloadMusicForGames(GlobalProgressActionArgs args, IEnumerable<Game> games, bool albumSelect, bool songSelect, bool overwrite, bool isLibraryUpdate, string progressTitle)
+        #endregion
+
+        #region Download
+
+        private void PromptUserToDownload()
         {
-            args.ProgressMaxValue = games.Count();
+            var albumSelect = GetBoolFromYesNoDialog(Resource.DialogMessageAlbumSelect);
+            var songSelect = GetBoolFromYesNoDialog(Resource.DialogMessageSongSelect);
+            var overwriteSelect = GetBoolFromYesNoDialog(Resource.DialogMessageOverwriteSelect);
+
+            CloseMusic();
+
+            CreateDownloadDialogue(PlayniteApi.MainView.SelectedGames, albumSelect, songSelect, overwriteSelect);
+
+            ShowMessage(Resource.DialogMessageDone);
+
+            MusicNeedsReload = true;
+            ReplayMusic();
+        }
+
+        private void CreateDownloadDialogue(
+            IEnumerable<Game> games,
+            bool albumSelect = false,
+            bool songSelect = false,
+            bool overwriteSelect = false)
+        {
+            var progressTitle = $"{App.AppName}-{Resource.DialogMessageDownloadingFiles}";
+            var progressOptions = new GlobalProgressOptions(progressTitle, true) { IsIndeterminate = false };
+
             try
             {
-                foreach (var game in games)
-                {
-                    if (args.CancelToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    args.CurrentProgressValue++;
-                    
-                    var gameName = StringManipulation.StripStrings(game.Name);
-                    
-                    args.Text =  $"{progressTitle}\n\n{args.CurrentProgressValue}/{args.ProgressMaxValue}\n{gameName}";
-
-                    var platform = GetPlatformName(game.Platforms);
-                    var MusicFileName = GetMusicFilename(gameName, platform, 0, true);
-
-                    var fileExists = FileExists(MusicFileName);
-                    if (overwrite || !fileExists.Value)
-                    {
-                        DownloadSongFromGame(gameName, MusicFileName, songSelect, albumSelect);
-                    }
-                    
-                    fileExists = FileExists(MusicFileName);
-                    
-                    UpdateMissingTag(game, gameName, fileExists);
-                }
+                PlayniteApi.Dialogs.ActivateGlobalProgress(
+                    a => { StartDownload(a, games, progressTitle, albumSelect, songSelect, overwriteSelect); },
+                    progressOptions);
             }
             catch (Exception ex)
             {
-                logger.Error($"An error occured while updating music: {ex.Message}");
-            }
-
-            if (!isLibraryUpdate && !args.CancelToken.IsCancellationRequested)
-            {
-                PlayniteApi.Dialogs.ShowMessage(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageDone"), "Playnite Sounds");
+                HandleException(ex);
             }
         }
 
-        Lazy<bool> FileExists(string filePath)
-            => new Lazy<bool>(() => File.Exists(filePath));
-
-        private void DownloadSongFromGame(string gameName, string filePath, bool songSelect, bool albumSelect)
+        private void StartDownload(
+            GlobalProgressActionArgs args,
+            IEnumerable<Game> games,
+            string progressTitle,
+            bool albumSelect,
+            bool songSelect,
+            bool overwrite)
         {
-            logger.Info($"Starting album search for game '{gameName}'");
+            args.ProgressMaxValue = games.Count();
+            foreach (var game in games)
+            {
+                if (args.CancelToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
+                args.Text = $"{progressTitle}\n\n{args.CurrentProgressValue++}/{args.ProgressMaxValue}\n{game.Name}";
+
+                var platform = GetPlatformName(game.Platforms);
+                var MusicFileName =  GetMusicFileName(game.Name, platform, 0, false);
+
+                bool fileCreated = false;
+                var fileExists = File.Exists(MusicFileName);
+
+                if (overwrite || !fileExists)
+                {
+                    var downloadSucceeded = DownloadSongFromGame(game.Name, MusicFileName, songSelect, albumSelect);
+                    fileCreated = !fileExists && downloadSucceeded;
+                }
+
+                UpdateMissingTag(game, fileCreated);
+            }
+        }
+
+        private bool DownloadSongFromGame(string gameName, string filePath, bool songSelect, bool albumSelect)
+        {
+            Logger.Info($"Starting album search for game '{gameName}'");
+
+            var strippedGameName = StringManipulation.StripStrings(gameName);
+
+            var regexGameName = songSelect && albumSelect
+                ? string.Empty
+                : StringManipulation.ReplaceStrings(strippedGameName);
 
             GenericItemOption album;
-            var regexGameName = songSelect && albumSelect ? string.Empty: StringManipulation.ReplaceStrings(gameName);
             if (albumSelect)
             {
-                album = PromptForAlbum(gameName);
+                album = PromptForAlbum(strippedGameName);
             }
             else
             {
-                var albums = downloadmanager.GetAlbumsForGame(gameName);
+                var albums = DownloadManager.GetAlbumsForGame(strippedGameName);
                 if (!albums.Any())
                 {
-                    logger.Info($"Did not find any albums for game '{gameName}'");
+                    Logger.Info($"Did not find any albums for game '{gameName}'");
                 }
 
-                album = downloadmanager.BestAlbumPick(albums, gameName, regexGameName);
+                album = DownloadManager.BestAlbumPick(albums, strippedGameName, regexGameName);
             }
 
             if (album == null)
             {
-                return;
+                return false;
             }
 
-            logger.Info($"Selected album '{album.Name}' for game '{gameName}'");
+            Logger.Info($"Selected album '{album.Name}' for game '{gameName}'");
 
-            var songs = downloadmanager.GetSongsFromAlbum(album).ToList();
+            var songs = DownloadManager.GetSongsFromAlbum(album).ToList();
             if (!songs.Any())
             {
-                logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
-                return;
+                Logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
+                return false;
             }
 
-            logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
+            Logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
 
             var songToPartialUrl = songSelect
                 ? PromptForSong(songs, album.Name)
-                : downloadmanager.BestSongPick(songs, regexGameName);
+                : DownloadManager.BestSongPick(songs, regexGameName);
+
             if (songToPartialUrl == null)
             {
-                return;
+                return false;
             }
 
-            if (!downloadmanager.DownloadSong(songToPartialUrl, filePath))
+            if (!DownloadManager.DownloadSong(songToPartialUrl, filePath))
             {
-                logger.Info($"Failed to download song '{songToPartialUrl.Name} for album '{album.Name}' of game '{gameName}' from url '{songToPartialUrl.Description}'");
-                return;
+                Logger.Info($"Failed to download song '{songToPartialUrl.Name} for album '{album.Name}' of game '{gameName}' from url '{songToPartialUrl.Description}'");
+                return false;
             }
 
-            logger.Info($"Found file for song '{songToPartialUrl.Name}' in album '{album.Name}' of game '{gameName}'");
+            Logger.Info($"Found file for song '{songToPartialUrl.Name}' in album '{album.Name}' of game '{gameName}'");
+            return true;
         }
 
-        private void UpdateMissingTag(Game game, string gameName, Lazy<bool> fileExists)
+        public void DeleteMusicFileName(int fileNumber)
         {
-            if (Settings.Settings.TagMissingEntries)
+            if (SingleGame())
             {
-                var missingTageString = ResourceProvider.GetString("LOC_PLAYNITESOUNDS_MissingTag");
-                var missingTag = PlayniteApi.Database.Tags.Add(missingTageString);
-                if (fileExists.Value)
+                var (gameName, platformName) = GetSelectedGameInfo();
+
+                var musicFileName = GetMusicFileName(gameName, platformName, fileNumber, false);
+
+                CloseMusic();
+                File.Delete(musicFileName);
+                Thread.Sleep(250);
+                //need to force getting new music filename
+                //if we were playing music 1 we delete music 2
+                //the music type data would remain the same
+                //and it would not load another music and start playing it again
+                //because we closed the music above
+                MusicFilenameNeedsReload = true;
+                MusicNeedsReload = true;
+
+                if (ShouldPlayMusic())
                 {
-                    if (RemoveTagFromGame(game, missingTag))
+                    var musicFile = MusicTypeToFilePath(gameName, platformName, -1);
+                    PlayMusicFromPath(musicFile);
+                }
+            }
+            else
+            {
+                ShowMessage(Resource.MsgSelectSingleGame);
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        //TODO: Explore creating custom game class with game, platform, and some of the below methods built in
+        private string GetSelectedGameFileName(int forceFileNumber = -1, bool setPrevMusicFileName2 = true)
+        {
+            var (game, platform) = GetSelectedGameInfo();
+            return GetMusicFileName(game, platform, forceFileNumber, setPrevMusicFileName2);
+        }
+
+        private string GetCurrentMusicFileName(int forceFileNumber = -1)
+        {
+            var (game, platform) = GetSelectedGameInfo();
+            return MusicTypeToFilePath(game, platform, forceFileNumber);
+        }
+
+        private (string, string) GetSelectedGameInfo() => GetGameInfoFromGames(PlayniteApi.MainView.SelectedGames);
+
+        private (string, string) GetGameInfoFromGames(IEnumerable<Game> games)
+        {
+            var game = games.FirstOrDefault();
+            var platform = GetPlatformName(game.Platforms);
+
+            return (game.Name, platform);
+        }
+
+        private string MusicTypeToFilePath(string fileName, string platform, int fileNumber = -1)
+        {
+            switch (Settings.MusicType)
+            {
+                case MusicType.Default:
+                    fileName = SoundFile.DefaultMusicName;
+                    platform = string.Empty;
+                    break;
+                case MusicType.Platform:
+                    fileName = SoundFile.DefaultMusicName;
+                    break;
+            }
+
+            return GetMusicFileName(fileName, platform, fileNumber);
+        }
+
+        private bool MusicFileNameExists(int forceFileNumber)
+            => SingleGame() && File.Exists(GetSelectedGameFileName(forceFileNumber, false));
+
+        private string GetMusicFileName(string gameName, string platform, int forceFileNumber = -1, bool setPrevMusicFileName2 = true)
+        {
+            try
+            {
+                string musicDir = Path.Combine(GetPluginUserDataPath(), SoundDirectory.Music, platform);
+                Directory.CreateDirectory(musicDir);
+                string invalidChars = new string(Path.GetInvalidFileNameChars());
+                Regex r = new Regex(string.Format("[{0}]", Regex.Escape(invalidChars)));
+                string sanitizedGameName = r.Replace(gameName, string.Empty);
+
+                string filename = _prevMusicFileName2;
+                if (forceFileNumber == -1)
+                {
+                    if (MusicFilenameNeedsReload || Settings.RandomizeOnEverySelect || (_prevMusicGameData != (platform + sanitizedGameName).ToLower()))
                     {
-                        logger.Info($"Removed tag from '{gameName}'");
+                        MusicFilenameNeedsReload = false;
+
+                        var musicFileRegex = new Regex(sanitizedGameName + @"(\.[12345])?\.mp3");
+                        List<string> filePaths = Directory.GetFiles(musicDir).Where(s => musicFileRegex.IsMatch(s)).ToList();
+                        if (filePaths.Any())
+                        {
+                            var rand = new Random();
+                            filename = Path.GetFileName(filePaths[rand.Next(filePaths.Count)]);
+                        }
                     }
+
+                    _prevMusicGameData = (platform + sanitizedGameName).ToLower();
                 }
                 else
                 {
-                    if (AddTagToGame(game, missingTag))
-                    {
-                        logger.Info($"Added tag to '{gameName}'");
-                    }
+                    filename = forceFileNumber > 0 
+                        ? $"{sanitizedGameName}.{forceFileNumber}.mp3"  
+                        : sanitizedGameName + ".mp3";
+                }
+
+                if (setPrevMusicFileName2)
+                {
+                    _prevMusicFileName2 = filename;
+                }
+                return Path.Combine(musicDir, filename);
+            }
+            catch (Exception E)
+            {
+                HandleException(E);
+                return string.Empty;
+            }
+        }
+
+        private void UpdateMissingTag(Game game, bool fileCreated)
+        {
+            if (Settings.TagMissingEntries)
+            {
+                var missingTagString = Resource.MissingTag;
+                var missingTag = PlayniteApi.Database.Tags.Add(missingTagString);
+
+                if (fileCreated && RemoveTagFromGame(game, missingTag))
+                {
+                    Logger.Info($"Removed tag from '{game.Name}'");
+                }
+                else if (AddTagToGame(game, missingTag))
+                {
+                    Logger.Info($"Added tag to '{game.Name}'");
                 }
             }
         }
@@ -1230,595 +1240,64 @@ namespace PlayniteSounds
             return false;
         }
 
-        private GenericItemOption PromptForAlbum(string gameName)
-        {
-            var caption = string.Format(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum"), gameName);
-            return PlayniteApi.Dialogs.ChooseItemWithSearch(
-                new List<GenericItemOption>(), a => downloadmanager.GetAlbumsForGame(a).ToList(), gameName, caption);
-        }
-
-        private GenericItemOption PromptForSong(List<GenericItemOption> songsToPartialUrls, string albumName)
-        {
-            var caption = string.Format(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageCaptionSong"), albumName);
-            return PlayniteApi.Dialogs.ChooseItemWithSearch(
-                songsToPartialUrls, (a) => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a)).ToList(), "", caption: caption);
-        }
-
-        private bool PromptForAlbumSelect()
-            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect"));
-
-        private bool PromptForSongSelect()
-            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageSongSelect"));
-
-        private bool PromptForOverwriteSelect()
-            => GetBoolFromYesNoDialog(ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect"));
-
-
-        private bool GetBoolFromYesNoDialog(string caption)
-        {
-            var selection = PlayniteApi.Dialogs.ShowMessage(caption,
-                ResourceProvider.GetString("LOC_PLAYNITESOUNDS_DialogCaptionSelectOption"),
-                MessageBoxButton.YesNo);
-
-            return selection == MessageBoxResult.Yes;
-        }
-
-        public void ShowMusicFilename()
-        {
-            if (PlayniteApi.MainView.SelectedGames.Count() == 1)
-            {
-                foreach (Game game in PlayniteApi.MainView.SelectedGames)
-                {
-                    string MusicFileName1, MusicFileName2;
-                    Platform platform = game?.Platforms.FirstOrDefault(o => o != null);
-                    if (Settings.Settings.MusicType == 2)
-                    {
-                        MusicFileName1 = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name, 0, true);
-                        MusicFileName2 = GetMusicFilename(game.Name, platform == null ? "No Platform" : platform.Name, 1, true);
-                    }
-                    else
-                    {
-                        if (Settings.Settings.MusicType == 1)
-                        {
-                            MusicFileName1 = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name, 0, true);
-                            MusicFileName2 = GetMusicFilename("_music_", platform == null ? "No Platform" : platform.Name, 1, true);
-                        }
-                        else
-                        {
-                            MusicFileName1 = GetMusicFilename("_music_", "", 0, true);
-                            MusicFileName2 = GetMusicFilename("_music_", "", 1, true);
-                        }
-                    }
-                    PlayniteApi.Dialogs.ShowMessage(MusicFileName1 + "\n\n" + MusicFileName2.Replace(".1.mp3",".<1-9>.mp3"), Constants.AppName);
-                }
-            }
-            else
-            {
-                PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgSelectSingleGame"), Constants.AppName);
-            }
-        }
-
-        public void PlayFileName(string FileName, bool UseSoundPlayer = false)
-        {
-            try
-            { 
-                InitialCopyAudioFiles();
-
-                if (closeaudiofilesnextplay)
-                {
-                    CloseAudioFiles();
-                    closeaudiofilesnextplay = false;
-                }
-
-                bool DesktopMode = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
-                bool DoPlay = (DesktopMode && ((Settings.Settings.SoundWhere == 1) || (Settings.Settings.SoundWhere == 3))) ||
-                    (!DesktopMode && ((Settings.Settings.SoundWhere == 2) || (Settings.Settings.SoundWhere == 3)));
-
-                if (DoPlay)
-                {
-                    PlayerEntry Entry;
-                    if (players.ContainsKey(FileName))
-                    {
-                        Entry = players[FileName];
-                    }
-                    else
-                    {
-                        string Prefix = PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop ? "D_" : "F_";
-
-                        string FullFileName = Path.Combine(GetPluginUserDataPath(), "Sound Files", Prefix + FileName);
-
-                        //MediaPlayer can play multiple sounds together from mulitple instances SoundPlayer can not
-                        if (UseSoundPlayer)
-                        {
-                            Entry = new PlayerEntry(File.Exists(FullFileName), null, new SoundPlayer(), 0);
-                        }
-                        else
-                        {
-                            Entry = new PlayerEntry(File.Exists(FullFileName), new MediaPlayer(), null, 1);
-                        }
-
-                        if (Entry.FileExists)
-                        {
-                            if (Entry.TypePlayer == 1)
-                            {
-                                Entry.MediaPlayer.Open(new Uri(FullFileName));
-                            }
-                            else
-                            {
-                                Entry.SoundPlayer.SoundLocation = FullFileName;
-                                Entry.SoundPlayer.Load();
-                            }
-                        }
-                        players[FileName] = Entry;
-                    }
-
-                    if (Entry.FileExists)
-                    {
-                        if (Entry.TypePlayer == 1)
-                        {
-                            Entry.MediaPlayer.Stop();
-                            Entry.MediaPlayer.Play();
-                        }
-                        else
-                        {
-                            Entry.SoundPlayer.Stop();
-                            Entry.SoundPlayer.PlaySync();
-                        }
-                    }
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "PlayFileName");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-
-        public void CloseAudioFiles()
+        private bool IsFileLocked(FileInfo file)
         {
             try
             {
-                foreach (string keyname in players.Keys)
+                using (FileStream stream = file.Open(FileMode.Open, FileAccess.Write, FileShare.None))
                 {
-                    PlayerEntry Entry = players[keyname];
-                    if (Entry.FileExists)
-                    {
-                        if (Entry.TypePlayer == 1)
-                        {
-                            string filename = "";
-                            if (Entry.MediaPlayer.Source != null)
-                            {
-                                filename = Entry.MediaPlayer.Source.LocalPath;
-                            }
-                            Entry.MediaPlayer.Stop();
-                            Entry.MediaPlayer.Close();
-                            Entry.MediaPlayer = null;
-                            if (File.Exists(filename))
-                            {
-                                int count = 0;
-                                while (IsFileLocked(new FileInfo(filename)))
-                                {
-                                    Thread.Sleep(5);
-                                    count += 5;
-                                    if (count > 500)
-                                        break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            Entry.SoundPlayer.Stop();
-                            Entry.SoundPlayer = null;
-                        }
-                    }
+                    stream.Close();
                 }
-                players.Clear();
             }
-            catch (Exception E)
+            catch (IOException)
             {
-                logger.Error(E, "CloseAudioFiles");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
+                //the file is unavailable because it is:
+                //still being written to
+                //or being processed by another thread
+                //or does not exist (has already been processed)
+                return true;
             }
+
+            //file is not locked
+            return false;
         }
 
-        public void ReloadAudioFiles()
+
+        private bool ShouldPlayMusicOrClose()
         {
-            CloseAudioFiles();
-            PlayniteApi.Dialogs.ShowMessage(resources.GetString("LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded"), Constants.AppName);
-        }
-
-        public void InitialCopyAudioFiles()
-        {
-            try
-            { 
-                string SoundFilesInstallPath = Path.Combine(pluginFolder, "Sound Files");
-                string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
-
-                if (!Directory.Exists(SoundFilesDataPath))
-                {
-                    if (Directory.Exists(SoundFilesInstallPath))
-                    {
-                        CloseAudioFiles();
-
-                        Directory.CreateDirectory(SoundFilesDataPath);
-                        string[] files = Directory.GetFiles(SoundFilesInstallPath);
-                        foreach (string file in files)
-                        {                        
-                            string DestPath = Path.Combine(SoundFilesDataPath, Path.GetFileName(file));
-                            File.Copy(file, DestPath, true);
-                        }
-                    }
-                }
-            }
-            catch (Exception E)
+            var shouldPlayMusic = ShouldPlayMusic();
+            if (!shouldPlayMusic)
             {
-                logger.Error(E, "InitialCopyAudioFiles");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        public void ResumeMusic()
-        {
-            try
-            {
-                if (gamerunning)
-                {
-                    return;
-                }
-
-                if ((musicplayer != null) && (musicplayer.Clock != null))
-                {
-                    if (musicplayer.Clock.CurrentState == ClockState.Active)
-                    {
-                        //Is Paused
-                        if (musicplayer.Clock.CurrentGlobalSpeed == 0.0)
-                        {
-                            musicplayer.Clock.Controller.Resume();
-                        }
-                    }
-                    else
-                    {
-                        if (musicplayer.Clock.CurrentState == ClockState.Stopped)
-                        {
-                            musicplayer.Clock.Controller.Begin();
-                        }
-                    }
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "ResumeMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        public void PauseMusic()
-        {
-            try
-            { 
-                if (gamerunning)
-                {
-                    return;
-                }
-
-                if ((musicplayer != null) && (musicplayer.Clock != null))
-                {
-                    musicplayer.Clock.Controller.Pause();
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "PauseMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        public void  CloseMusic()
-        {
-            try
-            {
-                if ((musicplayer != null) && (musicplayer.Clock != null))
-                {
-                    musicplayer.Clock.Controller.Stop();
-                    musicplayer.Clock = null;
-                    musicplayer.Close();
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "CloseMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        public void PlayMusic(string gamename, string platform, int ForceFileNr)
-        {
-            try
-            { 
-                if (canPlayMusic())
-                {
-                    string MusicFileName = GetMusicFilename(gamename, platform, ForceFileNr);
-                    if (MusicNeedsReload || (MusicFileName != prevmusicfilename))
-                    {
-                        CloseMusic();
-                        MusicNeedsReload = false;
-                        prevmusicfilename = "";
-                        if (File.Exists(MusicFileName))
-                        {
-                            prevmusicfilename = MusicFileName;
-                            timeLine.Source = new Uri(MusicFileName);
-                            if (musicplayer != null)
-                            {
-                                musicplayer.Volume = (double)Settings.Settings.MusicVolume / 100;
-                                musicplayer.Clock = timeLine.CreateClock(true) as MediaClock;
-                                musicplayer.Clock.Controller.Begin();
-                            }
-                        }
-                    }
-                }
-                else 
-                { 
-                    CloseMusic();
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "PlayMusic");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        private void MediaEnded(object sender, EventArgs e)
-        {            
-            if (Settings.Settings.RandomizeOnMusicEnd)
-            {
-                //will play random song on case of multiple (could be same song)
                 CloseMusic();
-                MusicNeedsReload = true;
-                MusicFilenameNeedsReload = true;
-                ReplayMusic();
             }
-            else
-            {
-                if ((musicplayer != null) && (musicplayer.Clock != null))
-                {
-                    musicplayer.Clock.Controller.Stop();
-                    musicplayer.Clock.Controller.Begin();
-                }
-            }
+
+            return shouldPlayMusic;
         }
 
-        public void OpenSoundsFolder()
+        private bool ShouldPlaySound() => ShouldPlayAudio(Settings.SoundState);
+
+        private bool ShouldPlayMusic() => ShouldPlayAudio(Settings.MusicState);
+
+        private bool ShouldPlayAudio(AudioState state)
         {
-            try
-            { 
-                //need to release them otherwise explorer can't overwrite files even though you can delete them
-                CloseAudioFiles();
-                string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
-                // just in case user deleted it
-                Directory.CreateDirectory(SoundFilesDataPath);
-                Process.Start(SoundFilesDataPath);
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "OpenSoundsFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
+            var DesktopMode = IsDesktop();
+
+            var playOnFullScreen = !DesktopMode && state == AudioState.Fullscreen;
+            var playOnBoth = state == AudioState.Always;
+            var playOnDesktop = DesktopMode && state == AudioState.Desktop;
+
+            return !_gameRunning && (playOnFullScreen || playOnBoth || playOnDesktop);
         }
 
-        public void OpenMusicFolder()
-        {
-            try
-            {
-                //need to release them otherwise explorer can't overwrite files even though you can delete them
-                CloseMusic();
-                string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Music Files");
-                //just in case user deleted it
-                Directory.CreateDirectory(SoundFilesDataPath);
-                Process.Start(SoundFilesDataPath);
-                MusicNeedsReload = true;
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "OpenMusicFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
+        private string GetPlatformName(IEnumerable<Platform> platforms)
+            => platforms?.FirstOrDefault()?.Name ?? SoundDirectory.NoPlatform;
 
-        public void SaveSounds()
-        {
-            Window windowExtension = PlayniteApi.Dialogs.CreateWindow(new WindowCreationOptions
-            {
-                ShowMinimizeButton = false,
-                ShowMaximizeButton = false,
-                ShowCloseButton = true
-            });
+        private void ShowMessage(string resource) => PlayniteApi.Dialogs.ShowMessage(resource, App.AppName);
 
-            windowExtension.ShowInTaskbar = false;
-            windowExtension.ResizeMode = ResizeMode.NoResize;
-            windowExtension.Owner = PlayniteApi.Dialogs.GetCurrentAppWindow();
-            windowExtension.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        private bool IsDesktop() => PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop;
 
-            StackPanel stackPanel = new StackPanel
-            {
-                Orientation = Orientation.Horizontal
-            };
+        private bool SingleGame() => PlayniteApi.MainView.SelectedGames.Count() == 1;
 
-            TextBox saveNameBox = new TextBox
-            {
-                Margin = new Thickness(5, 5, 10, 5),
-                Width = 200
-            };
-            stackPanel.Children.Add(saveNameBox);
-
-            Button saveNameButton = new Button
-            {
-                Margin = new Thickness(0, 5, 5, 5)
-            };
-            saveNameButton.SetResourceReference(Button.ContentProperty, "LOC_PLAYNITESOUNDS_ManagerSave");
-            saveNameButton.IsEnabled = false;
-            saveNameButton.IsDefault = true;
-            stackPanel.Children.Add(saveNameButton);
-
-            saveNameBox.KeyUp += (object sender, System.Windows.Input.KeyEventArgs e) =>
-            {
-                // Only allow saving if filename is larger than 3 characters
-                saveNameButton.IsEnabled = saveNameBox.Text.Trim().Length > 3;
-            };
-
-            saveNameButton.Click += (object sender, RoutedEventArgs e) =>
-            {
-                // Create ZIP file in sound manager folder
-                try
-                {
-                    string soundPackName = saveNameBox.Text;
-                    string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
-                    //just in case user deleted it
-                    Directory.CreateDirectory(SoundFilesDataPath);
-                    string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
-                    //just in case user deleted it
-                    Directory.CreateDirectory(SoundManagerFilesDataPath);
-                    ZipFile.CreateFromDirectory(SoundFilesDataPath, Path.Combine(SoundManagerFilesDataPath, soundPackName + ".zip"));
-                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerSaveConfirm").ToString() + " " + soundPackName);
-                    windowExtension.Close();
-                }
-                catch (Exception E)
-                {
-                    logger.Error(E, "SaveSounds");
-                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-                }
-            };
-
-            windowExtension.Content = stackPanel;
-            windowExtension.SizeToContent = SizeToContent.WidthAndHeight;
-            // Workaround for WPF bug which causes black sections to be displayed in the window
-            windowExtension.ContentRendered += (s, e) => windowExtension.InvalidateMeasure();
-            windowExtension.Loaded += (s, e) => saveNameBox.Focus();
-            windowExtension.ShowDialog();
-        }
-
-        public void LoadSounds()
-        {
-            try
-            {
-                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
-                //just in case user deleted it
-                Directory.CreateDirectory(SoundManagerFilesDataPath);
-
-                OpenFileDialog dialog = new OpenFileDialog
-                {
-                    Filter = "ZIP archive|*.zip",
-                    InitialDirectory = SoundManagerFilesDataPath
-                };
-                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
-                if (result == true)
-                {
-                    CloseAudioFiles();
-                    string targetPath = dialog.FileName;
-                    string SoundFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Files");
-                    //just in case user deleted it
-                    Directory.CreateDirectory(SoundFilesDataPath);
-                    // Have to extract each file one at a time to enabled overwrites
-                    using (ZipArchive archive = ZipFile.OpenRead(targetPath))
-                    {
-                        foreach (ZipArchiveEntry entry in archive.Entries)
-                        {
-                            // If it's a directory, it doesn't have a "Name".
-                            if (!String.IsNullOrEmpty(entry.Name))
-                            {
-                                string entryDestination = Path.GetFullPath(Path.Combine(SoundFilesDataPath, entry.Name));
-                                entry.ExtractToFile(entryDestination, true);
-                            }
-                        }
-                    }
-                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerLoadConfirm").ToString() + " " + Path.GetFileNameWithoutExtension(targetPath));
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "LoadSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-
-
-        }
-
-        public void ImportSounds()
-        {
-            List<string> targetPaths = PlayniteApi.Dialogs.SelectFiles("ZIP archive|*.zip");
-
-            if (targetPaths.HasNonEmptyItems())
-            {
-                try
-                {
-                    string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
-                    //just in case user deleted it
-                    Directory.CreateDirectory(SoundManagerFilesDataPath);
-                    foreach (string targetPath in targetPaths)
-                    {
-                        //just in case user selects a file from the soundmanager location
-                        if (! Path.GetDirectoryName(targetPath).Equals(SoundManagerFilesDataPath, StringComparison.OrdinalIgnoreCase))
-                        {
-                            File.Copy(targetPath, Path.Combine(SoundManagerFilesDataPath, Path.GetFileName(targetPath)), true);
-                        }
-                    }
-                }
-                catch (Exception E)
-                {
-                    logger.Error(E, "ImportSounds");
-                    PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-                }
-            }
-        }
-
-        public void RemoveSounds()
-        {
-            try
-            {
-                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
-                //just in case user deleted it
-                Directory.CreateDirectory(SoundManagerFilesDataPath);
-
-                OpenFileDialog dialog = new OpenFileDialog
-                {
-                    Filter = "ZIP archive|*.zip",
-                    InitialDirectory = SoundManagerFilesDataPath
-                };
-                bool? result = dialog.ShowDialog(PlayniteApi.Dialogs.GetCurrentAppWindow());
-                if (result == true)
-                {
-                    string targetPath = dialog.FileName;
-                    File.Delete(targetPath);
-                    PlayniteApi.Dialogs.ShowMessage(Application.Current.FindResource("LOC_PLAYNITESOUNDS_ManagerDeleteConfirm").ToString() + " " + Path.GetFileNameWithoutExtension(targetPath));
-                }
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "RemoveSounds");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-
-        public void OpenSoundManagerFolder()
-        {
-            try
-            {
-                string SoundManagerFilesDataPath = Path.Combine(GetPluginUserDataPath(), "Sound Manager");
-                //just in case user deleted it
-                Directory.CreateDirectory(SoundManagerFilesDataPath);
-                Process.Start(SoundManagerFilesDataPath);
-            }
-            catch (Exception E)
-            {
-                logger.Error(E, "OpenSoundManagerFolder");
-                PlayniteApi.Dialogs.ShowErrorMessage(E.Message, Constants.AppName);
-            }
-        }
-        public string GetPlatformName(IEnumerable<Platform> platforms)
-        {
-            var platform = platforms?.FirstOrDefault(o => o != null);
-            return platform == null ? "No Platform" : platform.Name;
-        }
+        #endregion
     }
 }

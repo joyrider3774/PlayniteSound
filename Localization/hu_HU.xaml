@@ -1,6 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Hangok lejátszása itt:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Zene lejátszása itt:</sys:String>
@@ -15,7 +17,18 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music file on music end</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music file on every 'musictype' selection</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Soha</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Asztali</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Teljesképernyős</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Asztali + Teljesképernyős</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -28,14 +41,6 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Select option</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Done</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Automatically Downloading files...</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Soha</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Asztali</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Teljesképernyős</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Asztali + Teljesképernyős</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Beállítások</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Műveletek</sys:String>
@@ -50,6 +55,7 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Hangfájlok újratöltve!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">A Playnite Sounds egy bővítmény, ami hangokat ad ki amikor a Playnite-ban valami történik.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Csak a WAV fájl formátum támogatott, zenéhez pedig az mp3.</sys:String>

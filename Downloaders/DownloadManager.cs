@@ -10,28 +10,31 @@ namespace PlayniteSounds.Downloaders
 {
     internal class DownloadManager : IDownloadManager
     {
-        private readonly IDownloader khdownloader;
+        private static readonly HtmlWeb Web = new HtmlWeb();
+        private static readonly HttpClient HttpClient = new HttpClient();
         
-        private Regex songTitleRegex = new Regex(@"(Main )?(Theme|Title|Menu)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly List<string> SongTitleEnds = new List<string> { "Theme", "Title", "Menu" };
 
-        public DownloadManager(HttpClient httpClient, HtmlWeb web)
+        private readonly IDownloader _khDownloader;
+
+        public DownloadManager()
         {
-            khdownloader = new KHDownloader(httpClient, web);
+            _khDownloader = new KHDownloader(HttpClient, Web);
         }
 
         public string BaseUrl() 
-            => khdownloader.BaseUrl();
+            => _khDownloader.BaseUrl();
 
         public IEnumerable<GenericItemOption> GetAlbumsForGame(string gameName) 
-            => khdownloader.GetAlbumsForGame(gameName);
+            => _khDownloader.GetAlbumsForGame(gameName);
         public IEnumerable<GenericItemOption> GetSongsFromAlbum(GenericItemOption album) 
-            => khdownloader.GetSongsFromAlbum(album);
+            => _khDownloader.GetSongsFromAlbum(album);
         public bool DownloadSong(GenericItemOption song, string path)
-            => khdownloader.DownloadSong(song, path);
+            => _khDownloader.DownloadSong(song, path);
 
         public GenericItemOption BestAlbumPick(IEnumerable<GenericItemOption> albums, string gameName, string regexGameName)
         {
-            var ostRegex = new Regex($@"{regexGameName}.*(Soundtrack|OST)", RegexOptions.IgnoreCase);
+            var ostRegex = new Regex($@"{regexGameName}.*(Soundtrack|OST|Score)", RegexOptions.IgnoreCase);
             var ostMatch = albums.FirstOrDefault(a => ostRegex.IsMatch(a.Name));
             if (ostMatch != null)
             {
@@ -55,7 +58,7 @@ namespace PlayniteSounds.Downloaders
 
         public GenericItemOption BestSongPick(IEnumerable<GenericItemOption> songs, string regexGameName)
         {
-            var titleMatch = songs.FirstOrDefault(s => songTitleRegex.IsMatch(s.Name));
+            var titleMatch = songs.FirstOrDefault(s => SongTitleEnds.Any(e => s.Name.EndsWith(e)));
             if (titleMatch != null)
             {
                 return titleMatch;

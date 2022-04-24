@@ -1,6 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Reproduzir som onde:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Reproduzir música onde:</sys:String>
@@ -15,7 +17,18 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music file on music end</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music file on every 'musictype' selection</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Parar música quando</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nunca</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Área de Trabalho</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Tela cheia</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Área de trabalho + Tela cheia</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">O jogo está começando</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">O jogo começou</sys:String>
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -28,14 +41,6 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Select option</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Done</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Automatically Downloading files...</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nunca</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Área de Trabalho</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Tela cheia</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Área de trabalho + Tela cheia</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">O jogo está começando</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">O jogo começou</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Configurações</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Ações</sys:String>
@@ -50,6 +55,7 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Arquivos de áudio recarregados!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Por favor, selecione um único jogo!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">O &quot;Playnite Sounds&quot; é uma extensão para reproduzir arquivos de áudio durante eventos do Playnite.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Ele só pode reproduzir arquivos de áudio WAV, arquivos mp3 de música e nada mais.</sys:String>

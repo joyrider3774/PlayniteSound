@@ -11,7 +11,23 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Eén muziek per platform en spel</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Sla eerste 'selecteer geluid' over na het starten van Playnite</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pauzeer muziek wanneer Playnite deactiveert of minimaliseert</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Tag titels die niet kunnen worden gedownload</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Download automatisch muziek voor nieuw toegevoegde spellen bij bibliotheek update</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Willekeurig muziekbestand op muziek einde</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Willekeurig muziekbestand op elke 'muziektype' selectie</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop muziek wanneer</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Ontbrekende achtergrondmuziek</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download bestanden</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles">Bestanden worden gedownload...</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect">Wilt u handmatig albums selecteren?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageSongSelect">Wilt u handmatig nummers selecteren?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum">Selecteer alstublieft een album voor spel {0}</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionSong">Selecteer alstublieft een nummer voor album {0}</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect">Wilt u bestaande bestanden overschrijven?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Selecteer optie</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Voltooid</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Bestanden automatisch downloaden...</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Nooit</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureaublad</sys:String>
@@ -29,6 +45,8 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Muziek bestandsnaam weergeven</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Selecteer Muziekbestand</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Muziekbestand verwijderen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Muziek bestand afspelen</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Geluidsbestanden herladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Selecteer één spel alstublieft!</sys:String>

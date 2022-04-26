@@ -11,7 +11,23 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Une musique par plateforme et par jeu</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Ignorer le premier 'son select' après le démarrage de Playnite</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Mettre en pause la musique lorsque Playnite désactive ou minimise</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Tag titles that fail to download</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Télécharger automatiquement la musique pour les nouveaux jeux ajoutés à la mise à jour de la bibliothèque</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Aléatoire des fichiers musicaux à la fin de la musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Aléatoire des fichiers musicaux sur chaque sélection de 'Type de musique'</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Arrêter la musique quand</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Musique de fond manquant</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Télécharger les fichiers</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles">Téléchargement de fichiers...</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect">Voulez-vous sélectionner manuellement les albums ?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageSongSelect">Voulez-vous sélectionner manuellement les chansons ?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum">Veuillez sélectionner un album pour le jeu {0}</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionSong">Veuillez choisir une chanson pour l'album {0}</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect">Voulez-vous écraser les fichiers existants ?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Sélectionnez l'option</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Terminé</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Téléchargement automatique des fichiers...</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Jamais</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureau</sys:String>
@@ -29,6 +45,8 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom du fichier musique</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Sélectionnez le fichier de musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Supprimer le fichier musique</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Jouer le fichier de musique</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Fichiers audio rechargés!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Veuillez sélectionner un seule jeu!</sys:String>

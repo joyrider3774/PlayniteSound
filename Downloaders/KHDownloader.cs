@@ -8,25 +8,25 @@ using PlayniteSounds.Common;
 
 namespace PlayniteSounds.Downloaders
 {
-    internal class KHDownloader : IDownloader
+    internal class KhDownloader : IDownloader
     {
-        private static readonly ILogger logger = LogManager.GetLogger();
+        private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private readonly HttpClient HttpClient;
-        private readonly HtmlWeb Web;
+        private readonly HttpClient _httpClient;
+        private readonly HtmlWeb _web;
 
-        private const string KHInsiderBaseUrl = @"https://downloads.khinsider.com/";
-        public string BaseUrl() => KHInsiderBaseUrl;
+        private const string KhInsiderBaseUrl = @"https://downloads.khinsider.com/";
+        public string BaseUrl() => KhInsiderBaseUrl;
 
-        public KHDownloader(HttpClient httpClient, HtmlWeb web)
+        public KhDownloader(HttpClient httpClient, HtmlWeb web)
         {
-            HttpClient = httpClient;
-            Web = web;
+            _httpClient = httpClient;
+            _web = web;
         }
 
         public IEnumerable<GenericItemOption> GetAlbumsForGame(string gameName)
         {
-            var htmlDoc = Web.Load($"{KHInsiderBaseUrl}search?search={gameName}");
+            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}search?search={gameName}");
 
             var tableRows = htmlDoc.DocumentNode.Descendants("tr");
 
@@ -36,14 +36,14 @@ namespace PlayniteSounds.Downloaders
                 var titleField = row.Descendants("td").Skip(1).FirstOrDefault();
                 if (titleField == null)
                 {
-                    logger.Info($"Found album entry of game '{gameName}' without title field");
+                    Logger.Info($"Found album entry of game '{gameName}' without title field");
                     continue;
                 }
 
                 var htmlLink = titleField.Descendants("a").FirstOrDefault();
                 if (htmlLink == null)
                 {
-                    logger.Info($"Found entry for album entry of game '{gameName}' without title");
+                    Logger.Info($"Found entry for album entry of game '{gameName}' without title");
                     continue;
                 }
 
@@ -51,11 +51,11 @@ namespace PlayniteSounds.Downloaders
                 var albumPartialLink = htmlLink.GetAttributeValue("href", null);
                 if (albumPartialLink == null)
                 {
-                    logger.Info($"Found entry for album '{albumName}' of game '{gameName}' without link in title");
+                    Logger.Info($"Found entry for album '{albumName}' of game '{gameName}' without link in title");
                     continue;
                 }
 
-                albumsToPartialUrls.Add(new GenericItemOption(StringManipulation.StripStrings(albumName), albumPartialLink));
+                albumsToPartialUrls.Add(new GenericItemOption(StringUtilities.StripStrings(albumName), albumPartialLink));
             }
 
             return albumsToPartialUrls;
@@ -65,14 +65,14 @@ namespace PlayniteSounds.Downloaders
         {
             var songsToPartialUrls = new List<GenericItemOption>();
 
-            var htmlDoc = Web.Load($"{KHInsiderBaseUrl}{album.Description}");
+            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{album.Description}");
 
             // Validate Html
             var headerRow = htmlDoc.GetElementbyId("songlist_header");
             var headers = headerRow.Descendants("th").Select(n => n.InnerHtml);
             if (headers.All(h => !h.Contains("MP3")))
             {
-                logger.Info($"No mp3 in album '{album.Name}'");
+                Logger.Info($"No mp3 in album '{album.Name}'");
                 return songsToPartialUrls;
             }
 
@@ -82,7 +82,7 @@ namespace PlayniteSounds.Downloaders
             var tableRows = table.Descendants("tr").Skip(1).ToList();
             if (tableRows.Count < 2)
             {
-                logger.Info($"No songs in album '{album.Name}'");
+                Logger.Info($"No songs in album '{album.Name}'");
                 return songsToPartialUrls;
             }
 
@@ -95,7 +95,7 @@ namespace PlayniteSounds.Downloaders
                     r => new GenericItemOption(r.InnerHtml, r.GetAttributeValue("href", null)))
                     .FirstOrDefault(r => !string.IsNullOrWhiteSpace(r.Description));
 
-                songNameEntry.Name = StringManipulation.StripStrings(songNameEntry.Name);
+                songNameEntry.Name = StringUtilities.StripStrings(songNameEntry.Name);
 
                 songsToPartialUrls.Add(songNameEntry);
             }
@@ -106,19 +106,19 @@ namespace PlayniteSounds.Downloaders
         public bool DownloadSong(GenericItemOption song, string path)
         {
             // Get Url to file from Song html page
-            var htmlDoc = Web.Load($"{KHInsiderBaseUrl}{song.Description}");
+            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{song.Description}");
 
             var fileUrl = htmlDoc.GetElementbyId("audio").GetAttributeValue("src", null);
             if (fileUrl == null)
             {
-                logger.Info($"Did not find file url for song '{song.Name}'");
+                Logger.Info($"Did not find file url for song '{song.Name}'");
                 return false;
             }
 
-            var httpMesage = HttpClient.GetAsync(fileUrl).Result;
-            using (FileStream fs = File.Create(path))
+            var httpMessage = _httpClient.GetAsync(fileUrl).Result;
+            using (var fs = File.Create(path))
             {
-                httpMesage.Content.CopyToAsync(fs).Wait();
+                httpMessage.Content.CopyToAsync(fs).Wait();
             }
 
             return true;

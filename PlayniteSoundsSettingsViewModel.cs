@@ -3,7 +3,6 @@ using Playnite.SDK.Data;
 using PlayniteSounds.Models;
 using System;
 using System.Collections.Generic;
-using System.Windows.Data;
 
 namespace PlayniteSounds
 {
@@ -38,9 +37,9 @@ namespace PlayniteSounds
                 // LoadPluginSettings returns null if no saved data is available.
                 Settings = savedSettings ?? new PlayniteSoundsSettings();
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                _plugin.HandleException(E);
+                plugin.HandleException(e);
             }
         }
 
@@ -51,9 +50,9 @@ namespace PlayniteSounds
             {
                 EditingClone = Serialization.GetClone(Settings);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                _plugin.HandleException(E);
+                _plugin.HandleException(e);
             }
         }
 
@@ -74,16 +73,15 @@ namespace PlayniteSounds
                 var musicTypeChanged = Settings.MusicType != EditingClone.MusicType;
                 var musicStateChanged = Settings.MusicState != EditingClone.MusicState;
 
-                _plugin.MusicNeedsReload = _plugin.MusicNeedsReload || musicTypeChanged || musicStateChanged; 
-                _plugin.MusicFilenameNeedsReload = _plugin.MusicFilenameNeedsReload || musicTypeChanged || musicStateChanged;
+                _plugin.ReloadMusic = _plugin.ReloadMusic || musicTypeChanged || musicStateChanged; 
+                _plugin.ReloadMusicFileName = _plugin.ReloadMusicFileName || musicTypeChanged || musicStateChanged;
 
-                _plugin.CreatePlayerEntries();
                 _plugin.ReplayMusic();
                 _plugin.ResetMusicVolume();
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                _plugin.HandleException(E);
+                _plugin.HandleException(e);
             }
            
         }

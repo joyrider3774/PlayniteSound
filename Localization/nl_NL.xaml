@@ -47,11 +47,20 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Geluidsbestanden herladen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Geluiden map openen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Muziek map openen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSelected">Open Selected Music Directories</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDeleteSelected">Delete Selected Music Directories</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Muziek bestandsnaam weergeven</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Selecteer Muziekbestand</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Muziekbestand verwijderen</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Muziek bestand afspelen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">While converting a legacy music directory, orphaned files were found. These files have been moved to: {0}. Would you like to view them?</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Geluidsbestanden herladen!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Selecteer één spel alstublieft!</sys:String>

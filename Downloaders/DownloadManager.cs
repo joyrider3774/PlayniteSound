@@ -19,7 +19,7 @@ namespace PlayniteSounds.Downloaders
 
         public DownloadManager()
         {
-            _khDownloader = new KHDownloader(HttpClient, Web);
+            _khDownloader = new KhDownloader(HttpClient, Web);
         }
 
         public string BaseUrl() 
@@ -34,44 +34,37 @@ namespace PlayniteSounds.Downloaders
 
         public GenericItemOption BestAlbumPick(IEnumerable<GenericItemOption> albums, string gameName, string regexGameName)
         {
+            var albumsList = albums.ToList();
+
             var ostRegex = new Regex($@"{regexGameName}.*(Soundtrack|OST|Score)", RegexOptions.IgnoreCase);
-            var ostMatch = albums.FirstOrDefault(a => ostRegex.IsMatch(a.Name));
+            var ostMatch = albumsList.FirstOrDefault(a => ostRegex.IsMatch(a.Name));
             if (ostMatch != null)
             {
                 return ostMatch;
             }
 
-            var exactMatch = albums.FirstOrDefault(a => string.Equals(a.Name, gameName, StringComparison.OrdinalIgnoreCase));
+            var exactMatch = albumsList.FirstOrDefault(a => string.Equals(a.Name, gameName, StringComparison.OrdinalIgnoreCase));
             if (exactMatch != null)
             {
                 return exactMatch;
             }
 
-            var closeMatch = albums.FirstOrDefault(a => a.Name.StartsWith(gameName, StringComparison.OrdinalIgnoreCase));
-            if (closeMatch != null)
-            {
-                return closeMatch;
-            }
-
-            return albums.FirstOrDefault();
+            var closeMatch = albumsList.FirstOrDefault(a => a.Name.StartsWith(gameName, StringComparison.OrdinalIgnoreCase));
+            return closeMatch ?? albumsList.FirstOrDefault();
         }
 
         public GenericItemOption BestSongPick(IEnumerable<GenericItemOption> songs, string regexGameName)
         {
-            var titleMatch = songs.FirstOrDefault(s => SongTitleEnds.Any(e => s.Name.EndsWith(e)));
+            var songsList = songs.ToList();
+            var titleMatch = songsList.FirstOrDefault(s => SongTitleEnds.Any(e => s.Name.EndsWith(e)));
             if (titleMatch != null)
             {
                 return titleMatch;
             }
 
             var nameRegex = new Regex(regexGameName, RegexOptions.IgnoreCase);
-            var gameNameMatch = songs.FirstOrDefault(s => nameRegex.IsMatch(s.Name));
-            if (gameNameMatch != null)
-            {
-                return gameNameMatch;
-            }
-
-            return songs.FirstOrDefault();
+            var gameNameMatch = songsList.FirstOrDefault(s => nameRegex.IsMatch(s.Name));
+            return gameNameMatch ?? songsList.FirstOrDefault();
         }
     }
 }

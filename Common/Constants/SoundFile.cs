@@ -4,10 +4,10 @@ namespace PlayniteSounds.Common.Constants
 {
     public class SoundFile
     {
-        public static IPlayniteAPI PlayniteApi { get; set; }
+        public static IPlayniteInfoAPI ApplicationInfo { get; set; }
 
 
-        public const string DefaultMusicName = "_music_";
+        public const string DefaultMusicName = "_music_.mp3";
         public const string LocalizationSource = "LocSource";
 
         public static string ApplicationStartedSound => CurrentPrefix + BaseApplicationStartedSound;
@@ -21,7 +21,7 @@ namespace PlayniteSounds.Common.Constants
         public static string LibraryUpdatedSound => CurrentPrefix + BaseLibraryUpdatedSound;
 
         //TODO: Move bool logic to some common location
-        public static string CurrentPrefix => PlayniteApi.ApplicationInfo.Mode == ApplicationMode.Desktop ? DesktopPrefix : FullScreenPrefix;
+        public static string CurrentPrefix => ApplicationInfo.Mode == ApplicationMode.Desktop ? DesktopPrefix : FullScreenPrefix;
         public const string DesktopPrefix = "D_";
         public const string FullScreenPrefix = "F_";
 

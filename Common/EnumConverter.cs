@@ -24,9 +24,9 @@ namespace PlayniteSounds.Common
 
     public abstract class BaseValueConverter<T> : MarkupExtension, IValueConverter where T : class, new()
     {
-        private static T Converter = null;
+        private static T _converter;
 
-        public override object ProvideValue(IServiceProvider serviceProvider) => Converter ?? (Converter = new T());
+        public override object ProvideValue(IServiceProvider serviceProvider) => _converter ?? (_converter = new T());
 
         public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
 

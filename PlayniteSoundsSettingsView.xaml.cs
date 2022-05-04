@@ -1,66 +1,65 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace PlayniteSounds
 {
-    public partial class PlayniteSoundsSettingsView : UserControl
+    public partial class PlayniteSoundsSettingsView
     {
-        private readonly PlayniteSounds plugin;
+        private readonly PlayniteSounds _plugin;
 
         public PlayniteSoundsSettingsView(PlayniteSounds plugin)
         {
-            this.plugin = plugin;
+            _plugin = plugin;
             InitializeComponent();
         }
 
         private void ButReloadAudio_Click(object sender, RoutedEventArgs e)
         {
-            plugin.ReloadAudioFiles();
+            _plugin.ReloadAudioFiles();
         }
 
         private void ButOpenSoundsFolder_Click(object sender, RoutedEventArgs e)
         {
-            plugin.OpenSoundsFolder();
+            _plugin.OpenSoundsFolder();
         }
 
         private void ButOpenMusicFolder_Click(object sender, RoutedEventArgs e)
         {
-            plugin.OpenMusicFolder();
+            _plugin.OpenMusicFolder();
         }
 
         private void ButOpenInfo_Click(object sender, RoutedEventArgs e)
         {
-            plugin.HelpMenu();
+            _plugin.HelpMenu();
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            plugin.ResetMusicVolume();
+            _plugin.ResetMusicVolume();
         }
 
         private void ButSaveSounds_Click(object sender, RoutedEventArgs e)
         {
-            plugin.SaveSounds();
+            _plugin.SaveSounds();
         }
 
         private void ButLoadSounds_Click(object sender, RoutedEventArgs e)
         {
-            plugin.LoadSounds();
+            _plugin.LoadSounds();
         }
 
         private void ButImportSounds_Click(object sender, RoutedEventArgs e)
         {
-            plugin.ImportSounds();
+            _plugin.ImportSounds();
         }
 
         private void ButRemoveSounds_Click(object sender, RoutedEventArgs e)
         {
-            plugin.RemoveSounds();
+            _plugin.RemoveSounds();
         }
 
         private void ButOpenSoundManagerFolder_Click(object sender, RoutedEventArgs e)
         {
-            plugin.OpenSoundManagerFolder();
+            _plugin.OpenSoundManagerFolder();
         }
     }
 }

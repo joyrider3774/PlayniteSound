@@ -59,7 +59,7 @@
     <Compile Include="Common\Constants\Directory.cs" />
     <Compile Include="Common\Constants\Resource.cs" />
     <Compile Include="Common\Constants\SoundFile.cs" />
-    <Compile Include="Common\StringManipulation.cs" />
+    <Compile Include="Common\StringUtilities.cs" />
     <Compile Include="Downloaders\DownloadManager.cs" />
     <Compile Include="Downloaders\IDownloader.cs" />
     <Compile Include="Downloaders\IDownloadManager.cs" />

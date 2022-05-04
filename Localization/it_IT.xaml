@@ -47,11 +47,20 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Ricarica File Audio</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Apri la cartella dei Suoni</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Apri la cartella delle Musiche</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSelected">Open Selected Music Directories</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDeleteSelected">Delete Selected Music Directories</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aiuto</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Mostra il nome del file musicale</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Seleziona file musicale</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Delete Music File</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Play Music File</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">While converting a legacy music directory, orphaned files were found. These files have been moved to: {0}. Would you like to view them?</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio Files Ricaricati!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Seleziona un singolo gioco!</sys:String>

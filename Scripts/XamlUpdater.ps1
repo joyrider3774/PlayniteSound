@@ -4,7 +4,7 @@ using namespace System.Collections.Generic
 param(
     [switch] $UpdateXaml,
     [switch] $GenerateResource,
-    $RootDir = "..\"
+    $RootDir = ".\"
 )
 
 $LocalizationDir = $rootDir + "Localization\"

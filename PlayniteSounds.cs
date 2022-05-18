@@ -370,7 +370,7 @@ namespace PlayniteSounds
            switch (Settings.MusicType)
            {
                case MusicType.Game:
-                   fileDirectory = GetMusicDirectoryPath(game);
+                   fileDirectory = CreateMusicDirectory(game);
                    break;
                case MusicType.Platform:
                    fileDirectory = CreatePlatformDirectoryPathFromGame(game);

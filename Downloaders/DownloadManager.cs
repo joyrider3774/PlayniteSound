@@ -10,65 +10,61 @@ namespace PlayniteSounds.Downloaders
 {
     internal class DownloadManager : IDownloadManager
     {
-        private readonly IDownloader khdownloader;
+        private static readonly HtmlWeb Web = new HtmlWeb();
+        private static readonly HttpClient HttpClient = new HttpClient();
         
-        private Regex songTitleRegex = new Regex(@"(Main )?(Theme|Title|Menu)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly List<string> SongTitleEnds = new List<string> { "Theme", "Title", "Menu" };
 
-        public DownloadManager(HttpClient httpClient, HtmlWeb web)
+        private readonly IDownloader _khDownloader;
+
+        public DownloadManager()
         {
-            khdownloader = new KHDownloader(httpClient, web);
+            _khDownloader = new KhDownloader(HttpClient, Web);
         }
 
         public string BaseUrl() 
-            => khdownloader.BaseUrl();
+            => _khDownloader.BaseUrl();
 
         public IEnumerable<GenericItemOption> GetAlbumsForGame(string gameName) 
-            => khdownloader.GetAlbumsForGame(gameName);
+            => _khDownloader.GetAlbumsForGame(gameName);
         public IEnumerable<GenericItemOption> GetSongsFromAlbum(GenericItemOption album) 
-            => khdownloader.GetSongsFromAlbum(album);
+            => _khDownloader.GetSongsFromAlbum(album);
         public bool DownloadSong(GenericItemOption song, string path)
-            => khdownloader.DownloadSong(song, path);
+            => _khDownloader.DownloadSong(song, path);
 
         public GenericItemOption BestAlbumPick(IEnumerable<GenericItemOption> albums, string gameName, string regexGameName)
         {
-            var ostRegex = new Regex($@"{regexGameName}.*(Soundtrack|OST)", RegexOptions.IgnoreCase);
-            var ostMatch = albums.FirstOrDefault(a => ostRegex.IsMatch(a.Name));
+            var albumsList = albums.ToList();
+
+            var ostRegex = new Regex($@"{regexGameName}.*(Soundtrack|OST|Score)", RegexOptions.IgnoreCase);
+            var ostMatch = albumsList.FirstOrDefault(a => ostRegex.IsMatch(a.Name));
             if (ostMatch != null)
             {
                 return ostMatch;
             }
 
-            var exactMatch = albums.FirstOrDefault(a => string.Equals(a.Name, gameName, StringComparison.OrdinalIgnoreCase));
+            var exactMatch = albumsList.FirstOrDefault(a => string.Equals(a.Name, gameName, StringComparison.OrdinalIgnoreCase));
             if (exactMatch != null)
             {
                 return exactMatch;
             }
 
-            var closeMatch = albums.FirstOrDefault(a => a.Name.StartsWith(gameName, StringComparison.OrdinalIgnoreCase));
-            if (closeMatch != null)
-            {
-                return closeMatch;
-            }
-
-            return albums.FirstOrDefault();
+            var closeMatch = albumsList.FirstOrDefault(a => a.Name.StartsWith(gameName, StringComparison.OrdinalIgnoreCase));
+            return closeMatch ?? albumsList.FirstOrDefault();
         }
 
         public GenericItemOption BestSongPick(IEnumerable<GenericItemOption> songs, string regexGameName)
         {
-            var titleMatch = songs.FirstOrDefault(s => songTitleRegex.IsMatch(s.Name));
+            var songsList = songs.ToList();
+            var titleMatch = songsList.FirstOrDefault(s => SongTitleEnds.Any(e => s.Name.EndsWith(e)));
             if (titleMatch != null)
             {
                 return titleMatch;
             }
 
             var nameRegex = new Regex(regexGameName, RegexOptions.IgnoreCase);
-            var gameNameMatch = songs.FirstOrDefault(s => nameRegex.IsMatch(s.Name));
-            if (gameNameMatch != null)
-            {
-                return gameNameMatch;
-            }
-
-            return songs.FirstOrDefault();
+            var gameNameMatch = songsList.FirstOrDefault(s => nameRegex.IsMatch(s.Name));
+            return gameNameMatch ?? songsList.FirstOrDefault();
         }
     }
 }

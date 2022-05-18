@@ -1,6 +1,8 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">تشغيل الصوت حيث:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">تشغيل الصوت حيث:</sys:String>
@@ -15,7 +17,18 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music file on music end</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music file on every 'musictype' selection</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">ابدأ</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
+
+<!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -29,27 +42,29 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Done</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Automatically Downloading files...</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">ابدأ</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Desktop + Fullscreen</sys:String>
-
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
-
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">إعدادات</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">اجراءات</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">إعادة تحميل ملفات الصوت</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">فتح مجلد الأصوات</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">فتح مجلد الموسيقى</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSelected">Open Selected Music Directories</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDeleteSelected">Delete Selected Music Directories</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">مساعدة</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">إظهار اسم ملف الموسيقى</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">تحديد ملف الموسيقى</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Delete Music File</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Play Music File</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">While converting a legacy music directory, orphaned files were found. These files have been moved to: {0}. Would you like to view them?</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">تم إعادة تحميل الملفات الصوتية!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">الرجاء تحديد لعبة واحدة!</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">أصوات Playnite هي إضافة لتشغيل الملفات الصوتية أثناء أحداث Playnite.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">يمكنها فقط تشغيل ملفات صوت WAV وملفات mp3 للموسيقى.</sys:String>

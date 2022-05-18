@@ -80,3 +80,4 @@ Thanks to the following people who have contributed with translations:
 * Used Icon made by [Freepik](http://www.freepik.com/)
 * Original Localization file loader by [Lacro59](https://github.com/Lacro59)
 * Sound Manager by [dfirsht](https://github.com/dfirsht)
+* Downloader Manager by [cnapolit](https://github.com/cnapolit)

@@ -891,6 +891,15 @@ namespace PlayniteSounds
             Logger.Info($"Working on Platform: {platformDirectory}");
 
             var platformDirectoryName = GetDirectoryNameFromPath(platformDirectory);
+            
+            if (platformDirectory.Equals(_defaultMusicPath, StringComparison.OrdinalIgnoreCase) ||
+                platformDirectory.Equals(_gameMusicFilePath, StringComparison.OrdinalIgnoreCase) ||
+                platformDirectory.Equals(_platformMusicFilePath, StringComparison.OrdinalIgnoreCase) ||
+                platformDirectory.Equals(_orphanDirectory, StringComparison.Ordinal))
+            {
+                Logger.Info($"Ignoring directory: {platformDirectoryName}");
+                return;
+            }
 
             var defaultPlatformFile = Path.Combine(platformDirectory, SoundFile.DefaultMusicName);
             if (File.Exists(defaultPlatformFile))
@@ -1292,7 +1301,7 @@ namespace PlayniteSounds
             => Directory.CreateDirectory(Path.Combine(_platformMusicFilePath, platform)).FullName;
 
         private static string GetDirectoryNameFromPath(string directory)
-            => directory.Substring(directory.LastIndexOf('\\'));
+            => directory.Substring(directory.LastIndexOf('\\')).Replace("\\", string.Empty);
 
         private void PlayMusicBasedOnSelected()
         {

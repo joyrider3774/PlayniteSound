@@ -254,7 +254,7 @@ namespace PlayniteSounds
             {
                 var game = SelectedGames.First();
 
-                var gameDirectory = GetMusicDirectoryPath(game);
+                var gameDirectory = CreateMusicDirectory(game);
                 var songSubMenu = $"|{Resource.ActionsSubMenuSongs}|";
 
                 ConstructItems(gameMenuItems, ConstructGameMenuItem, gameDirectory, songSubMenu, true);

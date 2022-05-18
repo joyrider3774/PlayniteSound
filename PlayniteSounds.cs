@@ -267,7 +267,7 @@ namespace PlayniteSounds
         {
             var mainMenuItems = new List<MainMenuItem>(_mainMenuItems);
 
-            foreach (var platform in PlayniteApi.Database.Platforms)
+            foreach (var platform in PlayniteApi.Database.Platforms.OrderBy((o) => o.Name))
             {
                 var platformDirectory = CreatePlatformDirectory(platform.Name);
 
@@ -592,7 +592,7 @@ namespace PlayniteSounds
                     Resource.ActionsCopyPlayMusicFile, () => PlayMusicFromPath(file), songSubMenu));
                 menuItems.Add(menuItemConstructor(
                     Resource.ActionsCopyDeleteMusicFile, () => DeleteMusicFile(file, songName, isGame), songSubMenu));
-            }
+            }           
         }
 
         private static GameMenuItem ConstructGameMenuItem(string resource, Action action, string subMenu = "")

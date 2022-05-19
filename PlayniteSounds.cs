@@ -118,7 +118,7 @@ namespace PlayniteSounds
                 _gameMenuItems = new List<GameMenuItem>
                 {
                     ConstructGameMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForSelectedGames),
-                    ConstructGameMenuItem(Resource.ActionsDownloadMusicForGames, DownloadMusicForSelectedGames),
+                    //ConstructGameMenuItem(Resource.ActionsDownloadMusicForGames, DownloadMusicForSelectedGames),
                     ConstructGameMenuItem(Resource.ActionsOpenSelected, OpenMusicDirectory),
                     ConstructGameMenuItem(Resource.ActionsDeleteSelected, DeleteMusicDirectories)
                 };
@@ -235,7 +235,7 @@ namespace PlayniteSounds
             // Add code to be executed when library is updated.
             PlaySoundFileFromName(SoundFile.LibraryUpdatedSound);
 
-            if (Settings.AutoDownload)
+            if (false && Settings.AutoDownload)
             {
                 var games = PlayniteApi.Database.Games
                     .Where(x => x.Added != null && x.Added > Settings.LastAutoLibUpdateAssetsDownload);

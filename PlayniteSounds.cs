@@ -967,7 +967,7 @@ namespace PlayniteSounds
 
             if (isGame)
             {
-                var gameDirectory = GetDirectoryNameFromPath(musicFile);
+                var gameDirectory = Path.GetDirectoryName(musicFile);
                 var gameId = GetDirectoryNameFromPath(gameDirectory);
                 var game = PlayniteApi.Database.Games.FirstOrDefault(g => g.Id.ToString() == gameId);
 
@@ -999,9 +999,14 @@ namespace PlayniteSounds
         }
 
         private void SelectMusicForSelectedGames()
-            => RestartMusicAfterSelect(
+        {
+            RestartMusicAfterSelect(
                 () => SelectedGames.Select(g => SelectMusicForDirectory(CreateMusicDirectory(g))).FirstOrDefault(),
                 SingleGame() && Settings.MusicType is MusicType.Game);
+
+            Game game = SelectedGames.FirstOrDefault();
+            UpdateMissingTag(game, Directory.GetFiles(CreateMusicDirectory(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
+        }
 
         private void SelectMusicForPlatform(string platform)
         {

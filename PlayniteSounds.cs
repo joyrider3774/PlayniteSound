@@ -274,7 +274,7 @@ namespace PlayniteSounds
                 var platformSelect = $"|{Resource.ActionsPlatform}|{platform.Name}";
                 mainMenuItems.Add(ConstructMainMenuItem(
                     Resource.ActionsCopySelectMusicFile, 
-                    () => SelectMusicForPlatform(platformDirectory), 
+                    () => SelectMusicForPlatform(platform.Name), 
                     platformSelect));
 
                 var platformSongSubMenu = $"{platformSelect}|{Resource.ActionsSubMenuSongs}|";
@@ -1015,7 +1015,7 @@ namespace PlayniteSounds
                 && SingleGame()
                 && SelectedGames.First().Platforms.Any(p => p.Name == platform);
 
-            RestartMusicAfterSelect(() => SelectMusicForDirectory(platform), playNewMusic);
+            RestartMusicAfterSelect(() => SelectMusicForDirectory(CreatePlatformDirectory(platform)), playNewMusic);
         }
 
         private void SelectMusicForDefault()

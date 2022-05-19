@@ -53,6 +53,7 @@ namespace PlayniteSounds
         private PlayniteSoundsSettingsViewModel SettingsModel { get; }
 
         private bool _gameRunning;
+        private bool _musicEnded = false;
         private bool _firstSelectSound = true;
         private bool _closeAudioFilesNextPlay;
 
@@ -359,39 +360,40 @@ namespace PlayniteSounds
             }
         }
 
-       private void PlayMusicFromFirstSelected() => PlayMusicFromFirst(SelectedGames);
+        private void PlayMusicFromFirstSelected() => PlayMusicFromFirst(SelectedGames);
 
-       private void PlayMusicFromFirst(IEnumerable<Game> games)
-       {
-           var game = games.FirstOrDefault();
+        private void PlayMusicFromFirst(IEnumerable<Game> games)
+        {
+            var game = games.FirstOrDefault();
 
-           string fileDirectory;
-           switch (Settings.MusicType)
-           {
-               case MusicType.Game:
-                   fileDirectory = CreateMusicDirectory(game);
-                   break;
-               case MusicType.Platform:
-                   fileDirectory = CreatePlatformDirectoryPathFromGame(game);
-                   break;
-               default:
-                   fileDirectory = _defaultMusicPath;
-                   break;
-           }
+            string fileDirectory;
+            switch (Settings.MusicType)
+            {
+                case MusicType.Game:
+                    fileDirectory = CreateMusicDirectory(game);
+                    break;
+                case MusicType.Platform:
+                    fileDirectory = CreatePlatformDirectoryPathFromGame(game);
+                    break;
+                default:
+                    fileDirectory = _defaultMusicPath;
+                    break;
+            }
 
-           var musicFiles = Directory.GetFiles(fileDirectory);
-           var musicFile = musicFiles.FirstOrDefault() ?? string.Empty;
+            var musicFiles = Directory.GetFiles(fileDirectory);
+            var musicFile = musicFiles.FirstOrDefault() ?? string.Empty;
 
-           var rand = new Random();
-           if (musicFiles.Length > 1 && Settings.RandomizeOnEverySelect)
-           /*Then*/
-           do
-           {
-               musicFile = musicFiles[rand.Next(musicFiles.Length)];
-           }
-           while (_prevMusicFileName == musicFile);
-           
-           PlayMusicFromPath(musicFile);
+            var rand = new Random();
+            if (musicFiles.Length > 1 && (Settings.RandomizeOnEverySelect ||
+                (_musicEnded && Settings.RandomizeOnMusicEnd)))
+            /*Then*/
+            do
+            {
+                musicFile = musicFiles[rand.Next(musicFiles.Length)];
+            }
+            while (_prevMusicFileName == musicFile);
+
+            PlayMusicFromPath(musicFile);
         }
 
         private void ResumeMusic()
@@ -445,6 +447,7 @@ namespace PlayniteSounds
                 _musicPlayer.Volume = Settings.MusicVolume / 100.0;
                 _musicPlayer.Clock = _timeLine.CreateClock();
                 _musicPlayer.Clock.Controller.Begin();
+                _musicEnded = false;
             }
         }
 
@@ -554,10 +557,10 @@ namespace PlayniteSounds
 
         private void MediaEnded(object sender, EventArgs e)
         {
+            _musicEnded = true;
             if (Settings.RandomizeOnMusicEnd)
             {
                 // will play a random song if more than one exists
-                CloseMusic();
                 ReloadMusic = true;
                 ReplayMusic();
             }

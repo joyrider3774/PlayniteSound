@@ -25,7 +25,6 @@ namespace PlayniteSounds
     public class PlayniteSounds : GenericPlugin
     {
         public bool ReloadMusic { get; set; }
-        public bool ReloadMusicFileName { get; set; }
 
         private static readonly string PluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private static readonly string IconPath = Path.Combine(PluginFolder, "icon.png");
@@ -560,7 +559,6 @@ namespace PlayniteSounds
                 // will play a random song if more than one exists
                 CloseMusic();
                 ReloadMusic = true;
-                ReloadMusicFileName = true;
                 ReplayMusic();
             }
             else if (_musicPlayer.Clock != null)
@@ -992,7 +990,6 @@ namespace PlayniteSounds
             //the music type data would remain the same
             //and it would not load another music and start playing it again
             //because we closed the music above
-            ReloadMusicFileName = true;
             ReloadMusic = true;
 
             PlayMusicFromFirst(SelectedGames);

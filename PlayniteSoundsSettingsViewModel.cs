@@ -74,7 +74,6 @@ namespace PlayniteSounds
                 var musicStateChanged = Settings.MusicState != EditingClone.MusicState;
 
                 _plugin.ReloadMusic = _plugin.ReloadMusic || musicTypeChanged || musicStateChanged; 
-                _plugin.ReloadMusicFileName = _plugin.ReloadMusicFileName || musicTypeChanged || musicStateChanged;
 
                 _plugin.ReplayMusic();
                 _plugin.ResetMusicVolume();

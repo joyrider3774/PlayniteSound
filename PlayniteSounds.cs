@@ -282,7 +282,7 @@ namespace PlayniteSounds
             }
 
             var defaultSubMenu = $"|{Resource.ActionsDefault}";
-            ConstructItems(mainMenuItems, ConstructMainMenuItem, _musicFilesDataPath, defaultSubMenu + "|");
+            ConstructItems(mainMenuItems, ConstructMainMenuItem, _defaultMusicPath, defaultSubMenu + "|");
             mainMenuItems.Add(
                 ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, defaultSubMenu));
 
@@ -874,6 +874,17 @@ namespace PlayniteSounds
             playniteGames.ForEach(g => g.Name = StringUtilities.SanitizeGameName(g.Name));
 
             platformDirectories.ForEach(p => UpdateLegacyPlatform(p, playniteGames));
+
+            var defaultFile = Path.Combine(_musicFilesDataPath, SoundFile.DefaultMusicName);
+            if (File.Exists(defaultFile))
+            {
+                Logger.Info($"Moving default music file from music files data path...");
+
+                File.Move(defaultFile, Path.Combine(_defaultMusicPath, SoundFile.DefaultMusicName));
+
+                Logger.Info($"Moved default music file from music files data path.");
+            }
+
 
             var anyOrphans = Directory.GetFileSystemEntries(_orphanDirectory).Any();
             if (anyOrphans)

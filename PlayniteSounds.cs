@@ -282,9 +282,9 @@ namespace PlayniteSounds
             }
 
             var defaultSubMenu = $"|{Resource.ActionsDefault}";
-            ConstructItems(mainMenuItems, ConstructMainMenuItem, _defaultMusicPath, defaultSubMenu + "|");
             mainMenuItems.Add(
                 ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, defaultSubMenu));
+            ConstructItems(mainMenuItems, ConstructMainMenuItem, _defaultMusicPath, defaultSubMenu + "|");
 
             return mainMenuItems;
         }

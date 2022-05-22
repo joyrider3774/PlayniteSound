@@ -1180,7 +1180,7 @@ namespace PlayniteSounds
 
             var sanitizedFileName = StringUtilities.SanitizeGameName(songToPartialUrl.Name) + ".mp3";
             var newFilePath = Path.Combine(gameDirectory, sanitizedFileName);
-            if (overwrite && File.Exists(newFilePath))
+            if (!overwrite && File.Exists(newFilePath))
             {
                 Logger.Info($"Song file '{sanitizedFileName}' for game '{gameName}' already exists. Skipping....");
                 return false;

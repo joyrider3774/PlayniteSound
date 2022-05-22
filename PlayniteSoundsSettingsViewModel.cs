@@ -3,6 +3,7 @@ using Playnite.SDK.Data;
 using PlayniteSounds.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PlayniteSounds
 {
@@ -17,6 +18,18 @@ namespace PlayniteSounds
                 _settings = value;
                 OnPropertyChanged();
             }
+        }
+
+        public RelayCommand<object> BrowseForFFmpegFile
+        {
+            get => new RelayCommand<object>((a) =>
+            {
+                var filePath = _plugin.PlayniteApi.Dialogs.SelectFile(string.Empty);
+                if (!string.IsNullOrWhiteSpace(filePath))
+                {
+                    Settings.FFmpegPath = filePath;
+                }
+            });
         }
 
         private PlayniteSoundsSettings EditingClone { get; set; }
@@ -75,6 +88,7 @@ namespace PlayniteSounds
 
                 _plugin.ReloadMusic = _plugin.ReloadMusic || musicTypeChanged || musicStateChanged; 
 
+                _plugin.UpdateDownloadManager(Settings);
                 _plugin.ReplayMusic();
                 _plugin.ResetMusicVolume();
             }
@@ -91,7 +105,15 @@ namespace PlayniteSounds
             // Executed before EndEdit is called and EndEdit is not called if false is returned.
             // List of errors is presented to user if verification fails.
             errors = new List<string>();
-            return true;
+            var outcome = true;
+
+            if (!File.Exists(Settings.FFmpegPath))
+            {
+                errors.Add($"The path to FFmpeg '{Settings.FFmpegPath}' is invalid");
+                outcome = false;
+            }
+
+            return outcome;
         }
     }
 }

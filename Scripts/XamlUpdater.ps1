@@ -58,17 +58,18 @@ function Set-XamlFiles {
 
     foreach ($file in $files)
     {
-    $fileContent = Get-Content -Path $file
-    [List[Tuple[int,string]]] $fileKeys = Get-IndexKey -lines $fileContent
-    foreach($keyTuple in $sourceKeys)
-    {
-        if ($fileKeys.Where({$_.Item2 -eq $keyTuple.Item2}).Count -eq 0)
+        $fullPath = $LocalizationDir + $file.PSChildName
+        $fileContent = Get-Content -Path $fullPath
+        [List[Tuple[int,string]]] $fileKeys = Get-IndexKey -lines $fileContent
+        foreach($keyTuple in $sourceKeys)
         {
-            $fileContent = Add-LineIntoFile -lines $fileContent -line $SourceLines[$keyTuple.Item1] -index $keyTuple.Item1
+            if ($fileKeys.Where({$_.Item2 -eq $keyTuple.Item2}).Count -eq 0)
+            {
+                $fileContent = Add-LineIntoFile -lines $fileContent -line $SourceLines[$keyTuple.Item1] -index $keyTuple.Item1
+            }
         }
-    }
 
-    Set-Content -Path $file -Value $fileContent
+        Set-Content -Path $fullPath -Value $fileContent
     }
 }
 

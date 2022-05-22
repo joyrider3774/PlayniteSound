@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PlayniteSounds.Models
 {
@@ -16,6 +17,11 @@ namespace PlayniteSounds.Models
         public bool RandomizeOnMusicEnd { get; set; } = true;
         public bool TagMissingEntries { get; set; }
         public bool AutoDownload { get; set; }
+        public bool AutoParallelDownload { get; set; }
+        public bool ManualParallelDownload { get; set; } = true;
+        public bool YtPlaylists { get; set; } = true;
+        public string FFmpegPath { get; set; }
+        public IList<Source> Downloaders { get; set; } = new List<Source> { Source.Youtube };
         public DateTime LastAutoLibUpdateAssetsDownload { get; set; } = DateTime.Now;
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using HtmlAgilityPack;
 using PlayniteSounds.Common;
+using PlayniteSounds.Models;
 
 namespace PlayniteSounds.Downloaders
 {
@@ -18,22 +19,28 @@ namespace PlayniteSounds.Downloaders
         private const string KhInsiderBaseUrl = @"https://downloads.khinsider.com/";
         public string BaseUrl() => KhInsiderBaseUrl;
 
+        private const Source Source = Models.Source.KHInsider;
+        public Source DownloadSource() => Source;
+
         public KhDownloader(HttpClient httpClient, HtmlWeb web)
         {
             _httpClient = httpClient;
             _web = web;
         }
 
-        public IEnumerable<GenericItemOption> GetAlbumsForGame(string gameName)
+        public IEnumerable<Album> GetAlbumsForGame(string gameName, bool auto = false)
         {
+
+            var albumsToPartialUrls = new List<Album>();
+
             var htmlDoc = _web.Load($"{KhInsiderBaseUrl}search?search={gameName}");
 
-            var tableRows = htmlDoc.DocumentNode.Descendants("tr");
-
-            var albumsToPartialUrls = new List<GenericItemOption>();
+            var tableRows = htmlDoc.DocumentNode.Descendants("tr").Skip(1);
             foreach (var row in tableRows)
             {
-                var titleField = row.Descendants("td").Skip(1).FirstOrDefault();
+                var columnEntries = row.Descendants("td").Skip(1).ToList();
+
+                var titleField = columnEntries.FirstOrDefault();
                 if (titleField == null)
                 {
                     Logger.Info($"Found album entry of game '{gameName}' without title field");
@@ -55,17 +62,37 @@ namespace PlayniteSounds.Downloaders
                     continue;
                 }
 
-                albumsToPartialUrls.Add(new GenericItemOption(StringUtilities.StripStrings(albumName), albumPartialLink));
+                var album = new Album
+                {
+                    Name = StringUtilities.StripStrings(albumName),
+                    Id = albumPartialLink,
+                    Source = Source.KHInsider
+                };
+
+                var platformEntry = columnEntries.ElementAtOrDefault(1);
+                if (platformEntry != null)
+                {
+                    var platforms = platformEntry.Descendants("a")
+                        .Select(d => d.InnerHtml)
+                        .Where(platform => !string.IsNullOrWhiteSpace(platform)).ToList();
+
+                    if (platforms.Any())
+                    {
+                        album.Platforms = platforms;
+                    }
+                }
+
+                albumsToPartialUrls.Add(album);
             }
 
             return albumsToPartialUrls;
         }
 
-        public IEnumerable<GenericItemOption> GetSongsFromAlbum(GenericItemOption album)
+        public IEnumerable<Song> GetSongsFromAlbum(Album album)
         {
-            var songsToPartialUrls = new List<GenericItemOption>();
+            var songs = new List<Song>();
 
-            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{album.Description}");
+            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{album.Id}");
 
             // Validate Html
             var headerRow = htmlDoc.GetElementbyId("songlist_header");
@@ -73,7 +100,7 @@ namespace PlayniteSounds.Downloaders
             if (headers.All(h => !h.Contains("MP3")))
             {
                 Logger.Info($"No mp3 in album '{album.Name}'");
-                return songsToPartialUrls;
+                return songs;
             }
 
             var table = htmlDoc.GetElementbyId("songlist");
@@ -83,7 +110,7 @@ namespace PlayniteSounds.Downloaders
             if (tableRows.Count < 2)
             {
                 Logger.Info($"No songs in album '{album.Name}'");
-                return songsToPartialUrls;
+                return songs;
             }
 
             // Remove footer
@@ -91,22 +118,49 @@ namespace PlayniteSounds.Downloaders
 
             foreach (var row in tableRows)
             {
-                var songNameEntry = row.Descendants("a").Select(
-                    r => new GenericItemOption(r.InnerHtml, r.GetAttributeValue("href", null)))
-                    .FirstOrDefault(r => !string.IsNullOrWhiteSpace(r.Description));
+                var rowEntries = row.Descendants("a").ToList();
 
-                songNameEntry.Name = StringUtilities.StripStrings(songNameEntry.Name);
+                var songNameEntry = rowEntries.FirstOrDefault();
+                if (songNameEntry == null)
+                {
+                    continue;
+                }
 
-                songsToPartialUrls.Add(songNameEntry);
+                var partialUrl = songNameEntry.GetAttributeValue("href", null);
+                if (string.IsNullOrWhiteSpace(partialUrl))
+                {
+                    continue;
+                }
+
+                var song = new Song
+                {
+                    Name = StringUtilities.StripStrings(songNameEntry.InnerHtml),
+                    Id = partialUrl,
+                    Source = Source.KHInsider
+                };
+
+                var lengthEntry = rowEntries.ElementAtOrDefault(1);
+                if (lengthEntry != null && !string.IsNullOrWhiteSpace(lengthEntry.InnerHtml))
+                {
+                    song.Length = StringUtilities.GetTimeSpan(lengthEntry.InnerHtml);
+                }
+
+                var sizeEntry = rowEntries.ElementAtOrDefault(2);
+                if (sizeEntry != null && !string.IsNullOrWhiteSpace(sizeEntry.InnerHtml))
+                {
+                    song.SizeInMb = sizeEntry.InnerHtml;
+                }
+
+                songs.Add(song);
             }
 
-            return songsToPartialUrls;
+            return songs;
         }
 
-        public bool DownloadSong(GenericItemOption song, string path)
+        public bool DownloadSong(Song song, string path)
         {
             // Get Url to file from Song html page
-            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{song.Description}");
+            var htmlDoc = _web.Load($"{KhInsiderBaseUrl}{song.Id}");
 
             var fileUrl = htmlDoc.GetElementbyId("audio").GetAttributeValue("src", null);
             if (fileUrl == null)

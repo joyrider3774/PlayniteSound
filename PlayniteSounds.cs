@@ -19,6 +19,8 @@ using PlayniteSounds.Downloaders;
 using PlayniteSounds.Common;
 using PlayniteSounds.Common.Constants;
 using PlayniteSounds.Models;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace PlayniteSounds
 {
@@ -49,11 +51,12 @@ namespace PlayniteSounds
 
         private static readonly ILogger Logger = LogManager.GetLogger();
 
-        private static readonly IDownloadManager DownloadManager = new DownloadManager();
+        private IDownloadManager DownloadManager;
+
         private PlayniteSoundsSettingsViewModel SettingsModel { get; }
 
         private bool _gameRunning;
-        private bool _musicEnded = false;
+        private bool _musicEnded;
         private bool _firstSelectSound = true;
         private bool _closeAudioFilesNextPlay;
 
@@ -117,8 +120,8 @@ namespace PlayniteSounds
                 
                 _gameMenuItems = new List<GameMenuItem>
                 {
+                    ConstructGameMenuItem(Resource.Youtube, _ => DownloadMusicForSelectedGames(Source.Youtube), "|" + Resource.Actions_Download),
                     ConstructGameMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForSelectedGames),
-                    //ConstructGameMenuItem(Resource.ActionsDownloadMusicForGames, DownloadMusicForSelectedGames),
                     ConstructGameMenuItem(Resource.ActionsOpenSelected, OpenMusicDirectory),
                     ConstructGameMenuItem(Resource.ActionsDeleteSelected, DeleteMusicDirectories)
                 };
@@ -131,12 +134,18 @@ namespace PlayniteSounds
                     ConstructMainMenuItem(Resource.ActionsHelp, HelpMenu),
                     ConstructMainMenuItem(Resource.ActionsUpdateLegacy, UpdateFromLegacyVersion)
                 };
+
+                DownloadManager = new DownloadManager(Settings);
             }
             catch (Exception e)
             {
                 HandleException(e);
             }
         }
+
+        public void UpdateDownloadManager(PlayniteSoundsSettings settings)
+            => DownloadManager = new DownloadManager(settings);
+        
 
         private static string HelpLine(string baseMessage)
             => $"{SoundFile.DesktopPrefix}{baseMessage} - {SoundFile.FullScreenPrefix}{baseMessage}\n";
@@ -203,9 +212,9 @@ namespace PlayniteSounds
             PlaySoundFileFromName(SoundFile.ApplicationStartedSound);
 
             SystemEvents.PowerModeChanged += OnPowerModeChanged;
+            Application.Current.MainWindow.StateChanged += OnWindowStateChanged;
             Application.Current.Deactivated += OnApplicationDeactivate;
             Application.Current.Activated += OnApplicationActivate;
-            Application.Current.MainWindow.StateChanged += OnWindowStateChanged;
 
             CopyAudioFiles();
         }
@@ -235,11 +244,11 @@ namespace PlayniteSounds
             // Add code to be executed when library is updated.
             PlaySoundFileFromName(SoundFile.LibraryUpdatedSound);
 
-            if (false && Settings.AutoDownload)
+            if (Settings.AutoDownload)
             {
                 var games = PlayniteApi.Database.Games
                     .Where(x => x.Added != null && x.Added > Settings.LastAutoLibUpdateAssetsDownload);
-                CreateDownloadDialogue(games);
+                CreateDownloadDialogue(games, Source.All);
             }
 
             Settings.LastAutoLibUpdateAssetsDownload = DateTime.Now;
@@ -248,7 +257,17 @@ namespace PlayniteSounds
 
         public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
         {
-            var gameMenuItems = new List<GameMenuItem>(_gameMenuItems);
+            var gameMenuItems = new List<GameMenuItem>();
+
+            if (Settings.Downloaders.Contains(Source.KHInsider))
+            {
+                gameMenuItems.Add(ConstructGameMenuItem(
+                    "All", _ => DownloadMusicForSelectedGames(Source.All), "|" + Resource.Actions_Download));
+                gameMenuItems.Add(ConstructGameMenuItem(
+                    "KHInsider", _ => DownloadMusicForSelectedGames(Source.KHInsider), "|" + Resource.Actions_Download));
+            }
+            
+            gameMenuItems.AddRange(_gameMenuItems);
 
             if (SingleGame())
             {
@@ -267,7 +286,7 @@ namespace PlayniteSounds
         {
             var mainMenuItems = new List<MainMenuItem>(_mainMenuItems);
 
-            foreach (var platform in PlayniteApi.Database.Platforms.OrderBy((o) => o.Name))
+            foreach (var platform in PlayniteApi.Database.Platforms.OrderBy(o => o.Name))
             {
                 var platformDirectory = CreatePlatformDirectory(platform.Name);
 
@@ -296,18 +315,19 @@ namespace PlayniteSounds
         private void OnWindowStateChanged(object sender, EventArgs e)
         {
             if (Settings.PauseOnDeactivate)
-            /*Then*/ switch (Application.Current?.MainWindow?.WindowState)
             {
-                case WindowState.Normal:
-                case WindowState.Maximized:
-                    ResumeMusic();
-                    break;
-                case WindowState.Minimized:
-                    PauseMusic(); 
-                    break;
+                switch (Application.Current?.MainWindow?.WindowState)
+                {
+                    case WindowState.Normal:
+                    case WindowState.Maximized:
+                        ResumeMusic();
+                        break;
+                    case WindowState.Minimized:
+                        PauseMusic();
+                        break;
+                }
             }
         }
-
         private void OnApplicationDeactivate(object sender, EventArgs e)
         {
             if (Settings.PauseOnDeactivate)
@@ -619,23 +639,23 @@ namespace PlayniteSounds
             => ConstructGameMenuItem(resource, _ => action(), subMenu);
 
         private static GameMenuItem ConstructGameMenuItem(string resource, Action<GameMenuItemActionArgs> action, string subMenu = "") => new GameMenuItem
-            {
-                MenuSection = App.AppName + subMenu,
-                Icon = IconPath,
-                Description = resource,
-                Action = action
-            };
+        {
+            MenuSection = App.AppName + subMenu,
+            Icon = IconPath,
+            Description = resource,
+            Action = action
+        };
 
         private static MainMenuItem ConstructMainMenuItem(string resource, Action action, string subMenu = "")
             => ConstructMainMenuItem(resource, _ => action(), subMenu);
 
         private static MainMenuItem ConstructMainMenuItem(string resource, Action<MainMenuItemActionArgs> action, string subMenu = "") => new MainMenuItem
-            {
-                MenuSection = App.MainMenuName + subMenu,
-                Icon = IconPath,
-                Description = resource,
-                Action = action
-            };
+        {
+            MenuSection = App.MainMenuName + subMenu,
+            Icon = IconPath,
+            Description = resource,
+            Action = action
+        };
 
         public void OpenMusicDirectory()
             => Try(() => SelectedGames.ForEach(g => Process.Start(GetMusicDirectoryPath(g))));
@@ -643,22 +663,44 @@ namespace PlayniteSounds
         #endregion
 
         #region Prompts
+        private Song PromptUserForYoutubeSearch(string gameName)
+            => PromptForSelect<Song>(Resource.DialogMessageCaptionSong,
+                gameName,
+                s => SearchYoutube(s).Select(a => new GenericObjectOption(a.Name, a.ToString(), a) as GenericItemOption).ToList(),
+                gameName + " soundtrack");
 
-        private GenericItemOption PromptForAlbum(string gameName)
-            => PromptForSelect(Resource.DialogMessageCaptionAlbum,
-                gameName, a => DownloadManager.GetAlbumsForGame(a).ToList(), gameName);
+        private Album PromptForAlbum(string gameName, Source source)
+            => PromptForSelect<Album>(Resource.DialogMessageCaptionAlbum,
+                gameName,
+                s => DownloadManager.GetAlbumsForGame(s, source)
+                    .Select(a => 
+                        new GenericObjectOption(a.Name, a.ToString(), a) as GenericItemOption).ToList(),
+                gameName + (source == Source.Youtube ? " soundtrack" : string.Empty));
 
-        private GenericItemOption PromptForSong(List<GenericItemOption> songsToPartialUrls, string albumName)
-            => PromptForSelect(Resource.DialogMessageCaptionSong,
-                albumName, a => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a)).ToList(), string.Empty);
+        private Song PromptForSong(List<Song> songsToPartialUrls, string albumName)
+            => PromptForSelect<Song>(Resource.DialogMessageCaptionSong,
+                albumName,
+                a => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a))
+                    .Select(s =>
+                        new GenericObjectOption(s.Name, s.ToString(), s) as GenericItemOption)
+                    .ToList(), string.Empty);
 
-        private GenericItemOption PromptForSelect(
+        private T PromptForSelect<T>(
             string captionFormat,
             string formatArg,
             Func<string, List<GenericItemOption>> search,
             string defaultSearch)
-            => Dialogs.ChooseItemWithSearch(
+        {
+            var option = Dialogs.ChooseItemWithSearch(
                 new List<GenericItemOption>(), search, defaultSearch, string.Format(captionFormat, formatArg));
+
+            if (option is GenericObjectOption idOption && idOption.Object is T obj)
+            {
+                return obj;
+            }
+
+            return default;
+        }
 
         private bool GetBoolFromYesNoDialog(string caption)
             => Dialogs.ShowMessage(
@@ -858,7 +900,6 @@ namespace PlayniteSounds
         #endregion
 
         #endregion
-
 
         #endregion
 
@@ -1093,9 +1134,73 @@ namespace PlayniteSounds
 
         #region Download
 
-        private void DownloadMusicForSelectedGames() => PromptUserToDownload(SelectedGames);
+        private void DownloadMusicForSelectedGames(Source source)
+        {
+            if (SingleGame())
+            {
+                PromptUserForSingleDownload(source);
+                return;
+            } 
+            
+            PromptUserToDownload(SelectedGames, source); 
+        }
 
-        private void PromptUserToDownload(IEnumerable<Game> games)
+        private void PromptUserForSingleDownload(Source source)
+        {
+            var game = SelectedGames.First();
+            var strippedGameName = StringUtilities.StripStrings(game.Name);
+            Album album;
+
+            if (OnlySearchForYoutubeVideos(source))
+            {
+                album = new Album { Name = Resource.YoutubeSearch, Source = Source.Youtube };
+            }
+            else
+            {
+                album = PromptForAlbum(strippedGameName, source);
+            }
+            
+            if (album == null) return;
+            
+            Song song;
+
+            if (OnlySearchForYoutubeVideos(album.Source))
+            {
+                song = PromptUserForYoutubeSearch(strippedGameName);
+            }
+            else
+            {
+                var songs = DownloadManager.GetSongsFromAlbum(album);
+                song = PromptForSong(songs.ToList(), album.Name);
+            }
+
+            if (song == null) return;
+
+            var gameDirectory = CreateMusicDirectory(game);
+            var sanitizedFileName = StringUtilities.SanitizeGameName(song.Name) + ".mp3";
+            var newFilePath = Path.Combine(gameDirectory, sanitizedFileName);
+            if (!DownloadManager.DownloadSong(song, newFilePath))
+            {
+                Logger.Info($"Failed to download song '{song.Name}' for album '{album.Name}' of game '{game.Name}' with source {song.Source} and Id '{song.Id}'");
+                return;
+            }
+
+            Logger.Info($"Downloaded file '{sanitizedFileName}' in album '{album.Name}' of game '{game.Name}'");
+
+            ReloadMusic = true;
+            ReplayMusic();
+        }
+
+
+        private IEnumerable<Song> SearchYoutube(string search)
+        {
+            var album = DownloadManager.GetAlbumsForGame(search, Source.Youtube).First();
+            return DownloadManager.GetSongsFromAlbum(album);
+        }
+
+        private bool OnlySearchForYoutubeVideos(Source source) => source is Source.Youtube && !Settings.YtPlaylists;
+
+        private void PromptUserToDownload(IEnumerable<Game> games, Source source)
         {
             var albumSelect = GetBoolFromYesNoDialog(Resource.DialogMessageAlbumSelect);
             var songSelect = GetBoolFromYesNoDialog(Resource.DialogMessageSongSelect);
@@ -1103,7 +1208,7 @@ namespace PlayniteSounds
 
             CloseMusic();
 
-            CreateDownloadDialogue(games, albumSelect, songSelect, overwriteSelect);
+            CreateDownloadDialogue(games, source, albumSelect, songSelect, overwriteSelect);
 
             ShowMessage(Resource.DialogMessageDone);
 
@@ -1113,21 +1218,23 @@ namespace PlayniteSounds
 
         private void CreateDownloadDialogue(
             IEnumerable<Game> games,
+            Source source,
             bool albumSelect = false,
             bool songSelect = false,
             bool overwriteSelect = false)
         {
-            var progressTitle = $"{App.AppName}-{Resource.DialogMessageDownloadingFiles}";
+            var progressTitle = $"{App.AppName} - {Resource.DialogMessageDownloadingFiles}";
             var progressOptions = new GlobalProgressOptions(progressTitle, true) { IsIndeterminate = false };
 
             Dialogs.ActivateGlobalProgress(
-                a => Try(() => StartDownload(a, games.ToList(), progressTitle, albumSelect, songSelect, overwriteSelect)),
+                a => Try(() => StartDownload(a, games.ToList(), source, progressTitle, albumSelect, songSelect, overwriteSelect)),
                 progressOptions);
         }
 
         private void StartDownload(
             GlobalProgressActionArgs args,
             List<Game> games,
+            Source source,
             string progressTitle,
             bool albumSelect,
             bool songSelect,
@@ -1141,14 +1248,14 @@ namespace PlayniteSounds
                 var gameDirectory = CreateMusicDirectory(game);
 
                 var downloadSucceeded = 
-                    DownloadSongFromGame(game.Name, gameDirectory, songSelect, albumSelect, overwrite);
+                    DownloadSongFromGame(game.Name, source, gameDirectory, songSelect, albumSelect, overwrite);
 
                 UpdateMissingTag(game, downloadSucceeded, gameDirectory);
             }
         }
 
         private bool DownloadSongFromGame(
-            string gameName, string gameDirectory, bool songSelect, bool albumSelect, bool overwrite)
+            string gameName, Source source, string gameDirectory, bool songSelect, bool albumSelect, bool overwrite)
         {
             Logger.Info($"Starting album search for game '{gameName}'");
 
@@ -1158,21 +1265,26 @@ namespace PlayniteSounds
                 ? string.Empty
                 : StringUtilities.ReplaceStrings(strippedGameName);
 
-            GenericItemOption album = null;
-            if (albumSelect)
+            Album album = null;
+            var skipAlbumSearch = OnlySearchForYoutubeVideos(source) && songSelect;
+            if (skipAlbumSearch)
             {
-                album = PromptForAlbum(strippedGameName);
+                album = new Album { Name = Resource.YoutubeSearch, Source = Source.Youtube };
+            }
+            else if (albumSelect)
+            {
+                album = PromptForAlbum(strippedGameName, source);
             }
             else
             {
-                var albums = DownloadManager.GetAlbumsForGame(strippedGameName).ToList();
+                var albums = DownloadManager.GetAlbumsForGame(strippedGameName, source, true).ToList();
                 if (albums.Any())
                 {
                     album = DownloadManager.BestAlbumPick(albums, strippedGameName, regexGameName);
                 }
                 else
                 {
-                    Logger.Info($"Did not find any albums for game '{gameName}'");
+                    Logger.Info($"Did not find any albums for game '{gameName}' from source '{source}'");
                 }
             }
 
@@ -1181,27 +1293,38 @@ namespace PlayniteSounds
                 return false;
             }
 
-            Logger.Info($"Selected album '{album.Name}' for game '{gameName}'");
+            Logger.Info($"Selected album '{album.Name}' from source '{album.Source}' for game '{gameName}'");
 
-            var songs = DownloadManager.GetSongsFromAlbum(album).ToList();
-            if (!songs.Any())
+            Song song;
+            if (OnlySearchForYoutubeVideos(album.Source))
             {
-                Logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
+                song = songSelect 
+                    ? PromptUserForYoutubeSearch(strippedGameName)
+                    : DownloadManager.BestSongPick(album.Songs.ToList(), regexGameName);
+            }
+            else
+            {
+                var songs = DownloadManager.GetSongsFromAlbum(album).ToList();
+                if (!songs.Any())
+                {
+                    Logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
+                    return false;
+                }
+
+                Logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
+                song = songSelect 
+                    ? PromptForSong(songs, regexGameName)
+                    : DownloadManager.BestSongPick(songs, regexGameName);
+            }
+
+            if (song is null)
+            {
                 return false;
             }
 
-            Logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
+            Logger.Info($"Selected song '{song.Name}' from album '{album.Name}' for game '{gameName}'");
 
-            var songToPartialUrl = songSelect
-                ? PromptForSong(songs, album.Name)
-                : DownloadManager.BestSongPick(songs, regexGameName);
-
-            if (songToPartialUrl == null)
-            {
-                return false;
-            }
-
-            var sanitizedFileName = StringUtilities.SanitizeGameName(songToPartialUrl.Name) + ".mp3";
+            var sanitizedFileName = StringUtilities.SanitizeGameName(song.Name) + ".mp3";
             var newFilePath = Path.Combine(gameDirectory, sanitizedFileName);
             if (!overwrite && File.Exists(newFilePath))
             {
@@ -1211,9 +1334,9 @@ namespace PlayniteSounds
 
             Logger.Info($"Overwriting song file '{sanitizedFileName}' for game '{gameName}'.");
 
-            if (!DownloadManager.DownloadSong(songToPartialUrl, newFilePath))
+            if (!DownloadManager.DownloadSong(song, newFilePath))
             {
-                Logger.Info($"Failed to download song '{songToPartialUrl.Name}' for album '{album.Name}' of game '{gameName}' from url '{songToPartialUrl.Description}'");
+                Logger.Info($"Failed to download song '{song.Name}' for album '{album.Name}' of game '{gameName}' with source {song.Source} and Id '{song.Id}'");
                 return false;
             }
 
@@ -1369,6 +1492,16 @@ namespace PlayniteSounds
         private PlayniteSoundsSettings Settings => SettingsModel.Settings;
         private IEnumerable<Game> SelectedGames => PlayniteApi.MainView.SelectedGames;
         private IDialogsFactory Dialogs => PlayniteApi.Dialogs;
+
+        #region DLL Imports
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        #endregion
 
         #endregion
     }

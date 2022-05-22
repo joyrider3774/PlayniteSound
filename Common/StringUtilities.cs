@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PlayniteSounds.Common.Extensions;
 
 namespace PlayniteSounds.Common
 {
@@ -28,5 +30,24 @@ namespace PlayniteSounds.Common
         }
 
         public static string SanitizeGameName(string gameName) => InvalidCharsRegex.Replace(gameName, string.Empty);
+
+        public static TimeSpan? GetTimeSpan(string time)
+        {
+            if (string.IsNullOrEmpty(time)) return null;
+
+            var times = time.Split(':').ToList();
+
+            var seconds = PopToInt(times);
+            var minutes = PopToInt(times);
+            var hours = PopToInt(times);
+
+            return new TimeSpan(hours, minutes, seconds);
+        }
+
+        private static int PopToInt(IList<string> strings)
+        {
+            var str = strings.Pop();
+            return string.IsNullOrWhiteSpace(str) ? 0 : int.Parse(str);
+        }
     }
 }

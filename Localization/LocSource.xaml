@@ -20,6 +20,13 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
 
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Browse">Browse...</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_YtPlaylists">Youtube: Search for Playlists</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManParDown">Manual: Display Results Side-By-Side</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_AutoParDown">Auto: Select Results Side-By-Side</sys:String>
+
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Fullscreen</sys:String>
@@ -29,6 +36,9 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
 
 <!-- Settings Resources -->
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Youtube">Youtube</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_YoutubeSearch">Youtube Search</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -52,6 +62,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Help</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Show Music Filename</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Select Music File</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions_Download">Download</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Delete</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Play</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>

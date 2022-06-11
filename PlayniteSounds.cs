@@ -57,7 +57,7 @@ namespace PlayniteSounds
         private bool _firstSelectSound = true;
         private bool _closeAudioFilesNextPlay;
 
-        private string _prevMusicFileName = string.Empty;  //used to prevent same file being restarted 
+        private string _prevMusicFileName = string.Empty;  //used to prevent same file abeing restarted 
 
         private readonly string _pluginUserDataPath;
         private readonly string _musicFilesDataPath;
@@ -362,7 +362,7 @@ namespace PlayniteSounds
 
         private void PlayMusicFromFirstSelected() => PlayMusicFromFirst(SelectedGames);
 
-        private void PlayMusicFromFirst(IEnumerable<Game> games)
+        private void PlayMusicFromFirst(IEnumerable<Game> games = null)
         {
             var game = games.FirstOrDefault();
 
@@ -379,19 +379,26 @@ namespace PlayniteSounds
                     fileDirectory = _defaultMusicPath;
                     break;
             }
+            PlayMusicFromDirectory(fileDirectory);
+        }
+
+        private void PlayMusicFromDirectory(string fileDirectory)
+        {
 
             var musicFiles = Directory.GetFiles(fileDirectory);
             var musicFile = musicFiles.FirstOrDefault() ?? string.Empty;
+            var musicEndRandom = _musicEnded && Settings.RandomizeOnMusicEnd;
 
             var rand = new Random();
-            if (musicFiles.Length > 1 && (Settings.RandomizeOnEverySelect ||
-                (_musicEnded && Settings.RandomizeOnMusicEnd)))
-            /*Then*/
-            do
+            if (musicFiles.Length > 1 && (Settings.RandomizeOnEverySelect || musicEndRandom))
             {
-                musicFile = musicFiles[rand.Next(musicFiles.Length)];
+                ReloadMusic = true;
+                do
+                {
+                    musicFile = musicFiles[rand.Next(musicFiles.Length)];
+                }
+                while (_prevMusicFileName == musicFile);
             }
-            while (_prevMusicFileName == musicFile);
 
             PlayMusicFromPath(musicFile);
         }
@@ -427,9 +434,21 @@ namespace PlayniteSounds
             _musicPlayer.Close();
         }
 
+        private void ForcePlayMusicFromPath(string filePath)
+        {
+            ReloadMusic = true;
+            PlayMusicFromPath(filePath);
+        }
+
         private void PlayMusicFromPath(string filePath)
         {
-            if (ReloadMusic || filePath != _prevMusicFileName)
+            //need to use directoryname on verification otherwise when game music randomly changes
+            //on musicend music will be restarted when we select another game in for Default or Platform Mode
+            //in case of "random music on selection" or "Random Music on Musicend" ReloadMusic will be set
+            //check on empty needs to happen before directory verification or exceptions occur if no such music exists
+            //it still needs to call the sub to play the music but it will just close the music as File.exists will fail there
+            if (ReloadMusic || _prevMusicFileName.Equals(string.Empty) || filePath.Equals(string.Empty) ||
+                (Path.GetDirectoryName(filePath) != Path.GetDirectoryName(_prevMusicFileName)))
             {
                 Try(() => SubPlayMusicFromPath(filePath));
             }
@@ -590,7 +609,7 @@ namespace PlayniteSounds
                 var songSubMenu = subMenu + songName;
 
                 menuItems.Add(menuItemConstructor(
-                    Resource.ActionsCopyPlayMusicFile, () => PlayMusicFromPath(file), songSubMenu));
+                    Resource.ActionsCopyPlayMusicFile, () => ForcePlayMusicFromPath(file), songSubMenu));
                 menuItems.Add(menuItemConstructor(
                     Resource.ActionsCopyDeleteMusicFile, () => DeleteMusicFile(file, songName, isGame), songSubMenu));
             }           
@@ -889,12 +908,16 @@ namespace PlayniteSounds
             var anyOrphans = Directory.GetFileSystemEntries(_orphanDirectory).Any();
             if (anyOrphans)
             {
-                var viewOrphans = 
+                var viewOrphans =
                     GetBoolFromYesNoDialog(string.Format(Resource.DialogUpdateLegacyOrphans, _orphanDirectory));
                 if (viewOrphans)
                 {
                     Process.Start(_orphanDirectory);
                 }
+            }
+            else
+            {
+                ShowMessage(Resource.DialogMessageDone);
             }
         }
 
@@ -1058,7 +1081,7 @@ namespace PlayniteSounds
             ReloadMusic = true;
             if (playNewMusic && newMusicFile != null)
             {
-                PlayMusicFromPath(newMusicFile);
+                ForcePlayMusicFromPath(newMusicFile);
             }
             else
             {
@@ -1308,7 +1331,7 @@ namespace PlayniteSounds
             => Path.Combine(_gameMusicFilePath, game.Id.ToString());
 
         private string CreatePlatformDirectoryPathFromGame(Game game) 
-            => CreatePlatformDirectory(game.Platforms?.FirstOrDefault()?.Name ?? SoundDirectory.NoPlatform);
+            => CreatePlatformDirectory(game?.Platforms?.FirstOrDefault()?.Name ?? SoundDirectory.NoPlatform);
 
         private string CreateMusicDirectory(Game game)
             => Directory.CreateDirectory(GetMusicDirectoryPath(game)).FullName;
@@ -1322,15 +1345,16 @@ namespace PlayniteSounds
         private void PlayMusicBasedOnSelected()
         {
             if (ShouldPlayMusicOrClose())
-            /*Then*/
-            switch (SelectedGames.Count())
             {
-                case 1:
-                    PlayMusicFromFirstSelected();
-                    break;
-                case 0 when Settings.PlayBackgroundWhenNoneSelected:
-                    PlayMusicFromPath(_defaultMusicPath);
-                    break;
+                switch (SelectedGames.Count())
+                {
+                    case 1:
+                        PlayMusicFromFirstSelected();
+                        break;
+                    case 0 when Settings.PlayBackgroundWhenNoneSelected:
+                        PlayMusicFromDirectory(_defaultMusicPath);
+                        break;
+                }
             }
         }
 

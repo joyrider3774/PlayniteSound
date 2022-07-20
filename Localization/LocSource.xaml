@@ -2,7 +2,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
 
-<!-- Settings Resources -->
+    <!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound where:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
@@ -20,8 +20,15 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
 
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Automatically normalize music when downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">FFmpeg-Normalize Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">Normalizing audio allows consistent volume between tracks without compromising quality</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Doc">FFmpeg-Normalize Documentation</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Cust">(Optional) FFmpeg-Normalize Custom Arguments</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Cust_Hint">The args provided if this is undefined are "-lrt 16 -c:a libmp3lame". Requires an encoder be defined via the "-c:a" command. "input_file -o input_file -f" is always provided</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Browse">Browse...</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Help">Help</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_YtPlaylists">Youtube: Search for Playlists</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManParDown">Manual: Display Results Side-By-Side</sys:String>
@@ -35,10 +42,13 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Game is starting</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Game has started</sys:String>
 
-<!-- Settings Resources -->
+    <!-- Settings Resources -->
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Youtube">Youtube</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_YoutubeSearch">Youtube Search</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions_Normalize">Normalize Music Files</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageNormalizingFiles">Normalizing Music files...</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_NormTag">[PS] Normalized</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Missing Background Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Download files</sys:String>
@@ -72,7 +82,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">While converting a legacy music directory, orphaned files were found. These files have been moved to: {0}. Would you like to view them?</sys:String>
-    
+
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Audio files reloaded!</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Please select a single game!</sys:String>
@@ -88,14 +98,14 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Music Volume:</sys:String>
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
-    
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Sound Manager</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Load</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Save</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Successfully Saved Sound Pack:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Successfully Loaded Sound Pack:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Successfully Deleted Sound Pack:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+
 </ResourceDictionary>

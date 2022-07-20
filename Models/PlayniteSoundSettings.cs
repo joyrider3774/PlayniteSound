@@ -20,7 +20,11 @@ namespace PlayniteSounds.Models
         public bool AutoParallelDownload { get; set; }
         public bool ManualParallelDownload { get; set; } = true;
         public bool YtPlaylists { get; set; } = true;
+        public bool NormalizeMusic { get; set; } = true;
+        public bool TagNormalizedGames { get; set; };
         public string FFmpegPath { get; set; }
+        public string FFmpegNormalizePath { get; set; }
+        public string FFmpegNormalizeArgs { get; set; }
         public IList<Source> Downloaders { get; set; } = new List<Source> { Source.Youtube };
         public DateTime LastAutoLibUpdateAssetsDownload { get; set; } = DateTime.Now;
     }

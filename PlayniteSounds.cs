@@ -123,7 +123,8 @@ namespace PlayniteSounds
                     ConstructGameMenuItem(Resource.Youtube, _ => DownloadMusicForSelectedGames(Source.Youtube), "|" + Resource.Actions_Download),
                     ConstructGameMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForSelectedGames),
                     ConstructGameMenuItem(Resource.ActionsOpenSelected, OpenMusicDirectory),
-                    ConstructGameMenuItem(Resource.ActionsDeleteSelected, DeleteMusicDirectories)
+                    ConstructGameMenuItem(Resource.ActionsDeleteSelected, DeleteMusicDirectories),
+                    ConstructGameMenuItem(Resource.Actions_Normalize, CreateNormalizationDialogue), 
                 };
 
                 _mainMenuItems = new List<MainMenuItem>
@@ -1130,6 +1131,134 @@ namespace PlayniteSounds
             }
         }
 
+        private void CreateNormalizationDialogue()
+        {
+            var progressTitle = $"{App.AppName} - {Resource.DialogMessageNormalizingFiles}";
+            var progressOptions = new GlobalProgressOptions(progressTitle, true) { IsIndeterminate = false };
+
+            var failedGames = new List<string>();
+
+            CloseMusic();
+
+            Dialogs.ActivateGlobalProgress(a => Try(() =>
+            failedGames = NormalizeSelectedGameMusicFiles(a, SelectedGames.ToList(), progressTitle)),
+                progressOptions);
+
+            if (failedGames.Any())
+            {
+                var games = string.Join(", ", failedGames);
+                Dialogs.ShowErrorMessage(string.Format("The following games had at least one file fail to normalize (see logs for details): ", games), App.AppName);
+            }
+            else
+            {
+                ShowMessage(Resource.DialogMessageDone);
+            }
+
+            ReloadMusic = true;
+            ReplayMusic();
+        }
+
+        private List<string> NormalizeSelectedGameMusicFiles(
+            GlobalProgressActionArgs args, IList<Game> games, string progressTitle)
+        {
+            var failedGames = new List<string>();
+
+            args.ProgressMaxValue = games.Count;
+            foreach (var game in games.TakeWhile(_ => !args.CancelToken.IsCancellationRequested))
+            {
+                args.Text = $"{progressTitle}\n\n{++args.CurrentProgressValue}/{args.ProgressMaxValue}\n{game.Name}";
+
+                var allMusicNormalized = true;
+                foreach (var musicFile in Directory.GetFiles(GetMusicDirectoryPath(game)))
+                {
+                    if (!NormalizeAudioFile(musicFile))
+                    {
+                        allMusicNormalized = false;
+                    }
+                }
+
+                if (allMusicNormalized)
+                {
+                    UpdateNormalizedTag(game);
+                }
+                else
+                {
+                    failedGames.Add(game.Name);
+                }
+            }
+
+            return failedGames;
+        }
+
+        private bool NormalizeAudioFile(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(Settings.FFmpegNormalizePath))
+            {
+                throw new ArgumentException("FFmpeg-Normalize path is undefined");
+            }
+
+            if (!File.Exists(Settings.FFmpegNormalizePath))
+            {
+                throw new ArgumentException("FFmpeg-Normalize path does not exist");
+            }
+
+            var args = SoundFile.DefaultNormArgs;
+            if (string.IsNullOrWhiteSpace(Settings.FFmpegNormalizeArgs))
+            {
+                args = Settings.FFmpegNormalizeArgs;
+                Logger.Info($"Using custom args '{args}' for file '{filePath}' during normalization.");
+            }
+                
+
+            var info = new ProcessStartInfo
+            {
+                Arguments = $"{args} \"{filePath}\" -o \"{filePath}\" -f",
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                FileName = Settings.FFmpegNormalizePath
+            };
+
+            info.EnvironmentVariables["FFMPEG_PATH"] = Settings.FFmpegPath;
+
+            var stdout = string.Empty;
+            var stderr = string.Empty;
+            using (var proc = new Process())
+            {
+                proc.StartInfo = info;
+                proc.OutputDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        stdout += e.Data + Environment.NewLine;
+                    }
+                };
+
+                proc.ErrorDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        stderr += e.Data + Environment.NewLine;
+                    }
+                };
+
+                proc.Start();
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
+                proc.WaitForExit();
+
+                if (!string.IsNullOrWhiteSpace(stderr))
+                {
+                    Logger.Error($"FFmpeg-Normalize failed for file '{filePath}' with error: {stderr} and output: {stdout}");
+                    return false;
+                }
+
+                Logger.Info($"FFmpeg-Normalize succeeded for file '{filePath}.");
+                return true;
+            }
+        }
+
         #endregion
 
         #region Download
@@ -1187,6 +1316,8 @@ namespace PlayniteSounds
 
             Logger.Info($"Downloaded file '{sanitizedFileName}' in album '{album.Name}' of game '{game.Name}'");
 
+            NormalizeAudioFile(newFilePath);
+
             ReloadMusic = true;
             ReplayMusic();
         }
@@ -1226,8 +1357,8 @@ namespace PlayniteSounds
             var progressTitle = $"{App.AppName} - {Resource.DialogMessageDownloadingFiles}";
             var progressOptions = new GlobalProgressOptions(progressTitle, true) { IsIndeterminate = false };
 
-            Dialogs.ActivateGlobalProgress(
-                a => Try(() => StartDownload(a, games.ToList(), source, progressTitle, albumSelect, songSelect, overwriteSelect)),
+            Dialogs.ActivateGlobalProgress(a => Try(() => 
+            StartDownload(a, games.ToList(), source, progressTitle, albumSelect, songSelect, overwriteSelect)),
                 progressOptions);
         }
 
@@ -1243,21 +1374,35 @@ namespace PlayniteSounds
             args.ProgressMaxValue = games.Count;
             foreach (var game in games.TakeWhile(_ => !args.CancelToken.IsCancellationRequested))
             {
-                args.Text = $"{progressTitle}\n\n{args.CurrentProgressValue++}/{args.ProgressMaxValue}\n{game.Name}";
+                args.Text = $"{progressTitle}\n\n{++args.CurrentProgressValue}/{args.ProgressMaxValue}\n{game.Name}";
 
                 var gameDirectory = CreateMusicDirectory(game);
 
-                var downloadSucceeded = 
-                    DownloadSongFromGame(game.Name, source, gameDirectory, songSelect, albumSelect, overwrite);
+                var newFilePath = 
+                    DownloadSongFromGame(source, game.Name, gameDirectory, songSelect, albumSelect, overwrite);
 
-                UpdateMissingTag(game, downloadSucceeded, gameDirectory);
+
+                if (Settings.NormalizeMusic)
+                {
+                    args.Text += $" - {Resource.DialogMessageNormalizingFiles}";
+                    if (NormalizeAudioFile(newFilePath))
+                    {
+                        UpdateNormalizedTag(game);
+                    }
+                }
+
+                UpdateMissingTag(game, newFilePath is null, gameDirectory);
             }
         }
 
-        private bool DownloadSongFromGame(
-            string gameName, Source source, string gameDirectory, bool songSelect, bool albumSelect, bool overwrite)
+        private string DownloadSongFromGame(
+            Source source,
+            string gameName,
+            string gameDirectory,
+            bool songSelect,
+            bool albumSelect,
+            bool overwrite)
         {
-            Logger.Info($"Starting album search for game '{gameName}'");
 
             var strippedGameName = StringUtilities.StripStrings(gameName);
 
@@ -1265,61 +1410,18 @@ namespace PlayniteSounds
                 ? string.Empty
                 : StringUtilities.ReplaceStrings(strippedGameName);
 
-            Album album = null;
-            var skipAlbumSearch = OnlySearchForYoutubeVideos(source) && songSelect;
-            if (skipAlbumSearch)
+            var album = SelectAlbumForGame(source, gameName, strippedGameName, regexGameName, albumSelect, songSelect);
+            if (album is null)
             {
-                album = new Album { Name = Resource.YoutubeSearch, Source = Source.Youtube };
-            }
-            else if (albumSelect)
-            {
-                album = PromptForAlbum(strippedGameName, source);
-            }
-            else
-            {
-                var albums = DownloadManager.GetAlbumsForGame(strippedGameName, source, true).ToList();
-                if (albums.Any())
-                {
-                    album = DownloadManager.BestAlbumPick(albums, strippedGameName, regexGameName);
-                }
-                else
-                {
-                    Logger.Info($"Did not find any albums for game '{gameName}' from source '{source}'");
-                }
-            }
-
-            if (album == null)
-            {
-                return false;
+                return null;
             }
 
             Logger.Info($"Selected album '{album.Name}' from source '{album.Source}' for game '{gameName}'");
 
-            Song song;
-            if (OnlySearchForYoutubeVideos(album.Source))
-            {
-                song = songSelect 
-                    ? PromptUserForYoutubeSearch(strippedGameName)
-                    : DownloadManager.BestSongPick(album.Songs.ToList(), regexGameName);
-            }
-            else
-            {
-                var songs = DownloadManager.GetSongsFromAlbum(album).ToList();
-                if (!songs.Any())
-                {
-                    Logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
-                    return false;
-                }
-
-                Logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
-                song = songSelect 
-                    ? PromptForSong(songs, regexGameName)
-                    : DownloadManager.BestSongPick(songs, regexGameName);
-            }
-
+            var song = SelectSongFromAlbum(album, gameName, strippedGameName, regexGameName, songSelect);
             if (song is null)
             {
-                return false;
+                return null;
             }
 
             Logger.Info($"Selected song '{song.Name}' from album '{album.Name}' for game '{gameName}'");
@@ -1329,7 +1431,7 @@ namespace PlayniteSounds
             if (!overwrite && File.Exists(newFilePath))
             {
                 Logger.Info($"Song file '{sanitizedFileName}' for game '{gameName}' already exists. Skipping....");
-                return false;
+                return null;
             }
 
             Logger.Info($"Overwriting song file '{sanitizedFileName}' for game '{gameName}'.");
@@ -1337,11 +1439,86 @@ namespace PlayniteSounds
             if (!DownloadManager.DownloadSong(song, newFilePath))
             {
                 Logger.Info($"Failed to download song '{song.Name}' for album '{album.Name}' of game '{gameName}' with source {song.Source} and Id '{song.Id}'");
-                return false;
+                return null;
             }
 
             Logger.Info($"Downloaded file '{sanitizedFileName}' in album '{album.Name}' of game '{gameName}'");
-            return true;
+            return newFilePath;
+        }
+
+        private Album SelectAlbumForGame(
+            Source source, 
+            string gameName, 
+            string strippedGameName, 
+            string regexGameName,
+            bool albumSelect, 
+            bool songSelect)
+        {
+            Album album = null;
+
+            var skipAlbumSearch = OnlySearchForYoutubeVideos(source) && songSelect;
+            if (skipAlbumSearch)
+            {
+                Logger.Info($"Skipping album search for game '{gameName}'");
+                album = new Album { Name = Resource.YoutubeSearch, Source = Source.Youtube };
+            }
+            else
+            {
+                Logger.Info($"Starting album search for game '{gameName}'");
+
+                if (albumSelect)
+                {
+                    album = PromptForAlbum(strippedGameName, source);
+                }
+                else
+                {
+                    var albums = DownloadManager.GetAlbumsForGame(strippedGameName, source, true).ToList();
+                    if (albums.Any())
+                    {
+                        album = DownloadManager.BestAlbumPick(albums, strippedGameName, regexGameName);
+                    }
+                    else
+                    {
+                        Logger.Info($"Did not find any albums for game '{gameName}' from source '{source}'");
+                    }
+                }
+            }
+
+            return album;
+        }
+
+        private Song SelectSongFromAlbum(
+            Album album,
+            string gameName,
+            string strippedGameName,
+            string regexGameName,
+            bool songSelect)
+        {
+            Song song = null;
+
+            if (OnlySearchForYoutubeVideos(album.Source))
+            {
+                song = songSelect
+                    ? PromptUserForYoutubeSearch(strippedGameName)
+                    : DownloadManager.BestSongPick(album.Songs.ToList(), regexGameName);
+            }
+            else
+            {
+                var songs = DownloadManager.GetSongsFromAlbum(album).ToList();
+                if (!songs.Any())
+                {
+                    Logger.Info($"Did not find any songs for album '{album.Name}' of game '{gameName}'");
+                }
+                else
+                {
+                    Logger.Info($"Found songs for album '{album.Name}' of game '{gameName}'");
+                    song = songSelect
+                        ? PromptForSong(songs, regexGameName)
+                        : DownloadManager.BestSongPick(songs, regexGameName);
+                }
+            }
+
+            return song;
         }
 
         #endregion
@@ -1365,6 +1542,18 @@ namespace PlayniteSounds
                     {
                         Logger.Info($"Added tag to '{game.Name}'");
                     }
+                }
+            }
+        }
+
+        private void UpdateNormalizedTag(Game game)
+        {
+            if (Settings.TagNormalizedGames)
+            {
+                var normalizedTag = PlayniteApi.Database.Tags.Add(Resource.NormTag);
+                if (AddTagToGame(game, normalizedTag))
+                {
+                    Logger.Info($"Added normalized tag to '{game.Name}'");
                 }
             }
         }
@@ -1469,7 +1658,7 @@ namespace PlayniteSounds
         {
             if (ShouldPlayMusicOrClose())
             {
-                switch (SelectedGames.Count())
+                switch (SelectedGames?.Count())
                 {
                     case 1:
                         PlayMusicFromFirstSelected();
@@ -1487,7 +1676,7 @@ namespace PlayniteSounds
             Dialogs.ShowErrorMessage(e.Message, App.AppName);
         }
 
-        private void Try(Action action) { try { action(); } catch (Exception ex) { HandleException(ex); } }
+        public void Try(Action action) { try { action(); } catch (Exception ex) { HandleException(ex); } }
 
         private PlayniteSoundsSettings Settings => SettingsModel.Settings;
         private IEnumerable<Game> SelectedGames => PlayniteApi.MainView.SelectedGames;

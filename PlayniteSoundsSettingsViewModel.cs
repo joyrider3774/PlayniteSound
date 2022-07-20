@@ -3,6 +3,7 @@ using Playnite.SDK.Data;
 using PlayniteSounds.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace PlayniteSounds
@@ -29,6 +30,25 @@ namespace PlayniteSounds
                 {
                     Settings.FFmpegPath = filePath;
                 }
+            });
+        }
+
+        public RelayCommand<object> BrowseForFFmpegNormalizeFile
+        {
+            get => new RelayCommand<object>((a) =>
+            {
+                var filePath = _plugin.PlayniteApi.Dialogs.SelectFile(string.Empty);
+                if (!string.IsNullOrWhiteSpace(filePath))
+                {
+                    Settings.FFmpegNormalizePath = filePath;
+                }
+            });
+        }
+        public RelayCommand<object> NavigateUrlCommand
+        {
+            get => new RelayCommand<object>((url) =>
+            {
+                _plugin.Try(() => Process.Start((url as Uri).AbsoluteUri));
             });
         }
 

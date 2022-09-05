@@ -1,6 +1,7 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
+using Sounds;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +25,7 @@ using System.Text;
 
 namespace PlayniteSounds
 {
-    public class PlayniteSounds : GenericPlugin
+    public class PlayniteSounds : GenericPlugin, ISounds
     {
         public bool ReloadMusic { get; set; }
 
@@ -308,6 +309,14 @@ namespace PlayniteSounds
 
             return mainMenuItems;
         }
+
+        #endregion
+
+        #region Sounds Interface
+
+        public void Play() => ResumeMusic();
+
+        public void Pause() => PauseMusic();
 
         #endregion
 

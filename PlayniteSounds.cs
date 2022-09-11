@@ -20,8 +20,6 @@ using PlayniteSounds.Downloaders;
 using PlayniteSounds.Common;
 using PlayniteSounds.Common.Constants;
 using PlayniteSounds.Models;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace PlayniteSounds
 {
@@ -673,6 +671,7 @@ namespace PlayniteSounds
         #endregion
 
         #region Prompts
+
         private Song PromptUserForYoutubeSearch(string gameName)
             => PromptForSelect<Song>(Resource.DialogMessageCaptionSong,
                 gameName,
@@ -692,8 +691,8 @@ namespace PlayniteSounds
                 albumName,
                 a => songsToPartialUrls.OrderByDescending(s => s.Name.StartsWith(a))
                     .Select(s =>
-                        new GenericObjectOption(s.Name, s.ToString(), s) as GenericItemOption)
-                    .ToList(), string.Empty);
+                        new GenericObjectOption(s.Name, s.ToString(), s) as GenericItemOption).ToList(),
+                string.Empty);
 
         private T PromptForSelect<T>(
             string captionFormat,
@@ -1272,65 +1271,6 @@ namespace PlayniteSounds
 
         #region Download
 
-        private void DownloadMusicForSelectedGames(Source source)
-        {
-            if (SingleGame())
-            {
-                PromptUserForSingleDownload(source);
-                return;
-            } 
-            
-            PromptUserToDownload(SelectedGames, source); 
-        }
-
-        private void PromptUserForSingleDownload(Source source)
-        {
-            var game = SelectedGames.First();
-            var strippedGameName = StringUtilities.StripStrings(game.Name);
-            Album album;
-
-            if (OnlySearchForYoutubeVideos(source))
-            {
-                album = new Album { Name = Resource.YoutubeSearch, Source = Source.Youtube };
-            }
-            else
-            {
-                album = PromptForAlbum(strippedGameName, source);
-            }
-            
-            if (album == null) return;
-            
-            Song song;
-
-            if (OnlySearchForYoutubeVideos(album.Source))
-            {
-                song = PromptUserForYoutubeSearch(strippedGameName);
-            }
-            else
-            {
-                var songs = DownloadManager.GetSongsFromAlbum(album);
-                song = PromptForSong(songs.ToList(), album.Name);
-            }
-
-            if (song == null) return;
-
-            var gameDirectory = CreateMusicDirectory(game);
-            var sanitizedFileName = StringUtilities.SanitizeGameName(song.Name) + ".mp3";
-            var newFilePath = Path.Combine(gameDirectory, sanitizedFileName);
-            if (!DownloadManager.DownloadSong(song, newFilePath))
-            {
-                Logger.Info($"Failed to download song '{song.Name}' for album '{album.Name}' of game '{game.Name}' with source {song.Source} and Id '{song.Id}'");
-                return;
-            }
-
-            Logger.Info($"Downloaded file '{sanitizedFileName}' in album '{album.Name}' of game '{game.Name}'");
-
-            NormalizeAudioFile(newFilePath);
-
-            ReloadMusic = true;
-            ReplayMusic();
-        }
-
 
         private IEnumerable<Song> SearchYoutube(string search)
         {
@@ -1340,10 +1280,17 @@ namespace PlayniteSounds
 
         private bool OnlySearchForYoutubeVideos(Source source) => source is Source.Youtube && !Settings.YtPlaylists;
 
-        private void PromptUserToDownload(IEnumerable<Game> games, Source source)
+        private void DownloadMusicForSelectedGames(Source source)
         {
-            var albumSelect = GetBoolFromYesNoDialog(Resource.DialogMessageAlbumSelect);
-            var songSelect = GetBoolFromYesNoDialog(Resource.DialogMessageSongSelect);
+            var games = SelectedGames.ToList();
+            var albumSelect = true;
+            var songSelect = true;
+            if (games.Count() > 1)
+            {
+                albumSelect = GetBoolFromYesNoDialog(Resource.DialogMessageAlbumSelect);
+                songSelect = GetBoolFromYesNoDialog(Resource.DialogMessageSongSelect);
+            }
+
             var overwriteSelect = GetBoolFromYesNoDialog(Resource.DialogMessageOverwriteSelect);
 
             CloseMusic();
@@ -1690,16 +1637,6 @@ namespace PlayniteSounds
         private PlayniteSoundsSettings Settings => SettingsModel.Settings;
         private IEnumerable<Game> SelectedGames => PlayniteApi.MainView.SelectedGames;
         private IDialogsFactory Dialogs => PlayniteApi.Dialogs;
-
-        #region DLL Imports
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
-        #endregion
 
         #endregion
     }

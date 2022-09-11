@@ -35,7 +35,7 @@ namespace PlayniteSounds.Downloaders
             => GetAlbumsFromExplodeApiAsync(gameName, auto).Result;
 
         public IEnumerable<Song> GetSongsFromAlbum(Album album) 
-            => album.Songs ?? GetSongsFromExplodeApiAsync(album).Result;
+            => album.Songs ?? GetSongsFromExplodeApiAsync(album).ToEnumerable();
 
         public bool DownloadSong(Song song, string path) => DownloadSongExplodeAsync(song, path).Result;
 
@@ -99,36 +99,14 @@ namespace PlayniteSounds.Downloaders
             return albums;
         }
 
-        private async Task<IEnumerable<Song>> GetSongsFromExplodeApiAsync(Album album)
-        {
-            var playlistVideos = new List<YoutubeExplode.Playlists.PlaylistVideo>();
-            var videoResults = _youtubeClient.Playlists.GetVideoBatchesAsync(album.Id);
-
-            var videoEnumerator = videoResults.GetAsyncEnumerator();
-            while (await videoEnumerator.MoveNextAsync())
+        private IAsyncEnumerable<Song> GetSongsFromExplodeApiAsync(Album album)
+            => _youtubeClient.Playlists.GetVideosAsync(album.Id).Select(video => new Song
             {
-                playlistVideos.AddRange(videoEnumerator.Current.Items);
-            }
-
-            // These methods currently seem to hang when used, but only if the above code is not executed.
-            // Current theory is the use of IAsyncEnumerable, as it targets C# 8.0, but this project targets C# 7.3.
-            //var a = await _youtubeClient.Playlists.GetVideoBatchesAsync(album.Id).SelectManyAwait(b => b.Items.ToList());
-            // Worked for awhile, but after updating to the latest version of Explode, it began to hang
-            // Attempts to revert to prior version of Explode were unsuccessful
-            //playlistVideos = (List<YoutubeExplode.Playlists.PlaylistVideo>)await _youtubeClient.Playlists.GetVideosAsync(album.Id);
-
-            // Outright unsupported
-            //var look = await _youtubeClient.Playlists.GetVideoBatchesAsync(album.Id).FlattenAsync();
-
-            return playlistVideos.Select(v =>
-                new Song
-                {
-                    Name = v.Title,
-                    Id = v.Id,
-                    Length = v.Duration,
-                    Source = DlSource
-                });
-        }
+                Name = video.Title,
+                Id = video.Id,
+                Length = video.Duration,
+                Source = DlSource
+            });
 
         private async Task<bool> DownloadSongExplodeAsync(Song song, string path)
         {

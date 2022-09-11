@@ -1,6 +1,6 @@
 ﻿namespace PlayniteSounds.Common.Constants
 {
-    public class SoundDirectory
+    public static class SoundDirectory
     {
         public const string NoPlatform = "No Platform";
         public const string Music = "Music Files";
@@ -11,5 +11,7 @@
         public const string SoundManager = "Sound Manager";
         public const string Localization = "Localization";
         public const string Orphans = "Orphans";
+        public const string ExtraMetaData = "ExtraMetadata";
+        public const string GamesFolder = "Games";
     }
 }

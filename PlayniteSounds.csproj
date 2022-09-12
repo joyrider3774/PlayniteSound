@@ -419,4 +419,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\System.Text.Json.6.0.5\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\System.Text.Json.6.0.5\build\System.Text.Json.targets'))" />
   </Target>
+  <ItemGroup>
+   <ProjectReference Include="Sounds\Sounds.csproj">
+      <Project>{B1C8F839-E464-42EB-B6C3-5759832CD59C}</Project>
+      <Name>Sounds</Name>
+   </ProjectReference>
+  </ItemGroup>
 </Project>

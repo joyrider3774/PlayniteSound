@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayniteSounds", "PlayniteSounds.csproj", "{4FDF1E89-5BC3-4C72-8FDA-0D580E7A5D5F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B1C8F839-E464-42EB-B6C3-5759832CD59C} = {B1C8F839-E464-42EB-B6C3-5759832CD59C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sounds", "Sounds\Sounds.csproj", "{B1C8F839-E464-42EB-B6C3-5759832CD59C}"
 EndProject

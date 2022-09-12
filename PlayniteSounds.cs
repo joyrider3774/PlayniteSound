@@ -114,14 +114,14 @@ namespace PlayniteSounds
                 //{
                 //    RepeatBehavior = RepeatBehavior.Forever                    
                 //};
-                
+
                 _gameMenuItems = new List<GameMenuItem>
                 {
                     ConstructGameMenuItem(Resource.Youtube, _ => DownloadMusicForSelectedGames(Source.Youtube), "|" + Resource.Actions_Download),
                     ConstructGameMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForSelectedGames),
                     ConstructGameMenuItem(Resource.ActionsOpenSelected, OpenMusicDirectory),
                     ConstructGameMenuItem(Resource.ActionsDeleteSelected, DeleteMusicDirectories),
-                    ConstructGameMenuItem(Resource.Actions_Normalize, CreateNormalizationDialogue), 
+                    ConstructGameMenuItem(Resource.Actions_Normalize, CreateNormalizationDialogue),
                 };
 
                 _mainMenuItems = new List<MainMenuItem>
@@ -135,6 +135,9 @@ namespace PlayniteSounds
                 };
 
                 DownloadManager = new DownloadManager(Settings);
+
+                PlayniteApi.Database.Games.ItemCollectionChanged += CleanupDeletedGames;
+                PlayniteApi.Database.Platforms.ItemCollectionChanged += CleanupDeletedPlatforms;
             }
             catch (Exception e)
             {
@@ -305,6 +308,30 @@ namespace PlayniteSounds
             ConstructItems(mainMenuItems, ConstructMainMenuItem, _defaultMusicPath, defaultSubMenu + "|");
 
             return mainMenuItems;
+        }
+        private void CleanupDeletedGames(object sender, ItemCollectionChangedEventArgs<Game> ItemCollectionChangedArgs)
+        {
+            // Let ExtraMetaDataLoader handle cleanup if it exists
+            if (PlayniteApi.Addons.Plugins.Any(p => p.Id.ToString() is App.ExtraMetaGuid))
+            {
+                return;
+            }
+
+            foreach (var removedItem in ItemCollectionChangedArgs.RemovedItems)
+            {
+                DeleteMusicDirectory(removedItem);
+            }
+        }
+        private void CleanupDeletedPlatforms(object sender, ItemCollectionChangedEventArgs<Platform> ItemCollectionChangedArgs)
+        {
+            foreach (var removedItem in ItemCollectionChangedArgs.RemovedItems)
+            {
+                var platformPath = GetPlatformDirectoryPath(removedItem.Name);
+                if (Directory.Exists(platformPath))
+                {
+                    Directory.Delete(platformPath, true);
+                }
+            }
         }
 
         #endregion
@@ -1638,7 +1665,10 @@ namespace PlayniteSounds
             => Directory.CreateDirectory(GetMusicDirectoryPath(game)).FullName;
 
         private string CreatePlatformDirectory(string platform)
-            => Directory.CreateDirectory(Path.Combine(_platformMusicFilePath, platform)).FullName;
+            => Directory.CreateDirectory(GetPlatformDirectoryPath(platform)).FullName;
+
+        private string GetPlatformDirectoryPath(string platform)
+            => Path.Combine(_platformMusicFilePath, platform);
 
         private static string GetDirectoryNameFromPath(string directory)
             => directory.Substring(directory.LastIndexOf('\\')).Replace("\\", string.Empty);

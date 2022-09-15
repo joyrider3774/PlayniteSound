@@ -1,7 +1,6 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
-using Sounds;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +22,7 @@ using PlayniteSounds.Models;
 
 namespace PlayniteSounds
 {
-    public class PlayniteSounds : GenericPlugin, ISounds
+    public class PlayniteSounds : GenericPlugin
     {
         public bool ReloadMusic { get; set; }
 
@@ -76,6 +75,8 @@ namespace PlayniteSounds
 
         private readonly List<GameMenuItem> _gameMenuItems;
         private readonly List<MainMenuItem> _mainMenuItems;
+
+        private ISet<string> _pausers = new HashSet<string>();
 
         #region Constructor
 
@@ -138,6 +139,7 @@ namespace PlayniteSounds
 
                 PlayniteApi.Database.Games.ItemCollectionChanged += CleanupDeletedGames;
                 PlayniteApi.Database.Platforms.ItemCollectionChanged += CleanupDeletedPlatforms;
+                PlayniteApi.UriHandler.RegisterSource("Sounds", HandleUriEvent);
             }
             catch (Exception e)
             {
@@ -334,13 +336,28 @@ namespace PlayniteSounds
             }
         }
 
-        #endregion
+        // ex: playnite://Sounds/Play/someId
+        // Sounds maintains a list of plugins who want the music paused and will only allow play when
+        // no other plugins have paused.
+        private void HandleUriEvent(PlayniteUriEventArgs args)
+        {
+            var action = args.Arguments[0];
+            var senderId = args.Arguments[1];
 
-        #region Sounds Interface
-
-        public void Play() => ResumeMusic();
-
-        public void Pause() => PauseMusic();
+            switch (action.ToLower())
+            {
+                case "play":
+                    _pausers.Remove(senderId);
+                    ResumeMusic();
+                    break;
+                case "pause":
+                    if (_pausers.Add(senderId) && _pausers.Count is 1)
+                    {
+                        PauseMusic();
+                    }
+                    break;
+            }
+        }
 
         #endregion
 
@@ -1636,7 +1653,7 @@ namespace PlayniteSounds
 
         private bool ShouldPlaySound() => ShouldPlayAudio(Settings.SoundState);
 
-        private bool ShouldPlayMusic() => ShouldPlayAudio(Settings.MusicState);
+        private bool ShouldPlayMusic() => _pausers.Count is 0 && ShouldPlayAudio(Settings.MusicState);
 
         private bool ShouldPlayAudio(AudioState state)
         {

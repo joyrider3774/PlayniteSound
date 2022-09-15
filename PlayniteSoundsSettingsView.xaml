@@ -45,6 +45,8 @@
                             <RowDefinition/>
                             <RowDefinition Height="5"/>
                             <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment"/>
                         <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundState, Converter={common:AudioStateConverter}}" Height="20">
@@ -83,13 +85,14 @@
                         <CheckBox Name="ChkRandomizeOnEverySelect" Grid.Row="14" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnEverySelect}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect}"/>
                         <CheckBox Name="ChkRandomizeOnMusicEnd" Grid.Row="16" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnMusicEnd}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd}"/>
                         <CheckBox Name="ChkBackgroundNone" Grid.Row="18" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PlayBackgroundWhenNoneSelected}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkBackgroundNone}"/>
-                        <CheckBox Name="ChkTagMissing" Grid.Row="20" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagMissingEntries}" Visibility="Collapsed" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkTagMissing}"/>
-                        <DockPanel Grid.Row="22" Grid.ColumnSpan="2" Margin="0,0,0,10">
+                        <CheckBox Name="ChkTagMissing" Grid.Row="20" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagMissingEntries}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkTagMissing}"/>
+                        <CheckBox Name="ChkTagNormal" Grid.Row="22" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagNormalizedGames}" Content="Tag Normalized Games"/>
+                        <DockPanel Grid.Row="24" Grid.ColumnSpan="2" Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FF_Path}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Hint}"/>
                             <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForFFmpegFile}" />
                             <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegPath}" IsReadOnly="True" />
                         </DockPanel>
-                        <DockPanel Grid.Row="24" Grid.ColumnSpan="2" Margin="0,0,0,10">
+                        <DockPanel Grid.Row="26" Grid.ColumnSpan="2" Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Path}" DockPanel.Dock="Left" VerticalAlignment="Center"/>
                             <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForFFmpegNormalizeFile}" />
                             <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegNormalizePath}" IsReadOnly="True" />
@@ -103,7 +106,7 @@
                                     </Hyperlink>
                             </TextBlock>
                         </DockPanel>
-                        <DockPanel Grid.Row="26" Grid.ColumnSpan="2" Margin="0,0,0,10">
+                        <DockPanel Grid.Row="28" Grid.ColumnSpan="2" Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Cust}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Cust_Hint}"/>
                             <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegNormalizeArgs}" />
                         </DockPanel>

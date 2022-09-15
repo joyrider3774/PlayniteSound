@@ -725,9 +725,8 @@ namespace PlayniteSounds
             => PromptForSelect<Album>(Resource.DialogMessageCaptionAlbum,
                 gameName,
                 s => DownloadManager.GetAlbumsForGame(s, source)
-                    .Select(a => 
-                        new GenericObjectOption(a.Name, a.ToString(), a) as GenericItemOption).ToList(),
-                gameName + (source == Source.Youtube ? " soundtrack" : string.Empty));
+                    .Select(a => new GenericObjectOption(a.Name, a.ToString(), a) as GenericItemOption).ToList(),
+                gameName + (source is Source.Youtube ? " soundtrack" : string.Empty));
 
         private Song PromptForSong(List<Song> songsToPartialUrls, string albumName)
             => PromptForSelect<Song>(Resource.DialogMessageCaptionSong,
@@ -986,9 +985,17 @@ namespace PlayniteSounds
                 {
                     var fileName = file.Substring(file.LastIndexOf('\\') + 1);
                     var newDirectory = Path.Combine(_gameMusicFilePath, directoryName, SoundDirectory.Music);
-                    Directory.CreateDirectory(newDirectory);
                     var newFilePath = Path.Combine(newDirectory, fileName);
-                    File.Move(file, newFilePath);
+
+                    try
+                    {
+                        Directory.CreateDirectory(newDirectory);
+                        File.Move(file, newFilePath);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error($"Failed to move file '{file}' to '{newFilePath}' due to: {e.Message}");
+                    }
                 }
             }
             Directory.Delete(dir, true);
@@ -1118,8 +1125,11 @@ namespace PlayniteSounds
         private void DeleteMusicDirectory(Game game)
         {
             var gameDirectory = GetMusicDirectoryPath(game);
-            Directory.Delete(gameDirectory, true);
-            UpdateMissingTag(game, false, gameDirectory);
+            if (Directory.Exists(gameDirectory))
+            {
+                Directory.Delete(gameDirectory, true);
+                UpdateMissingTag(game, false, gameDirectory);
+            }
         }
 
         private void DeleteMusicFile(string musicFile, string musicFileName, bool isGame = false)
@@ -1166,7 +1176,7 @@ namespace PlayniteSounds
                 SingleGame() && Settings.MusicType is MusicType.Game);
 
             Game game = SelectedGames.FirstOrDefault();
-            UpdateMissingTag(game, Directory.GetFiles(CreateMusicDirectory(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
+            UpdateMissingTag(game, Directory.GetFiles(GetMusicDirectoryPath(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
         }
 
         private void SelectMusicForPlatform(string platform)
@@ -1288,7 +1298,7 @@ namespace PlayniteSounds
             }
 
             var args = SoundFile.DefaultNormArgs;
-            if (string.IsNullOrWhiteSpace(Settings.FFmpegNormalizeArgs))
+            if (!string.IsNullOrWhiteSpace(Settings.FFmpegNormalizeArgs))
             {
                 args = Settings.FFmpegNormalizeArgs;
                 Logger.Info($"Using custom args '{args}' for file '{filePath}' during normalization.");
@@ -1414,8 +1424,8 @@ namespace PlayniteSounds
                 var newFilePath = 
                     DownloadSongFromGame(source, game.Name, gameDirectory, songSelect, albumSelect, overwrite);
 
-
-                if (Settings.NormalizeMusic)
+                var fileDownloaded = newFilePath != null;
+                if (Settings.NormalizeMusic && fileDownloaded)
                 {
                     args.Text += $" - {Resource.DialogMessageNormalizingFiles}";
                     if (NormalizeAudioFile(newFilePath))
@@ -1424,7 +1434,7 @@ namespace PlayniteSounds
                     }
                 }
 
-                UpdateMissingTag(game, newFilePath is null, gameDirectory);
+                UpdateMissingTag(game, fileDownloaded, gameDirectory);
             }
         }
 
@@ -1593,7 +1603,7 @@ namespace PlayniteSounds
 
         private bool AddTagToGame(Game game, Tag tag)
         {
-            if (game.Tags == null)
+            if (game.Tags is null)
             {
                 game.TagIds = new List<Guid> { tag.Id };
                 PlayniteApi.Database.Games.Update(game);

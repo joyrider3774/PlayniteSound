@@ -67,6 +67,7 @@ namespace PlayniteSounds
         private readonly string _defaultMusicPath;
         private readonly string _gameMusicFilePath;
         private readonly string _platformMusicFilePath;
+        private readonly string _filterMusicFilePath;
 
         private readonly Dictionary<string, PlayerEntry> _players = new Dictionary<string, PlayerEntry>();
 
@@ -98,6 +99,9 @@ namespace PlayniteSounds
 
                 _platformMusicFilePath = Path.Combine(_extraMetaDataFolder, SoundDirectory.Platform);
                 Directory.CreateDirectory(_platformMusicFilePath);
+
+                _filterMusicFilePath = Path.Combine(_extraMetaDataFolder, SoundDirectory.Filter);
+                Directory.CreateDirectory(_filterMusicFilePath);
 
                 _gameMusicFilePath = Path.Combine(_extraMetaDataFolder, SoundDirectory.GamesFolder);
                 Directory.CreateDirectory(_gameMusicFilePath);
@@ -133,13 +137,15 @@ namespace PlayniteSounds
                     ConstructMainMenuItem(Resource.ActionsReloadAudioFiles, ReloadAudioFiles),
                     ConstructMainMenuItem(Resource.ActionsHelp, HelpMenu),
                     ConstructMainMenuItem(Resource.ActionsUpdateLegacy, UpdateFromLegacyVersion),
-                    new MainMenuItem { Description = "-", MenuSection = App.MainMenuName }
+                    new MainMenuItem { Description = "-", MenuSection = App.MainMenuName },
+                    ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, "|" + Resource.ActionsDefault),
                 };
 
                 DownloadManager = new DownloadManager(Settings);
 
                 PlayniteApi.Database.Games.ItemCollectionChanged += CleanupDeletedGames;
-                PlayniteApi.Database.Platforms.ItemCollectionChanged += CleanupDeletedPlatforms;
+                PlayniteApi.Database.Platforms.ItemCollectionChanged += UpdatePlatforms;
+                PlayniteApi.Database.FilterPresets.ItemCollectionChanged += UpdateFilters;
                 PlayniteApi.UriHandler.RegisterSource("Sounds", HandleUriEvent);
             }
             catch (Exception e)
@@ -280,7 +286,7 @@ namespace PlayniteSounds
                 if (files.Any())
                 {
                     gameMenuItems.Add(new GameMenuItem { Description = "-", MenuSection = App.AppName });
-                    ConstructItems(gameMenuItems, ConstructGameMenuItem, files, "|", true);
+                    gameMenuItems.AddRange(ConstructItems(ConstructGameMenuItem, files, "|", true));
                 }
             }
 
@@ -291,32 +297,19 @@ namespace PlayniteSounds
         {
             var mainMenuItems = new List<MainMenuItem>(_mainMenuItems);
 
-            foreach (var platform in PlayniteApi.Database.Platforms.OrderBy(o => o.Name))
-            {
-                var platformDirectory = CreatePlatformDirectory(platform.Name);
+            mainMenuItems.AddRange(CreateDirectoryMainMenuItems(
+                PlayniteApi.Database.Platforms,
+                Resource.ActionsPlatform,
+                CreatePlatformDirectory,
+                SelectMusicForPlatform));
 
-                var platformSelect = $"|{Resource.ActionsPlatform}|{platform.Name}";
-                mainMenuItems.Add(ConstructMainMenuItem(
-                    Resource.ActionsCopySelectMusicFile, 
-                    () => SelectMusicForPlatform(platform.Name), 
-                    platformSelect));
-
-                var files = Directory.GetFiles(platformDirectory);
-                if (files.Any())
-                {
-                    mainMenuItems.Add(new MainMenuItem 
-                    {
-                        Description = "-",
-                        MenuSection = App.MainMenuName + platformSelect
-                    });
-                    ConstructItems(mainMenuItems, ConstructMainMenuItem, files, platformSelect + "|");
-                }
-            }
+            mainMenuItems.AddRange(CreateDirectoryMainMenuItems(
+                PlayniteApi.Database.FilterPresets,
+                Resource.ActionsFilter,
+                CreateFilterDirectory,
+                SelectMusicForFilter));
 
             var defaultSubMenu = $"|{Resource.ActionsDefault}";
-            mainMenuItems.Add(
-                ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, defaultSubMenu));
-
             var defaultFiles = Directory.GetFiles(_defaultMusicPath);
             if (defaultFiles.Any())
             {
@@ -325,11 +318,44 @@ namespace PlayniteSounds
                     Description = "-", 
                     MenuSection = App.MainMenuName + defaultSubMenu 
                 });
-                ConstructItems(mainMenuItems, ConstructMainMenuItem, defaultFiles, defaultSubMenu + "|");
+                mainMenuItems.AddRange(ConstructItems(ConstructMainMenuItem, defaultFiles, defaultSubMenu + "|"));
             }
 
             return mainMenuItems;
         }
+
+        private IEnumerable<MainMenuItem> CreateDirectoryMainMenuItems<T>(
+            IEnumerable<T> databaseObjects,
+            string menuPath,
+            Func<T, string> directoryConstructor,
+            Action<T> musicSelector) where T : DatabaseObject
+        {
+            foreach (var databaseObject in databaseObjects.OrderBy(o => o.Name))
+            {
+                var directorySelect = $"|{menuPath}|{databaseObject.Name}";
+
+                yield return ConstructMainMenuItem(
+                    Resource.ActionsCopySelectMusicFile,
+                    () => musicSelector(databaseObject),
+                    directorySelect);
+
+                var files = Directory.GetFiles(directoryConstructor(databaseObject));
+                if (files.Any())
+                {
+                    yield return new MainMenuItem
+                    {
+                        Description = "-",
+                        MenuSection = App.MainMenuName + directorySelect
+                    };
+
+                    foreach (var item in ConstructItems(ConstructMainMenuItem, files, directorySelect + "|"))
+                    {
+                        yield return item;
+                    }
+                }
+            }
+        }
+
         private void CleanupDeletedGames(object sender, ItemCollectionChangedEventArgs<Game> ItemCollectionChangedArgs)
         {
             // Let ExtraMetaDataLoader handle cleanup if it exists
@@ -343,17 +369,32 @@ namespace PlayniteSounds
                 DeleteMusicDirectory(removedItem);
             }
         }
-        private void CleanupDeletedPlatforms(object sender, ItemCollectionChangedEventArgs<Platform> ItemCollectionChangedArgs)
+
+        private void UpdatePlatforms(object sender, ItemCollectionChangedEventArgs<Platform> ItemCollectionChangedArgs)
         {
-            foreach (var removedItem in ItemCollectionChangedArgs.RemovedItems)
+            foreach (var addedItem in ItemCollectionChangedArgs.AddedItems)
             {
-                var platformPath = GetPlatformDirectoryPath(removedItem.Name);
-                if (Directory.Exists(platformPath))
-                {
-                    Directory.Delete(platformPath, true);
-                }
+                CreatePlatformDirectory(addedItem.Name);
             }
+
+            DeleteDirectories(ItemCollectionChangedArgs.RemovedItems, GetPlatformDirectoryPath);
         }
+
+        private void UpdateFilters(object sender, ItemCollectionChangedEventArgs<FilterPreset> ItemCollectionChangedArgs)
+        {
+            foreach (var addedItem in ItemCollectionChangedArgs.AddedItems)
+            {
+                CreateFilterDirectory(addedItem.Id.ToString());
+            }
+
+            DeleteDirectories(ItemCollectionChangedArgs.RemovedItems, GetFilterDirectoryPath);
+        }
+
+        private void DeleteDirectories<T>(IEnumerable<T> directoryLinks, Func<T, string> PathConstructor)
+            => directoryLinks.
+                Select(PathConstructor).
+                Where(Directory.Exists).
+                ForEach(f => Directory.Delete(f, true));
 
         // ex: playnite://Sounds/Play/someId
         // Sounds maintains a list of plugins who want the music paused and will only allow play when
@@ -465,17 +506,25 @@ namespace PlayniteSounds
                 case MusicType.Platform:
                     fileDirectory = CreatePlatformDirectoryPathFromGame(game);
                     break;
+                case MusicType.Filter:
+                    fileDirectory = GetCurrentFilterDirectoryPath();
+                    break;
                 default:
                     fileDirectory = _defaultMusicPath;
                     break;
             }
-            PlayMusicFromDirectory(fileDirectory);
+
+            var files = Directory.GetFiles(fileDirectory);
+            if (Settings.PlayBackupMusic && !files.Any())
+            {
+                files = GetBackupFiles();
+            }
+
+            PlayMusicFromFiles(files);
         }
 
-        private void PlayMusicFromDirectory(string fileDirectory)
+        private void PlayMusicFromFiles(string[] musicFiles)
         {
-
-            var musicFiles = Directory.GetFiles(fileDirectory);
             var musicFile = musicFiles.FirstOrDefault() ?? string.Empty;
             var musicEndRandom = _musicEnded && Settings.RandomizeOnMusicEnd;
 
@@ -503,7 +552,7 @@ namespace PlayniteSounds
 
         private void PauseMusic()
         {
-            if (ShouldPlayMusic() && _musicPlayer.Clock != null)
+            if (_musicPlayer.Clock != null)
             {
                 Try(_musicPlayer.Clock.Controller.Pause);
             }
@@ -686,8 +735,7 @@ namespace PlayniteSounds
 
         #region Menu UI
 
-        private void ConstructItems<TMenuItem>(
-            List<TMenuItem> menuItems, 
+        private IEnumerable<TMenuItem> ConstructItems<TMenuItem>(
             Func<string, Action, string, TMenuItem> menuItemConstructor, 
             string[] files,
             string subMenu,
@@ -698,10 +746,10 @@ namespace PlayniteSounds
                 var songName = Path.GetFileNameWithoutExtension(file);
                 var songSubMenu = subMenu + songName;
 
-                menuItems.Add(menuItemConstructor(
-                    Resource.ActionsCopyPlayMusicFile, () => ForcePlayMusicFromPath(file), songSubMenu));
-                menuItems.Add(menuItemConstructor(
-                    Resource.ActionsCopyDeleteMusicFile, () => DeleteMusicFile(file, songName, isGame), songSubMenu));
+                yield return menuItemConstructor(
+                    Resource.ActionsCopyPlayMusicFile, () => ForcePlayMusicFromPath(file), songSubMenu);
+                yield return menuItemConstructor(
+                    Resource.ActionsCopyDeleteMusicFile, () => DeleteMusicFile(file, songName, isGame), songSubMenu);
             }           
         }
 
@@ -1198,14 +1246,22 @@ namespace PlayniteSounds
             UpdateMissingTag(game, Directory.GetFiles(GetMusicDirectoryPath(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
         }
 
-        private void SelectMusicForPlatform(string platform)
+        private void SelectMusicForPlatform(Platform platform)
         {
             var playNewMusic = 
                 Settings.MusicType is MusicType.Platform
                 && SingleGame()
-                && SelectedGames.First().Platforms.Any(p => p.Name == platform);
+                && SelectedGames.First().Platforms.Contains(platform);
 
             RestartMusicAfterSelect(() => SelectMusicForDirectory(CreatePlatformDirectory(platform)), playNewMusic);
+        }
+
+        private void SelectMusicForFilter(FilterPreset filter)
+        {
+            var playNewMusic = Settings.MusicType is MusicType.Filter
+                && PlayniteApi.MainView.GetActiveFilterPreset() == filter.Id;
+
+            RestartMusicAfterSelect(() => SelectMusicForDirectory(CreateFilterDirectory(filter)), playNewMusic);
         }
 
         private void SelectMusicForDefault()
@@ -1701,6 +1757,9 @@ namespace PlayniteSounds
 
         private bool SingleGame() => SelectedGames.Count() == 1;
 
+        private string GetCurrentFilterDirectoryPath()
+            => Path.Combine(_filterMusicFilePath, PlayniteApi.MainView.GetActiveFilterPreset().ToString());
+
         private string GetMusicDirectoryPath(Game game)
             => Path.Combine(_gameMusicFilePath, game.Id.ToString(), SoundDirectory.Music);
 
@@ -1710,11 +1769,28 @@ namespace PlayniteSounds
         private string CreateMusicDirectory(Game game)
             => Directory.CreateDirectory(GetMusicDirectoryPath(game)).FullName;
 
+        private string CreatePlatformDirectory(Platform platform)
+            => Directory.CreateDirectory(GetPlatformDirectoryPath(platform)).FullName;
+
         private string CreatePlatformDirectory(string platform)
             => Directory.CreateDirectory(GetPlatformDirectoryPath(platform)).FullName;
 
+        private string CreateFilterDirectory(FilterPreset filter)
+            => Directory.CreateDirectory(GetFilterDirectoryPath(filter)).FullName;
+
+        private string CreateFilterDirectory(string filterId)
+            => Directory.CreateDirectory(GetFilterDirectoryPath(filterId)).FullName;
+
+        private string GetPlatformDirectoryPath(Platform platform)
+            => Path.Combine(_platformMusicFilePath, platform.Name);
+
         private string GetPlatformDirectoryPath(string platform)
             => Path.Combine(_platformMusicFilePath, platform);
+        private string GetFilterDirectoryPath(FilterPreset filter)
+            => Path.Combine(_filterMusicFilePath, filter.Id.ToString());
+
+        private string GetFilterDirectoryPath(string filterId)
+            => Path.Combine(_filterMusicFilePath, filterId);
 
         private static string GetDirectoryNameFromPath(string directory)
             => directory.Substring(directory.LastIndexOf('\\')).Replace("\\", string.Empty);
@@ -1728,11 +1804,26 @@ namespace PlayniteSounds
                     case 1:
                         PlayMusicFromFirstSelected();
                         break;
-                    case 0 when Settings.PlayBackgroundWhenNoneSelected:
-                        PlayMusicFromDirectory(_defaultMusicPath);
+                    case 0 when Settings.PlayBackupMusic:
+                        PlayMusicFromFiles(GetBackupFiles());
                         break;
                 }
             }
+        }
+
+        // Backup order is game -> filter -> default
+        private string[] GetBackupFiles()
+        {
+            if (Settings.MusicType is MusicType.Filter)
+            {
+                var filterFiles = Directory.GetFiles(GetCurrentFilterDirectoryPath());
+                if (filterFiles.Any())
+                {
+                    return filterFiles;
+                }
+            }
+
+            return Directory.GetFiles(_defaultMusicPath);
         }
 
         public void HandleException(Exception e)

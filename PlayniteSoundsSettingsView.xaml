@@ -84,9 +84,9 @@
                         <CheckBox Name="ChkPauseOnDeactivate" Grid.Row="12" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnDeactivate}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate}"/>
                         <CheckBox Name="ChkRandomizeOnEverySelect" Grid.Row="14" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnEverySelect}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect}"/>
                         <CheckBox Name="ChkRandomizeOnMusicEnd" Grid.Row="16" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnMusicEnd}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd}"/>
-                        <CheckBox Name="ChkBackgroundNone" Grid.Row="18" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PlayBackgroundWhenNoneSelected}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkBackgroundNone}"/>
+                        <CheckBox Name="ChkBackgroundNone" Grid.Row="18" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PlayBackupMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkBackup}"/>
                         <CheckBox Name="ChkTagMissing" Grid.Row="20" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagMissingEntries}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkTagMissing}"/>
-                        <CheckBox Name="ChkTagNormal" Grid.Row="22" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagNormalizedGames}" Content="Tag Normalized Games"/>
+                        <CheckBox Name="ChkTagNormal" Grid.Row="22" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagNormalizedGames}" Content="{DynamicResource LOC_PLAYNITESOUNDS_Normalize_Tag}"/>
                         <DockPanel Grid.Row="24" Grid.ColumnSpan="2" Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FF_Path}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Hint}"/>
                             <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForFFmpegFile}" />

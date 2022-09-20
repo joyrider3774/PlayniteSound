@@ -17,10 +17,11 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music every loop</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music upon selection</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackup">Play backup music when default cannot be found</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Automatically normalize music when downloading</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize_Tag">Tag Normalized Games</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">FFmpeg-Normalize Path</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">Normalizing audio allows consistent volume between tracks without compromising quality</sys:String>
@@ -78,6 +79,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsFilter">Filters</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>

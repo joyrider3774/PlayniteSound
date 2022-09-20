@@ -11,7 +11,7 @@ namespace PlayniteSounds.Models
         public int MusicVolume { get; set; } = 25;
         public bool StopMusic { get; set; } = true;
         public bool SkipFirstSelectSound { get; set; }
-        public bool PlayBackgroundWhenNoneSelected { get; set; }
+        public bool PlayBackupMusic { get; set; }
         public bool PauseOnDeactivate { get; set; } = true;
         public bool RandomizeOnEverySelect { get; set; }
         public bool RandomizeOnMusicEnd { get; set; } = true;

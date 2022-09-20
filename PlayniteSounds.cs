@@ -132,7 +132,8 @@ namespace PlayniteSounds
                     ConstructMainMenuItem(Resource.ActionsOpenSoundsFolder, OpenSoundsFolder),
                     ConstructMainMenuItem(Resource.ActionsReloadAudioFiles, ReloadAudioFiles),
                     ConstructMainMenuItem(Resource.ActionsHelp, HelpMenu),
-                    ConstructMainMenuItem(Resource.ActionsUpdateLegacy, UpdateFromLegacyVersion)
+                    ConstructMainMenuItem(Resource.ActionsUpdateLegacy, UpdateFromLegacyVersion),
+                    new MainMenuItem { Description = "-", MenuSection = App.MainMenuName }
                 };
 
                 DownloadManager = new DownloadManager(Settings);
@@ -275,12 +276,12 @@ namespace PlayniteSounds
 
             if (SingleGame())
             {
-                var game = SelectedGames.First();
-
-                var gameDirectory = CreateMusicDirectory(game);
-                var songSubMenu = $"|{Resource.ActionsSubMenuSongs}|";
-
-                ConstructItems(gameMenuItems, ConstructGameMenuItem, gameDirectory, songSubMenu, true);
+                var files = Directory.GetFiles(CreateMusicDirectory(SelectedGames.First()));
+                if (files.Any())
+                {
+                    gameMenuItems.Add(new GameMenuItem { Description = "-", MenuSection = App.AppName });
+                    ConstructItems(gameMenuItems, ConstructGameMenuItem, files, "|", true);
+                }
             }
 
             return gameMenuItems;
@@ -300,14 +301,32 @@ namespace PlayniteSounds
                     () => SelectMusicForPlatform(platform.Name), 
                     platformSelect));
 
-                var platformSongSubMenu = $"{platformSelect}|{Resource.ActionsSubMenuSongs}|";
-                ConstructItems(mainMenuItems, ConstructMainMenuItem, platformDirectory, platformSongSubMenu);
+                var files = Directory.GetFiles(platformDirectory);
+                if (files.Any())
+                {
+                    mainMenuItems.Add(new MainMenuItem 
+                    {
+                        Description = "-",
+                        MenuSection = App.MainMenuName + platformSelect
+                    });
+                    ConstructItems(mainMenuItems, ConstructMainMenuItem, files, platformSelect + "|");
+                }
             }
 
             var defaultSubMenu = $"|{Resource.ActionsDefault}";
             mainMenuItems.Add(
                 ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, defaultSubMenu));
-            ConstructItems(mainMenuItems, ConstructMainMenuItem, _defaultMusicPath, defaultSubMenu + "|");
+
+            var defaultFiles = Directory.GetFiles(_defaultMusicPath);
+            if (defaultFiles.Any())
+            {
+                mainMenuItems.Add(new MainMenuItem
+                { 
+                    Description = "-", 
+                    MenuSection = App.MainMenuName + defaultSubMenu 
+                });
+                ConstructItems(mainMenuItems, ConstructMainMenuItem, defaultFiles, defaultSubMenu + "|");
+            }
 
             return mainMenuItems;
         }
@@ -670,11 +689,11 @@ namespace PlayniteSounds
         private void ConstructItems<TMenuItem>(
             List<TMenuItem> menuItems, 
             Func<string, Action, string, TMenuItem> menuItemConstructor, 
-            string directory, 
+            string[] files,
             string subMenu,
             bool isGame = false)
         {
-            foreach (var file in Directory.GetFiles(directory))
+            foreach (var file in files)
             {
                 var songName = Path.GetFileNameWithoutExtension(file);
                 var songSubMenu = subMenu + songName;

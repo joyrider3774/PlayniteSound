@@ -4,6 +4,7 @@
     {
         Default,
         Platform,
-        Game
+        Game,
+        Filter
     }
 }

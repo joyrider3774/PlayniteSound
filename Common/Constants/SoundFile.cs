@@ -9,6 +9,7 @@ namespace PlayniteSounds.Common.Constants
 
         public const string DefaultMusicName = "_music_.mp3";
         public const string LocalizationSource = "LocSource";
+        public const string DefaultNormArgs = "-lrt 20 -c:a libmp3lame";
 
         public static string ApplicationStartedSound => CurrentPrefix + BaseApplicationStartedSound;
         public static string ApplicationStoppedSound => CurrentPrefix + BaseApplicationStoppedSound;

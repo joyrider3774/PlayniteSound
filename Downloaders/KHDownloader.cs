@@ -38,9 +38,20 @@ namespace PlayniteSounds.Downloaders
             var tableRows = htmlDoc.DocumentNode.Descendants("tr").Skip(1);
             foreach (var row in tableRows)
             {
-                var columnEntries = row.Descendants("td").Skip(1).ToList();
+                var columnEntries = row.Descendants("td").ToList();
 
-                var titleField = columnEntries.FirstOrDefault();
+                var iconUrl = string.Empty;
+                var iconField = columnEntries.FirstOrDefault();
+                if (iconField != null)
+                {
+                    var img = iconField.Descendants("img").FirstOrDefault();
+                    if (img != null)
+                    {
+                        iconUrl = img.GetAttributeValue("src", string.Empty);
+                    }
+                }
+
+                var titleField = columnEntries.ElementAtOrDefault(1);
                 if (titleField == null)
                 {
                     Logger.Info($"Found album entry of game '{gameName}' without title field");
@@ -66,7 +77,8 @@ namespace PlayniteSounds.Downloaders
                 {
                     Name = StringUtilities.StripStrings(albumName),
                     Id = albumPartialLink,
-                    Source = Source.KHInsider
+                    Source = Source.KHInsider,
+                    IconUrl = iconUrl
                 };
 
                 var platformEntry = columnEntries.ElementAtOrDefault(1);

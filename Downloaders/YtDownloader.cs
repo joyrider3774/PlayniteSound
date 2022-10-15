@@ -61,7 +61,8 @@ namespace PlayniteSounds.Downloaders
                         Name = videoSearchResult.Title,
                         Id = videoSearchResult.Id,
                         Length = videoSearchResult.Duration,
-                        Source = DlSource
+                        Source = DlSource,
+                        IconUrl = videoSearchResult.Thumbnails.FirstOrDefault()?.Url
                     };
 
                 videos.AddRange(batchOfVideos);
@@ -89,7 +90,8 @@ namespace PlayniteSounds.Downloaders
                         {
                             Name = playlistSearchResult.Title,
                             Id = playlistSearchResult.Id,
-                            Source = DlSource
+                            Source = DlSource,
+                            IconUrl = playlistSearchResult.Thumbnails.FirstOrDefault()?.Url
                         };
 
                     albums.AddRange(batchOfPlaylists);
@@ -105,7 +107,8 @@ namespace PlayniteSounds.Downloaders
                 Name = video.Title,
                 Id = video.Id,
                 Length = video.Duration,
-                Source = DlSource
+                Source = DlSource,
+                IconUrl= video.Thumbnails.FirstOrDefault()?.Url
             });
 
         private async Task<bool> DownloadSongExplodeAsync(Song song, string path)

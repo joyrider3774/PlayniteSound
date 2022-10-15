@@ -4,39 +4,20 @@ using System.Reflection;
 
 namespace PlayniteSounds.Models
 {
-    internal class Album
+    internal class Album : DownloadItem
     {
-        public string Name { get; set; }
-        public string Id { get; set; }
         public string Type { get; set; }
         public string Url { get; set; }
         public string Artist { get; set; }
-        public Source Source { get; set; }
         public uint? Count { get; set; }
         public uint? Year { get; set; }
         public IEnumerable<string> Platforms { get; set; }
         public IEnumerable<Song> Songs { get; set; }
-
-        private static readonly IEnumerable<PropertyInfo> Properties = typeof(Album).GetProperties();
-        private static readonly IEnumerable<string> IgnoredFields = new[]
-        {
-            // Ignored Types
-            "Name",
-            "Url",
-            "Songs",
-            // Needs Custom Handling
-            "Id",
-            "Platforms"
-        };
+        protected override IEnumerable<PropertyInfo> Properties => typeof(Album).GetProperties();
 
         public override string ToString()
         {
-            var albumStrings =
-                from property in Properties
-                let propertyValue = property.GetValue(this)
-                where IsValidField(property, propertyValue)
-                select $"{property.Name}: {propertyValue}";
-            var albumStringsList = albumStrings.ToList();
+            var baseString = base.ToString();
 
             if (Platforms != null)
             {
@@ -45,16 +26,11 @@ namespace PlayniteSounds.Models
 
                 if (!string.IsNullOrWhiteSpace(platformsValue))
                 {
-                    albumStringsList.Add($"{nameof(Platforms)}: {platformsValue}");
+                    baseString += $", {nameof(Platforms)}: {platformsValue}";
                 }
             }
 
-            return string.Join(", ", albumStringsList);
+            return baseString;
         }
-
-        private static bool IsValidField(PropertyInfo property, object propertyValue)
-            => propertyValue != null 
-            && !IgnoredFields.ContainsString(property.Name) 
-            && !(propertyValue is string propertyString && string.IsNullOrWhiteSpace(propertyString));
     }
 }

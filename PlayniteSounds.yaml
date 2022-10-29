@@ -5,7 +5,7 @@ Packages:
     ReleaseDate: 2022-10-29
     PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.0/PlayniteSounds-v5.0.pext
     Changelog:
-      - ***The below two changes require a migration process upon next app start, if given user approval***
+      - The below two changes require a migration process upon next app start, if given user approval
       - Re-organized game music file layout to use unique IDs instead of game names
       - Moved all audio files into the ExtraMetaData folder
       - Added ability to download game music from YouTube

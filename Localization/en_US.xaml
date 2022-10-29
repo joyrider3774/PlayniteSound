@@ -8,6 +8,9 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
 
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Music">Music</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Sound">Sound</sys:String>
+
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
@@ -23,6 +26,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Automatically normalize music when downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize_Tag">Tag Normalized Games</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Hint">FFmpeg is required for audio normalization and downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">FFmpeg-Normalize Path</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">Normalizing audio allows consistent volume between tracks without compromising quality</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Doc">FFmpeg-Normalize Documentation</sys:String>

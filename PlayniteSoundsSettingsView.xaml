@@ -112,6 +112,7 @@
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
+                            <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeFilter}"/>
                         </ComboBox>
                         <Label Grid.Row="4" Name="LblStopMusic" Content="{DynamicResource LOC_PLAYNITESOUNDS_StopMusic}" d:LayoutOverrides="VerticalAlignment"/>
                         <ComboBox Grid.Row="4" Grid.Column="1" Name="CmbStopMusic" SelectedIndex="{Binding Settings.StopMusic}" Height="20">

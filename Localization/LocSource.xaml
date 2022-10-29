@@ -4,17 +4,18 @@
 
     <!-- Settings Resources -->
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound where:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Play Sound State:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music State:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Music">Music</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Sound">Sound</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select sound' after playnite startup</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Default</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Platform</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Game</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeFilter">Filter</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select' sound on startup</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Tag titles that fail to download</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
@@ -113,7 +114,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Migrate">It appears the Playnite Sounds file locations are outdated. These files must be moved for Sounds to function. Would you like to migrate them?</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CreateBackup">This process may fail. Would you like to select a backup location the Sounds files?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Migrate">It appears the Playnite Sounds file layout is outdated. These files must be moved for Sounds to function. Would you like to migrate them?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CreateBackup">This process may fail. Would you like to select a backup location for the Sounds files?</sys:String>
 
 </ResourceDictionary>

@@ -1,5 +1,20 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
+  - Version: 5.0
+    RequiredApiVersion: 6.4.0
+    ReleaseDate: 2022-10-29
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.0/PlayniteSounds-v5.0.pext
+    Changelog:
+      - ***The below two changes require a migration process upon next app start, if given user approval***
+      - Re-organized game music file layout to use unique IDs instead of game names
+      - Moved all audio files into the ExtraMetaData folder
+      - Added ability to download game music from YouTube
+      - Added support for filter support
+      - Can now specify multiple music files per source (Filter, Platform, Game, Default)
+      - Replaced default sound files
+      - Backup music can now be played (Game -> Filter -> Default)
+      - Re-organized all UI options
+      - Added Play/Pause Uri support
   - Version: 4.6
     RequiredApiVersion: 6.1.0
     ReleaseDate: 2022-04-03

@@ -458,7 +458,9 @@ namespace PlayniteSounds
         //fix sounds not playing after system resume
         private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs args)
         {
-            if (args.Mode == PowerModes.Resume)
+            var shouldNotPlay = Settings.PauseOnDeactivate
+                && Application.Current?.MainWindow?.WindowState == WindowState.Minimized;
+            if (args.Mode is PowerModes.Resume && !shouldNotPlay)
             {
                 Try(RestartMusic);
             }

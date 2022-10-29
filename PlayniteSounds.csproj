@@ -119,6 +119,7 @@
     <Compile Include="Downloaders\KHDownloader.cs" />
     <Compile Include="Models\Album.cs" />
     <Compile Include="Models\AudioState.cs" />
+    <Compile Include="Models\DownloadItem.cs" />
     <Compile Include="Models\GenericObjectOption.cs" />
     <Compile Include="Models\Source.cs" />
     <Compile Include="Models\Song.cs" />
@@ -359,13 +360,7 @@
     <None Include="Sound Files\D_GameSelected.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Sound Files\D_GameStarted.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Sound Files\D_GameStarting.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Sound Files\D_GameStopped.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Sound Files\D_GameUninstalled.wav">
@@ -386,13 +381,7 @@
     <None Include="Sound Files\F_GameSelected.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Sound Files\F_GameStarted.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Sound Files\F_GameStarting.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Sound Files\F_GameStopped.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Sound Files\F_GameUninstalled.wav">

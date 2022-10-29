@@ -8,6 +8,9 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Play Music where:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Music Type:</sys:String>
 
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Music">Music</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Sound">Sound</sys:String>
+
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">One music for all games and platforms</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">One music per platform</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">One music per platform and game</sys:String>
@@ -23,6 +26,7 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Automatically normalize music when downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize_Tag">Tag Normalized Games</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Hint">FFmpeg is required for audio normalization and downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">FFmpeg-Normalize Path</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">Normalizing audio allows consistent volume between tracks without compromising quality</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Doc">FFmpeg-Normalize Documentation</sys:String>
@@ -77,7 +81,6 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Delete</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Play</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsFilter">Filters</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
@@ -109,5 +112,8 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Remove</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Import</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Open Sound Manager Folder</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Migrate">It appears the Playnite Sounds file locations are outdated. These files must be moved for Sounds to function. Would you like to migrate them?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_CreateBackup">This process may fail. Would you like to select a backup location the Sounds files?</sys:String>
 
 </ResourceDictionary>

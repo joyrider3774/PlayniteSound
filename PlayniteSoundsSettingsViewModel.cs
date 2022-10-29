@@ -127,7 +127,7 @@ namespace PlayniteSounds
             errors = new List<string>();
             var outcome = true;
 
-            if (!File.Exists(Settings.FFmpegPath))
+            if (!string.IsNullOrEmpty(Settings.FFmpegPath) && !File.Exists(Settings.FFmpegPath))
             {
                 errors.Add($"The path to FFmpeg '{Settings.FFmpegPath}' is invalid");
                 outcome = false;

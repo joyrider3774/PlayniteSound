@@ -1,0 +1,27 @@
+Application Started: "Corporate Logo Intro1.wav" by Original Sound
+Link: https://freesound.org/people/original_sound/sounds/493544/
+License: Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
+
+Game Starting: "Atmospheric Notification 2.mp3" by Original Sound
+Link: https://freesound.org/people/original_sound/sounds/494978/
+License: Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
+
+Game Installed: "Achievement Confirmation » Confirmation Upward" by Original Sound
+Link: https://freesound.org/people/original_sound/sounds/366102/
+License: Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
+
+Game UnInstalled: "Achievement Confirmation » Confirmation Downward" by Original Sound
+Link: https://freesound.org/people/original_sound/sounds/366104/
+License: Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
+
+Application Stopped: "Error Wooden" by Original Sound
+Link: https://freesound.org/people/original_sound/sounds/366103/
+License: Attribution 3.0 License (https://creativecommons.org/licenses/by/3.0/)
+
+Library Updated: "100% synthesis » Ping!" by unfa
+Link: https://freesound.org/people/unfa/sounds/215415/
+License: CC0 1.0 Universal Public Domain Dedication (https://creativecommons.org/publicdomain/zero/1.0/)
+
+Default Music: "Ambient Sounds & Loops (Pack 3) » Ambient Wave 36" by Erokia
+Link: https://freesound.org/people/Erokia/sounds/424026/
+License: Attribution 4.0 International (https://creativecommons.org/licenses/by/4.0/)

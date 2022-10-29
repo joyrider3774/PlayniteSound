@@ -1031,6 +1031,12 @@ namespace PlayniteSounds
             {
                 Try(() => SubCopyAudioFiles(soundFilesInstallPath));
             }
+
+            var defaultMusicFile = Path.Combine(soundFilesInstallPath, SoundFile.DefaultMusicName);
+            if (File.Exists(defaultMusicFile) && !Directory.Exists(_defaultMusicPath))
+            {
+                File.Move(defaultMusicFile, Path.Combine(_defaultMusicPath, SoundFile.DefaultMusicName));
+            }
         }
 
         private void SubCopyAudioFiles(string soundFilesInstallPath)

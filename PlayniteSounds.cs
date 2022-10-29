@@ -58,7 +58,7 @@ namespace PlayniteSounds
         private bool _firstSelectSound = true;
         private bool _closeAudioFilesNextPlay;
 
-        private string _prevMusicFileName = string.Empty;  //used to prevent same file abeing restarted 
+        private string _prevMusicFileName = string.Empty;  //used to prevent same file being restarted 
 
         private readonly string _extraMetaDataFolder;
         private readonly string _musicFilesDataPath;
@@ -131,12 +131,10 @@ namespace PlayniteSounds
 
                 _mainMenuItems = new List<MainMenuItem>
                 {
-                    ConstructMainMenuItem("Migrate (temp)", Migrate),
                     ConstructMainMenuItem(Resource.ActionsOpenMusicFolder, OpenMusicFolder),
                     ConstructMainMenuItem(Resource.ActionsOpenSoundsFolder, OpenSoundsFolder),
                     ConstructMainMenuItem(Resource.ActionsReloadAudioFiles, ReloadAudioFiles),
                     ConstructMainMenuItem(Resource.ActionsHelp, HelpMenu),
-                    ConstructMainMenuItem(Resource.ActionsUpdateLegacy, UpdateFromLegacyVersion),
                     new MainMenuItem { Description = "-", MenuSection = App.MainMenuName },
                     ConstructMainMenuItem(Resource.ActionsCopySelectMusicFile, SelectMusicForDefault, "|" + Resource.ActionsDefault),
                 };
@@ -219,6 +217,10 @@ namespace PlayniteSounds
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
+            // One-time operations
+            UpdateFromLegacyVersion();
+            CopyAudioFiles();
+
             // Add code to be executed when Playnite is initialized.
             PlaySoundFileFromName(SoundFile.ApplicationStartedSound);
 
@@ -226,8 +228,6 @@ namespace PlayniteSounds
             Application.Current.MainWindow.StateChanged += OnWindowStateChanged;
             Application.Current.Deactivated += OnApplicationDeactivate;
             Application.Current.Activated += OnApplicationActivate;
-
-            CopyAudioFiles();
         }
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
@@ -458,7 +458,9 @@ namespace PlayniteSounds
         //fix sounds not playing after system resume
         private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs args)
         {
-            if (args.Mode == PowerModes.Resume)
+            var shouldNotPlay = Settings.PauseOnDeactivate
+                && Application.Current?.MainWindow?.WindowState == WindowState.Minimized;
+            if (args.Mode is PowerModes.Resume && !shouldNotPlay)
             {
                 Try(RestartMusic);
             }
@@ -756,7 +758,8 @@ namespace PlayniteSounds
         private static GameMenuItem ConstructGameMenuItem(string resource, Action action, string subMenu = "")
             => ConstructGameMenuItem(resource, _ => action(), subMenu);
 
-        private static GameMenuItem ConstructGameMenuItem(string resource, Action<GameMenuItemActionArgs> action, string subMenu = "") => new GameMenuItem
+        private static GameMenuItem ConstructGameMenuItem(
+            string resource, Action<GameMenuItemActionArgs> action, string subMenu = "") => new GameMenuItem
         {
             MenuSection = App.AppName + subMenu,
             Icon = IconPath,
@@ -767,7 +770,8 @@ namespace PlayniteSounds
         private static MainMenuItem ConstructMainMenuItem(string resource, Action action, string subMenu = "")
             => ConstructMainMenuItem(resource, _ => action(), subMenu);
 
-        private static MainMenuItem ConstructMainMenuItem(string resource, Action<MainMenuItemActionArgs> action, string subMenu = "") => new MainMenuItem
+        private static MainMenuItem ConstructMainMenuItem(
+            string resource, Action<MainMenuItemActionArgs> action, string subMenu = "") => new MainMenuItem
         {
             MenuSection = App.MainMenuName + subMenu,
             Icon = IconPath,
@@ -1031,6 +1035,12 @@ namespace PlayniteSounds
             {
                 Try(() => SubCopyAudioFiles(soundFilesInstallPath));
             }
+
+            var defaultMusicFile = Path.Combine(soundFilesInstallPath, SoundFile.DefaultMusicName);
+            if (File.Exists(defaultMusicFile) && !Directory.Exists(_defaultMusicPath))
+            {
+                File.Move(defaultMusicFile, Path.Combine(_defaultMusicPath, SoundFile.DefaultMusicName));
+            }
         }
 
         private void SubCopyAudioFiles(string soundFilesInstallPath)
@@ -1038,46 +1048,34 @@ namespace PlayniteSounds
             CloseAudioFiles();
 
             Directory.CreateDirectory(_soundFilesDataPath);
-            var files = Directory.GetFiles(soundFilesInstallPath);
-            files.ForEach(f => File.Copy(f, Path.Combine(_soundFilesDataPath, Path.GetFileName(f)), true));
-        }
-
-        private void Migrate()
-        {
-            var dir = Path.Combine(GetPluginUserDataPath(), "Music Files\\Game");
-            foreach (var directory in Directory.GetDirectories(dir))
-            {
-                var directoryName = directory.Substring(directory.LastIndexOf('\\') + 1);
-                foreach(var file in Directory.GetFiles(directory))
-                {
-                    var fileName = file.Substring(file.LastIndexOf('\\') + 1);
-                    var newDirectory = Path.Combine(_gameMusicFilePath, directoryName, SoundDirectory.Music);
-                    var newFilePath = Path.Combine(newDirectory, fileName);
-
-                    try
-                    {
-                        Directory.CreateDirectory(newDirectory);
-                        File.Move(file, newFilePath);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error($"Failed to move file '{file}' to '{newFilePath}' due to: {e.Message}");
-                    }
-                }
-            }
-            Directory.Delete(dir, true);
-
-            foreach(var directory in Directory.GetDirectories(GetPluginUserDataPath()))
-            {
-                Directory.Move(directory, _extraMetaDataFolder);
-            }
+            var files = Directory.GetFiles(soundFilesInstallPath).Where(f => f.EndsWith(".wav"));
+            files.ForEach(f => File.Move(f, Path.Combine(_soundFilesDataPath, Path.GetFileName(f))));
         }
 
         private void UpdateFromLegacyVersion()
         {
             var oldDirectory = GetPluginUserDataPath();
             var oldMusicDirectory = Path.Combine(oldDirectory, SoundDirectory.Music);
+            var oldSoundFiles = Path.Combine(oldMusicDirectory, SoundDirectory.Sound);
             var orphanDirectory = Path.Combine(oldDirectory, SoundDirectory.Orphans);
+
+            var notLegacyFileSystem = !Directory.Exists(oldMusicDirectory) && !Directory.Exists(oldSoundFiles);
+            if (notLegacyFileSystem || !GetBoolFromYesNoDialog(Resource.Migrate))
+            {
+                return;
+            }
+
+            if (GetBoolFromYesNoDialog(Resource.CreateBackup))
+            {
+                var backupFolderPath = Path.Combine(Dialogs.SelectFolder(), "Sounds Music Backup");
+                Directory.CreateDirectory(backupFolderPath);
+
+                Directory.GetDirectories(oldDirectory, "*", SearchOption.AllDirectories)
+                    .ForEach(d => Directory.CreateDirectory(d.Replace(oldDirectory, backupFolderPath)));
+
+                Directory.GetFiles(oldDirectory, "*.*", SearchOption.AllDirectories)
+                    .ForEach(f => File.Copy(f, f.Replace(oldDirectory, backupFolderPath), true));
+            }
 
             var platformDirectories = Directory.GetDirectories(oldMusicDirectory);
 
@@ -1098,21 +1096,22 @@ namespace PlayniteSounds
                 Logger.Info($"Moved default music file from music files data path.");
             }
 
-            var soundFiles = Path.Combine(oldMusicDirectory, SoundDirectory.Sound);
-            if (File.Exists(soundFiles))
+            if (Directory.Exists(oldSoundFiles))
             {
                 Logger.Info($"Moving sound files from music files data path...");
 
-                File.Move(soundFiles, Path.Combine(_defaultMusicPath, SoundDirectory.Sound));
+                Directory.Move(oldSoundFiles, Path.Combine(_defaultMusicPath, SoundDirectory.Sound));
 
                 Logger.Info($"Moved default sound files from music files data path.");
             }
 
+            Try(() => Directory.Delete(oldMusicDirectory, true));
+
             var anyOrphans = Directory.GetFileSystemEntries(orphanDirectory).Any();
             if (anyOrphans)
             {
-                var viewOrphans =
-                    GetBoolFromYesNoDialog(string.Format(Resource.DialogUpdateLegacyOrphans, orphanDirectory));
+                var viewOrphans = GetBoolFromYesNoDialog(
+                    string.Format(Resource.DialogUpdateLegacyOrphans, orphanDirectory));
                 if (viewOrphans)
                 {
                     Process.Start(orphanDirectory);
@@ -1120,6 +1119,7 @@ namespace PlayniteSounds
             }
             else
             {
+                Directory.Delete(orphanDirectory);
                 ShowMessage(Resource.DialogMessageDone);
             }
         }
@@ -1156,7 +1156,8 @@ namespace PlayniteSounds
             Directory.Delete(platformDirectory);
         }
         
-        private void MoveLegacyGameFile(string looseGameFile, string platformDirectoryName, string orphanDirectory, IEnumerable<Game> games)
+        private void MoveLegacyGameFile(
+            string looseGameFile, string platformDirectoryName, string orphanDirectory, IEnumerable<Game> games)
         {
             var looseGameFileNameMp3 = Path.GetFileName(looseGameFile);
             var looseGameFileName = Path.GetFileNameWithoutExtension(looseGameFile);
@@ -1243,7 +1244,8 @@ namespace PlayniteSounds
                 SingleGame() && Settings.MusicType is MusicType.Game);
 
             Game game = SelectedGames.FirstOrDefault();
-            UpdateMissingTag(game, Directory.GetFiles(GetMusicDirectoryPath(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
+            UpdateMissingTag(
+                game, Directory.GetFiles(GetMusicDirectoryPath(game)).HasNonEmptyItems(), CreateMusicDirectory(game));
         }
 
         private void SelectMusicForPlatform(Platform platform)
@@ -1266,8 +1268,7 @@ namespace PlayniteSounds
 
         private void SelectMusicForDefault()
             => RestartMusicAfterSelect(
-                () => SelectMusicForDirectory(_defaultMusicPath),
-                Settings.MusicType is MusicType.Default);
+                () => SelectMusicForDirectory(_defaultMusicPath), Settings.MusicType is MusicType.Default);
 
         private List<string> SelectMusicForDirectory(string directory)
         {
@@ -1432,7 +1433,6 @@ namespace PlayniteSounds
         #endregion
 
         #region Download
-
 
         private IEnumerable<Song> SearchYoutube(string search)
         {

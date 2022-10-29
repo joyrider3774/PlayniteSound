@@ -7,9 +7,6 @@ namespace PlayniteSounds.Models
         public Source Source { get; set; }
         public object Object { get; set; }
 
-        public GenericObjectOption(string name, string description, object obj) : base(name, description)
-        {
-            Object = obj;
-        }
+        public GenericObjectOption(string name, string description, object obj) : base(name, description) => Object = obj;
     }
 }

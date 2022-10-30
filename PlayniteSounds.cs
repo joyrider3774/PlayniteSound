@@ -1814,7 +1814,7 @@ namespace PlayniteSounds
         // Backup order is game -> filter -> default
         private string[] GetBackupFiles()
         {
-            if (Settings.MusicType is MusicType.Filter)
+            if (Settings.MusicType != MusicType.Default)
             {
                 var filterFiles = Directory.GetFiles(GetCurrentFilterDirectoryPath());
                 if (filterFiles.Any())

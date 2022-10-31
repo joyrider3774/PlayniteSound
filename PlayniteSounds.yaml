@@ -1,9 +1,9 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
-  - Version: 5.0.2
+  - Version: 5.2
     RequiredApiVersion: 6.4.0
     ReleaseDate: 2022-10-31
-    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.0.2/PlayniteSounds-v5.0.2.pext
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.2/PlayniteSounds-v5.2.pext
     Changelog:
       - Fixed issues with migration process
       - Fixed filter music not playing as backup music

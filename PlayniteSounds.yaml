@@ -7,7 +7,6 @@ Packages:
     Changelog:
       - Fixed issues with migration process
       - Fixed filter music not playing as backup music
-Packages:
   - Version: 5.0
     RequiredApiVersion: 6.4.0
     ReleaseDate: 2022-10-29

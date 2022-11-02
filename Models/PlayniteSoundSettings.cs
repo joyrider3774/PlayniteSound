@@ -27,5 +27,6 @@ namespace PlayniteSounds.Models
         public string FFmpegNormalizeArgs { get; set; }
         public IList<Source> Downloaders { get; set; } = new List<Source> { Source.Youtube };
         public DateTime LastAutoLibUpdateAssetsDownload { get; set; } = DateTime.Now;
+        public bool PromptedForMigration { get; set; }
     }
 }

@@ -1,5 +1,12 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
+  - Version: 5.4
+    RequiredApiVersion: 6.4.0
+    ReleaseDate: 2022-10-31
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.4/PlayniteSounds-v5.4.pext
+    Changelog:
+      - Migration process now only prompts exactly once (can be re-enabled via editing the config file)
+      - The Sounds directory in ExtraMetaData folder is now deleted if one is found during migration process
   - Version: 5.2
     RequiredApiVersion: 6.4.0
     ReleaseDate: 2022-10-31

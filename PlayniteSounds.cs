@@ -1055,16 +1055,30 @@ namespace PlayniteSounds
 
         private void UpdateFromLegacyVersion()
         {
+            if (Settings.PromptedForMigration)
+            {
+                return;
+            }
+
+            Settings.PromptedForMigration = true;
+            SavePluginSettings(Settings);
+
             var oldDirectory = GetPluginUserDataPath();
             var oldMusicDirectory = Path.Combine(oldDirectory, SoundDirectory.Music);
             var oldSoundFiles = Path.Combine(oldDirectory, SoundDirectory.Sound);
-            var orphanDirectory = Path.Combine(oldDirectory, SoundDirectory.Orphans);
 
             var notLegacyFileSystem = !Directory.Exists(oldMusicDirectory) && !Directory.Exists(oldSoundFiles);
             if (notLegacyFileSystem || !GetBoolFromYesNoDialog(Resource.Migrate))
             {
                 return;
             }
+
+            Try(() => AttemptDirectoryMigration(oldDirectory, oldMusicDirectory, oldSoundFiles));
+        }
+
+        private void AttemptDirectoryMigration(string oldDirectory, string oldMusicDirectory, string oldSoundFiles)
+        {
+            var orphanDirectory = Path.Combine(oldDirectory, SoundDirectory.Orphans);
 
             if (GetBoolFromYesNoDialog(Resource.CreateBackup))
             {
@@ -1103,11 +1117,16 @@ namespace PlayniteSounds
 
             if (Directory.Exists(oldSoundFiles))
             {
+                
+                var newSoundsPath = Path.Combine(_extraMetaDataFolder, SoundDirectory.Sound);
+                if (Directory.Exists(newSoundsPath))
+                {
+                    Logger.Info("Found sounds directory in ExtraMetaData folder. Deleting...");
+                    Try(() => Directory.Delete(newSoundsPath, true));
+                }
+
                 Logger.Info($"Moving sound files from data path...");
-
-                Directory.Move(oldSoundFiles, Path.Combine(_extraMetaDataFolder, SoundDirectory.Sound));
-
-                Logger.Info($"Moved default sound files from data path.");
+                Try(() => Directory.Move(oldSoundFiles, newSoundsPath));
             }
 
             Try(() => Directory.Delete(oldMusicDirectory, true));
@@ -1135,8 +1154,7 @@ namespace PlayniteSounds
 
             var platformDirectoryName = GetDirectoryNameFromPath(platformDirectory);
             
-            if (platformDirectoryName.Equals(SoundDirectory.Default, StringComparison.OrdinalIgnoreCase) ||
-                platformDirectoryName.Equals(SoundDirectory.Orphans, StringComparison.Ordinal))
+            if (platformDirectoryName.Equals(SoundDirectory.Orphans, StringComparison.Ordinal))
             {
                 Logger.Info($"Ignoring directory: {platformDirectoryName}");
                 return;

@@ -193,24 +193,24 @@ namespace PlayniteSounds
                 PauseMusic();
                 _gameRunning = true;
             }
+
             PlaySoundFileFromName(SoundFile.GameStartedSound, true);
         }
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
-            // Add code to be executed when game is preparing to be started.
             if (!Settings.StopMusic)
             {
                 PauseMusic();
                 _gameRunning = true;
             }
+
             PlaySoundFileFromName(SoundFile.GameStartingSound);
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
             _gameRunning = false;
-            // Add code to be executed when game is preparing to be started.
             PlaySoundFileFromName(SoundFile.GameStoppedSound);
             ResumeMusic();
         }
@@ -221,7 +221,6 @@ namespace PlayniteSounds
             UpdateFromLegacyVersion();
             CopyAudioFiles();
 
-            // Add code to be executed when Playnite is initialized.
             PlaySoundFileFromName(SoundFile.ApplicationStartedSound);
 
             SystemEvents.PowerModeChanged += OnPowerModeChanged;
@@ -634,7 +633,7 @@ namespace PlayniteSounds
             }
 
             if (entry != null)
-            /*Then*/ if (entry.MediaPlayer == null)
+            /*Then*/ if (useSoundPlayer)
             {
                 entry.SoundPlayer.Stop();
                 entry.SoundPlayer.PlaySync();
@@ -1761,7 +1760,7 @@ namespace PlayniteSounds
 
         private bool ShouldPlaySound() => ShouldPlayAudio(Settings.SoundState);
 
-        private bool ShouldPlayMusic() => _pausers.Count is 0 && ShouldPlayAudio(Settings.MusicState);
+        private bool ShouldPlayMusic() => _pausers.Count is 0 && !_gameRunning && ShouldPlayAudio(Settings.MusicState);
 
         private bool ShouldPlayAudio(AudioState state)
         {
@@ -1771,7 +1770,7 @@ namespace PlayniteSounds
             var playOnBoth = state == AudioState.Always;
             var playOnDesktop = desktopMode && state == AudioState.Desktop;
 
-            return !_gameRunning && (playOnFullScreen || playOnBoth || playOnDesktop);
+            return playOnFullScreen || playOnBoth || playOnDesktop;
         }
 
         private void ShowMessage(string resource) => Dialogs.ShowMessage(resource, App.AppName);

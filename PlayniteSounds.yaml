@@ -1,5 +1,12 @@
 AddonId: 'Playnite.Sounds.WD'
 Packages:
+  - Version: 5.6
+    RequiredApiVersion: 6.4.0
+    ReleaseDate: 2022-10-31
+    PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v5.6/PlayniteSounds-v5.6.pext
+    Changelog:
+      - Error message no longer displays sometimes when plugin attempted to play backup music from a filter
+      - GameStarted sound has been restored
   - Version: 5.4
     RequiredApiVersion: 6.4.0
     ReleaseDate: 2022-10-31

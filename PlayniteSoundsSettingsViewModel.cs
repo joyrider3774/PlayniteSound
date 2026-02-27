@@ -1,6 +1,8 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Data;
+using PlayniteSounds.Common.Extensions;
 using PlayniteSounds.Models;
+using PlayniteSounds.Players;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,7 +27,7 @@ namespace PlayniteSounds
         {
             get => new RelayCommand<object>((a) =>
             {
-                var filePath = _plugin.PlayniteApi.Dialogs.SelectFile(string.Empty);
+                var filePath = _plugin.PlayniteApi.Dialogs.SelectFile("ffmpeg|ffmpeg.exe");
                 if (!string.IsNullOrWhiteSpace(filePath))
                 {
                     Settings.FFmpegPath = filePath;
@@ -44,11 +46,35 @@ namespace PlayniteSounds
                 }
             });
         }
+
+        public RelayCommand InstallWMPCommand
+        {
+            get => new RelayCommand(() =>
+            {
+                if (WMPMusicPlayer.InstallWMP())
+                {
+                    Settings.WMPIsInstalled = true;
+                }
+            });
+        }
+
         public RelayCommand<object> NavigateUrlCommand
         {
             get => new RelayCommand<object>((url) =>
             {
-                _plugin.Try(() => Process.Start((url as Uri).AbsoluteUri));
+                PlayniteSounds.Try(() => Process.Start(new Uri(url.ToString()).AbsoluteUri));
+            });
+        }
+
+        public RelayCommand<object> BrowseForYtDlpFile
+        {
+            get => new RelayCommand<object>((a) =>
+            {
+                var filePath = _plugin.PlayniteApi.Dialogs.SelectFile("yt-dlp|yt-dlp.exe");
+                if (!string.IsNullOrWhiteSpace(filePath))
+                {
+                    Settings.YtDlpPath = filePath;
+                }
             });
         }
 
@@ -72,7 +98,7 @@ namespace PlayniteSounds
             }
             catch (Exception e)
             {
-                plugin.HandleException(e);
+                PlayniteSounds.HandleException(e);
             }
         }
 
@@ -85,7 +111,7 @@ namespace PlayniteSounds
             }
             catch (Exception e)
             {
-                _plugin.HandleException(e);
+                PlayniteSounds.HandleException(e);
             }
         }
 
@@ -105,18 +131,32 @@ namespace PlayniteSounds
 
                 var musicTypeChanged = Settings.MusicType != EditingClone.MusicType;
                 var musicStateChanged = Settings.MusicState != EditingClone.MusicState;
+                var DetailsMusicType = Settings.DetailsMusicType != EditingClone.DetailsMusicType;
 
-                _plugin.ReloadMusic = _plugin.ReloadMusic || musicTypeChanged || musicStateChanged; 
+                _plugin.ReloadMusic = _plugin.ReloadMusic || musicTypeChanged || musicStateChanged || DetailsMusicType;
 
+                var replayMusic = _plugin.ReloadMusic
+                    || Settings.ChoosenMusicType != EditingClone.ChoosenMusicType
+                    || Settings.PlayBackupMusic != EditingClone.PlayBackupMusic
+                    || Settings.CollectFromGames != EditingClone.CollectFromGames
+                    || Settings.CollectFromGamesOnBackup != EditingClone.CollectFromGamesOnBackup;
+
+                if (Settings.UseWMPLegacyApp != EditingClone.UseWMPLegacyApp)
+                {
+                    _plugin.UpdateMediaPlayer(Settings);
+                }
                 _plugin.UpdateDownloadManager(Settings);
-                _plugin.ReplayMusic();
+                if (replayMusic)
+                {
+                    _plugin.ReplayMusic();
+                }
                 _plugin.ResetMusicVolume();
             }
             catch (Exception e)
             {
-                _plugin.HandleException(e);
+                PlayniteSounds.HandleException(e);
             }
-           
+
         }
 
         public bool VerifySettings(out List<string> errors)
@@ -127,9 +167,15 @@ namespace PlayniteSounds
             errors = new List<string>();
             var outcome = true;
 
-            if (!string.IsNullOrEmpty(Settings.FFmpegPath) && !File.Exists(Settings.FFmpegPath))
+            if (!string.IsNullOrEmpty(Settings.FFmpegPath) && !File.Exists(PathExt.GetFullPath(Settings.FFmpegPath)))
             {
                 errors.Add($"The path to FFmpeg '{Settings.FFmpegPath}' is invalid");
+                outcome = false;
+            }
+
+            if (!string.IsNullOrEmpty(Settings.YtDlpPath) && !File.Exists(PathExt.GetFullPath(Settings.YtDlpPath)))
+            {
+                errors.Add($"The path to Yt-Dlp '{Settings.YtDlpPath}' is invalid");
                 outcome = false;
             }
 

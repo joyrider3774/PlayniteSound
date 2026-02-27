@@ -3,7 +3,6 @@
     public enum Source
     {
         All,
-        KHInsider,
         Youtube
     }
 }

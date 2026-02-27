@@ -1,14 +1,20 @@
-﻿Id: Playnite.Sounds.WD
-Name: Playnite Sounds
-Author: Joyrider3774,cnapolit
-Version: 5.6
+﻿Id: Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb
+Name: Playnite Sounds Mod
+Author: ashpynov, cnapolit, Joyrider3774
+Version: 5.8.3
 Module: PlayniteSounds.dll
 Type: GenericPlugin
 Icon: icon.png
 Links:
     - Name: Github
-      Url: https://github.com/joyrider3774/PlayniteSound
-    - Name: Forum Thread
-      Url: https://playnite.link/forum/thread-432.html
-    - Name: Translate
-      Url: https://crowdin.com/project/playnite-game-speak
+      Url: https://github.com/ashpynov/PlayniteSound
+    - Name: License
+      Url: https://github.com/ashpynov/PlayniteSound/LICENSE
+    - Name: Support(Discord)
+      Url: https://discord.com/channels/365863063296933888/808419165311467630
+    - Name: Bug tracker
+      Url: https://github.com/ashpynov/PlayniteSound/issues
+    - Name: Ko-fi for Tips
+      Url: https://ko-fi.com/ashpynov
+    - Name: Boosty for Tips
+      Url: https://boosty.to/ashpynov/donate

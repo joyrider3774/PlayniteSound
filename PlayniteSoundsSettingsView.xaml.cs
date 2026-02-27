@@ -1,15 +1,17 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Markup;
 
 namespace PlayniteSounds
 {
-    public partial class PlayniteSoundsSettingsView
+    public partial class PlayniteSoundsSettingsView : UserControl
     {
         private readonly PlayniteSounds _plugin;
 
         public PlayniteSoundsSettingsView(PlayniteSounds plugin)
         {
             _plugin = plugin;
-            InitializeComponent();
+            ((IComponentConnector)this).InitializeComponent();
         }
 
         private void ButReloadAudio_Click(object sender, RoutedEventArgs e)

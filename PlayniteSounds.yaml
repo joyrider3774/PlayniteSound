@@ -1,5 +1,172 @@
-AddonId: 'Playnite.Sounds.WD'
+AddonId: 'Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb'
 Packages:
+  - Version: 5.8.3
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2026-02-27
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.8.3/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_8_3.pext
+    Changelog:
+      - Removed music source to avoid DMCA strikes
+  - Version: 5.8.2
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-09-20
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.8.2/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_8_2.pext
+    Changelog:
+      - Quick scroll transition fixes #26
+      - Proper pausing of background music #39
+      - Preloading of next music of fadeout phase to improve smoothness of transition
+      - Configurable Media Player or SDL Mixer for playback
+  - Version: 5.8.1
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-09-15
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.8.1/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_8_1.pext
+    Changelog:
+      - Fallback to SDL Mixer media player (used by Playnite) as fallback if Windows Media Player Legacy (App) is not installed #34, #37
+      - Support of relative paths in settings #30
+  - Version: 5.7.23
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-04-01
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.23/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_23.pext
+    Changelog:
+      - Handle error if required legacy media player is not installed and Install it using DISM tool.
+  - Version: 5.7.22
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-01-21
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.22/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_22.pext
+    Changelog:
+      - Do not reset background music on custom music completed #20
+  - Version: 5.7.21
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-01-21
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.21/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_21.pext
+    Changelog:
+      - Pause backup music instead of restart (PS5 like) #20
+  - Version: 5.7.20
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2025-01-20
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.20/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_20.pext
+    Changelog:
+      - Fixed BUG Play/Pause button doesn't seem to work anymore #21
+  - Version: 5.7.19
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-12-25
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.19/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_19.pext
+    Changelog:
+      - Added ability to stop music in specific window
+  - Version: 5.7.18
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-12-20
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.18/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_18.pext
+    Changelog:
+      - Recover work in fullscreen mode
+  - Version: 5.7.17
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-12-18
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.17/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_17.pext
+    Changelog:
+      - FIXED Alt version to pause music when switching tabs (#11)
+  - Version: 5.7.16
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-12-16
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.16/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_16.pext
+    Changelog:
+      - FEATURE Pause Sound when switching tabs (play misic only in Library in Desktop mode) (#11)
+      - FIXED Playnite Sounds Mod no longer pulls Youtube Properly (#14)
+      - FIXED Sound playing on startup (option to skip music activation on first selection at startup) (#15)
+  - Version: 5.7.15
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-11-15
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.15/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_15.pext
+    Changelog:
+      - Addon prevents PC to shut down from fullscreen via Main Menu (#13)
+  - Version: 5.7.14
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-11-12
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.14/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_14.pext
+    Changelog:
+      - Music Fade out and Fade in when switching between games (#12)
+  - Version: 5.7.13
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-29
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.13/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_13.pext
+    Changelog:
+      - Third attempt to fix null value error #8.
+  - Version: 5.7.12
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-18
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.12/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_12.pext
+    Changelog:
+      - Fixed Bug Music Keeps Playing Even When Switching Games #9
+  - Version: 5.7.11
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-08
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.11/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_11.pext
+    Changelog:
+      - Second attempt to fix null value error #8.
+      - Cancelation of loading was improved.
+  - Version: 5.7.10
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-01
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.10/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_10.pext
+    Changelog:
+      - Mute music if Screenshot Visualiser plays video with music.
+  - Version: 5.7.9
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-01
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.9/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_9.pext
+    Changelog:
+      - Crash on fullscreen (#7)
+  - Version: 5.7.8
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-10-01
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.8/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_8.pext
+    Changelog:
+      - Play game specific music only on game detail screen (#6)
+      - Fixed Value cannot be null. Parameter name source (#5)
+      - Redesigned manual Music selector
+      - Multiple choise to download several music from album
+      - Music preview on selection
+      - Usage of music from games for Platform and Filter option
+  - Version: 5.7.7
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-07-25
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.7/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_7.pext
+    Changelog:
+      - Added ability to select not only mp3 music files, but flac and ogg also (#4)
+  - Version: 5.7.6
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-07-20
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.6/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_6.pext
+    Changelog:
+      - Fixed crash on music finish when no games selected
+  - Version: 5.7.5
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-07-12
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.5/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_5.pext
+    Changelog:
+      - Suppressed Native Fullscreen background music. Now PlayniteSound Mod background music volume may be controled via Main Menu -> Audio -> Background volume
+      - Settings `Mute on deactivation` now sync with Fullscreen Main Menu -> `Mute on deactivation` checkbox.
+      - New icon by Mike Aniki
+  - Version: 5.7.4
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-05-27
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.4/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_4.pext
+    Changelog:
+      - Better handling startup splash video
+      - Reduced monitoring workload and better keeping music muted
+  - Version: 5.7.3
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-05-23
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.3/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_3.pext
+    Changelog:
+      - Removed internal dependency from Newtonsoft.Json.Linq library in favour of PlayniteSDK.Data API
+  - Version: 5.7.2
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-05-23
+    PackageUrl: https://github.com/ashpynov/PlayniteSound/releases/download/v5.7.2/Playnite.Sounds.Mod.baf1744c-72f6-4bc1-92cc-474403b279fb_5_7_2.pext
+    Changelog:
+      - Pause music during Vide Trailers or Video Splash with sounds playback
+      - Redesigned download from Youtube in favor to in-house search an YT-DLP downloading
+      - Exposed control and interface to visualise current plaing music by theme
   - Version: 5.6
     RequiredApiVersion: 6.4.0
     ReleaseDate: 2022-10-31
@@ -61,7 +228,7 @@ Packages:
     PackageUrl: https://github.com/joyrider3774/PlayniteSound/releases/download/v4.2/PlayniteSounds-v4.2.pext
     Changelog:
       - Fix Potential Null Source Value Error after waking up from sleep / hibernate
-      - Added Option to Skip first select sound at playnite startup 
+      - Added Option to Skip first select sound at playnite startup
       - Fix music resuming after sleep (while game is running)
       - Korean translation by Min-Ki Jeong
       - Chinese Simplified translation by ATNewHope

@@ -2,9 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:playnitesounds="clr-namespace:PlayniteSounds"
              xmlns:common="clr-namespace:PlayniteSounds.Common"
+             xmlns:models="clr-namespace:PlayniteSounds.Models"
              d:DataContext="{d:DesignInstance Type=playnitesounds:PlayniteSoundsSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="460">
@@ -25,7 +26,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0"  Name="LblSoundWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_SoundWhere}" d:LayoutOverrides="VerticalAlignment"/>
-                        <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundState, Converter={common:AudioStateConverter}}" Height="20">
+                        <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbSoundWhere" SelectedIndex="{Binding Settings.SoundState, Converter={common:AudioStateConverter}}">
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
@@ -64,13 +65,14 @@
             </StackPanel>
         </TabItem>
         <TabItem Header="{DynamicResource LOC_PLAYNITESOUNDS_Music}">
+        <ScrollViewer>
             <StackPanel Margin="2">
                 <!--<CheckBox Name="ChkAutoSearchOrder" Grid.Row="0" Grid.ColumnSpan="2" IsChecked="{Binding Settings.AutoParallelDownload}" Content="{DynamicResource LOC_PLAYNITESOUNDS_AutoParDown}" ToolTip="Determine whether results are retrieved for each source or for the first source with results."/>
                     <CheckBox Name="ChkManualSearchOrder" Grid.Row="2" Grid.ColumnSpan="2" IsChecked="{Binding Settings.ManualParallelDownload}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ManParDown}" ToolTip="Determine whether results are retrieved for each source or for the first source with results."/>-->
                 <GroupBox Header="{DynamicResource LOC_PLAYNITESOUNDS_Settings}" Grid.Row="0" Grid.ColumnSpan="2"  Margin="0,5,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="160"/>
+                            <ColumnDefinition Width="220"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -99,23 +101,47 @@
                             <RowDefinition/>
                             <RowDefinition Height="5"/>
                             <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="5"/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Label Grid.Row="0"  Name="LblMusicWhere" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicWhere}" d:LayoutOverrides="VerticalAlignment"/>
-                        <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbMusicWhere" SelectedIndex="{Binding Settings.MusicState, Converter={common:AudioStateConverter}}" Height="20">
+                        <ComboBox Grid.Row="0" Grid.Column="1" Name="CmbMusicWhere" SelectedIndex="{Binding Settings.MusicState, Converter={common:AudioStateConverter}}">
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemNever}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktop}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemFullscreen}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen}"/>
                         </ComboBox>
-                        <Label Grid.Row="2" Name="LblMusicType" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicType}" d:LayoutOverrides="VerticalAlignment"/>
-                        <ComboBox Grid.Row="2" Grid.Column="1" Name="CmbMusicType" SelectedIndex="{Binding Settings.MusicType, Converter={common:MusicTypeConverter}}" Height="20">
-                            <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
-                            <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
-                            <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
-                            <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeFilter}"/>
-                        </ComboBox>
+                        <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal"  >
+                            <StackPanel Orientation="Horizontal">
+                                <Label Width="220" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicType}" d:LayoutOverrides="VerticalAlignment"/>
+                                <ComboBox MinWidth="220" Name="CmbMusicType" SelectedValuePath="Tag"  SelectedValue="{Binding Settings.MusicType, Mode=TwoWay}">
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Default}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Platform}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Game}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Filter}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeFilter}"/>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel  Orientation="Horizontal" Visibility="{Binding Settings.DetailsMusicTypeVisibility}">
+                                <Label Margin="20,0,10,0" Name="LblDetailsMusicType" Content="{DynamicResource LOC_PLAYNITESOUNDS_DetailsMusicType}" d:LayoutOverrides="VerticalAlignment"/>
+                                <ComboBox MinWidth="220" Name="CmbDetailsMusicType" SelectedValuePath="Tag"  SelectedValue="{Binding Settings.DetailsMusicType, Mode=TwoWay}">
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Same}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeSame}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Default}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Platform}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Game}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame}"/>
+                                    <ComboBoxItem Tag="{x:Static models:MusicType.Filter}" Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbMusicTypeFilter}"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
                         <Label Grid.Row="4" Name="LblStopMusic" Content="{DynamicResource LOC_PLAYNITESOUNDS_StopMusic}" d:LayoutOverrides="VerticalAlignment"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1" Name="CmbStopMusic" SelectedIndex="{Binding Settings.StopMusic}" Height="20">
+                        <ComboBox Grid.Row="4" Grid.Column="1" Name="CmbStopMusic" SelectedIndex="{Binding Settings.StopMusic}">
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbStopItemIsStarting}"/>
                             <ComboBoxItem Content="{DynamicResource LOC_PLAYNITESOUNDS_CmbStopItemHasStarted}"/>
                         </ComboBox>
@@ -126,57 +152,120 @@
                             <Label Name="PercentageSign" Content="%"/>
                         </StackPanel>
                         <Slider Name="VolumeSlider" Grid.Row="6" Grid.Column="1" Maximum="100" Value="{Binding Settings.MusicVolume}"  AutoToolTipPlacement="TopLeft" ValueChanged="Slider_ValueChanged" VerticalAlignment="Center"/>
-                        <CheckBox Name="ChkPauseOnDeactivate" Grid.Row="8" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnDeactivate}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate}"/>
-                        <CheckBox Name="ChkRandomizeOnEverySelect" Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnEverySelect}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect}"/>
-                        <CheckBox Name="ChkRandomizeOnMusicEnd" Grid.Row="12" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnMusicEnd}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd}"/>
-                        <CheckBox Name="ChkBackgroundNone" Grid.Row="14" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PlayBackupMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkBackup}"/>
-                        <CheckBox Name="ChkTagMissing" Grid.Row="16" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagMissingEntries}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkTagMissing}"/>
-                        <CheckBox Name="ChkTagNormal" Grid.Row="18" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagNormalizedGames}" Content="{DynamicResource LOC_PLAYNITESOUNDS_Normalize_Tag}"/>
-                        <DockPanel Grid.Row="20" Grid.ColumnSpan="2" Margin="0,0,0,10">
-                        <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FF_Path}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FF_Hint}"/>
-                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForFFmpegFile}" />
-                            <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegPath}" IsReadOnly="True" />
+                        <StackPanel Grid.Row="8" Orientation="Horizontal">
+                            <Label Name="LblMusicFade" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicFadeDuration}" d:LayoutOverrides="VerticalAlignment"/>
+                            <Label Name="LblSpaceFade" Content=" "/>
+                            <Label Name="FadeTime" Content="{Binding Settings.FadeDuration}" />
+                            <Label Name="LblSpaceFade2" Content=" "/>
+                            <Label Name="LblMsFade" Content="{DynamicResource LOC_PLAYNITESOUNDS_MusicFadeDurationSec}" d:LayoutOverrides="VerticalAlignment"/>
+                        </StackPanel>
+                        <Slider Name="FadeSlider" Grid.Row="8" Grid.Column="1"
+                            Minimum="0.05" Maximum="2" SmallChange="0.1" LargeChange="0.5"
+                            TickFrequency="0.05" TickPlacement="BottomRight"
+                            AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="2"
+                            Value="{Binding Settings.FadeDuration}"
+                            VerticalAlignment="Center"/>
+
+                        <CheckBox Name="ChkPauseOnDeactivate" Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnDeactivate}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate}"/>
+                        <CheckBox Name="ChkPauseOnTrailer" Grid.Row="12" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseOnTrailer}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseOnTrailer}"/>
+                        <CheckBox Name="ChkPauseNotInLibrary" Grid.Row="14" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PauseNotInLibrary}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkPauseNotInLibrary}"/>
+                        <CheckBox Name="ChkSkipFirstSelectMusic" Grid.Row="16" Grid.ColumnSpan="2" IsChecked="{Binding Settings.SkipFirstSelectMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkSkipFirstSelectMusic}"/>
+                        <CheckBox Name="ChkRandomizeOnEverySelect" Grid.Row="18" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnEverySelect}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect}"/>
+                        <CheckBox Name="ChkRandomizeOnMusicEnd" Grid.Row="20" Grid.ColumnSpan="2" IsChecked="{Binding Settings.RandomizeOnMusicEnd}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd}"/>
+                        <CheckBox Name="ChkCollectFromGames" Grid.Row="22" Grid.ColumnSpan="2" IsChecked="{Binding Settings.CollectFromGames}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkCollectFromGames}"/>
+                        <CheckBox Name="ChkBackgroundNone" Grid.Row="24" Grid.ColumnSpan="2" IsChecked="{Binding Settings.PlayBackupMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkBackup}"/>
+                        <CheckBox Name="ChkRestartBackground" Grid.Row="26" Grid.ColumnSpan="2"
+                                  IsChecked="{Binding Settings.RestartBackupMusic}"
+                                  IsEnabled="{Binding Settings.PlayBackupMusic}"
+                                  Content="{DynamicResource LOC_PLAYNITESOUNDS_RestartBackupMusic}"/>
+                        <CheckBox Name="ChkBackgroundNoneCollect" Grid.Row="28" Grid.ColumnSpan="2"
+                                  IsChecked="{Binding Settings.CollectFromGamesOnBackup}"
+                                  IsEnabled="{Binding Settings.PlayBackupMusic}"
+                                  Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkCollectFromGamesOnBackup}"/>
+                        <CheckBox Name="ChkTagMissing" Grid.Row="30" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagMissingEntries}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkTagMissing}"/>
+                        <CheckBox Name="ChkTagNormal" Grid.Row="32" Grid.ColumnSpan="2" IsChecked="{Binding Settings.TagNormalizedGames}" Content="{DynamicResource LOC_PLAYNITESOUNDS_Normalize_Tag}"/>
+
+                        <DockPanel Grid.Row="34" Grid.ColumnSpan="2" >
+                            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
+                                    DockPanel.Dock="Right"
+                                    ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_InstallWMHint}">
+                                <Hyperlink
+                                        Command="{Binding InstallWMPCommand}" >
+                                        <Run Text="{DynamicResource LOC_PLAYNITESOUNDS_InstallWMP}" />
+                                </Hyperlink>
+                            </TextBlock>
+                            <CheckBox Name="ChkUseWMPLegacyApp"
+                                      IsChecked="{Binding Settings.UseWMPLegacyApp}"
+                                      IsEnabled="{Binding Settings.WMPIsInstalled}"
+                                      Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkUseWMPLegacyApp}"/>
                         </DockPanel>
-                        <Grid Grid.Row="22" Grid.ColumnSpan="2" Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="90"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions><RowDefinition/></Grid.RowDefinitions>
+
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions_Download}" Grid.Row="1" Grid.ColumnSpan="2"  Margin="0,5,0,0">
+                    <StackPanel>
+
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FF_Path}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FF_Hint}"/>
+                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Actions_Download}"
+                                Command="{Binding NavigateUrlCommand}"
+                                CommandParameter="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.7z"
+                            />
+                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForFFmpegFile}" />
+                            <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegPath}" IsReadOnly="False" />
+                        </DockPanel>
+
+                        <DockPanel Margin="0,0,0,10">
+                            <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_YtDLp_Path}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_YtDLp_Hint}"/>
+                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Actions_Download}"
+                                Command="{Binding NavigateUrlCommand}"
+                                CommandParameter="https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
+                            />
+                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" Command="{Binding BrowseForYtDlpFile}" />
+                            <TextBox Margin="10,0,0,0" Text="{Binding Settings.YtDlpPath}" IsReadOnly="False" />
+                        </DockPanel>
+
+                        <DockPanel Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Path}"
-                                    ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Hint}"
-                                    VerticalAlignment="Center"/>
-                            <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegNormalizePath}" Grid.Column="1"
-                                        IsReadOnly="True" ToolTip="{Binding Settings.FFmpegNormalizePath}"/>
-                            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0" Grid.Column="2"
+                                   ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Hint}"
+                                   VerticalAlignment="Center" DockPanel.Dock="Left" />
+
+                            <Button Margin="10,0,0,0" DockPanel.Dock="Right" Content="{DynamicResource LOC_PLAYNITESOUNDS_Actions_Download}"
+                                   Command="{Binding NavigateUrlCommand}"
+                                   IsEnabled="False"
+                                   CommandParameter="https://github.com/slhck/ffmpeg-normalize/releases/latest/download/yt-dlp.exe"
+                            />
+
+                            <Button Margin="10,0,0,0"
+                                    DockPanel.Dock="Right"
+                                    Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}"
+                                    Command="{Binding BrowseForFFmpegNormalizeFile}"/>
+
+                            <TextBlock VerticalAlignment="Center" Margin="10,0,0,0"
                                     DockPanel.Dock="Right"
                                     ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Doc}">
-                                <Hyperlink NavigateUri="https://github.com/slhck/ffmpeg-normalize"
+                                    <Hyperlink NavigateUri="https://github.com/slhck/ffmpeg-normalize"
                                         Command="{Binding NavigateUrlCommand}"
                                         CommandParameter="{Binding NavigateUri, RelativeSource={RelativeSource Self}}">
                                     <Run Text="{DynamicResource LOC_PLAYNITESOUNDS_Help}" />
                                 </Hyperlink>
                             </TextBlock>
-                            <Button Margin="10,0,0,0" Grid.Column="3"
-                                    Content="{DynamicResource LOC_PLAYNITESOUNDS_Browse}" 
-                                    Command="{Binding BrowseForFFmpegNormalizeFile}"/>
-                        </Grid>
-                        <DockPanel Grid.Row="24" Grid.ColumnSpan="2" Margin="0,0,0,10">
+
+                            <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegNormalizePath}"
+                                   IsReadOnly="True" ToolTip="{Binding Settings.FFmpegNormalizePath}"
+                                   />
+                        </DockPanel>
+                        <DockPanel  Margin="0,0,0,10">
                             <TextBlock Text="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Cust}" DockPanel.Dock="Left" VerticalAlignment="Center" ToolTip="{DynamicResource LOC_PLAYNITESOUNDS_FFNorm_Cust_Hint}"/>
                             <TextBox Margin="10,0,0,0" Text="{Binding Settings.FFmpegNormalizeArgs}" />
                         </DockPanel>
-                    </Grid>
-                </GroupBox>
-                <GroupBox Header="{DynamicResource LOC_PLAYNITESOUNDS_Actions_Download}" Grid.Row="1" Grid.ColumnSpan="2"  Margin="0,5,0,0">
-                    <StackPanel>
-                        <CheckBox Name="ChkAutoDownload" IsChecked="{Binding Settings.AutoDownload}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkAutoDownload}"/>
-                        <CheckBox Name="ChkNormalize" IsChecked="{Binding Settings.NormalizeMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_Normalize}"/>
-                        <CheckBox Name="ChkPlaylists" IsChecked="{Binding Settings.YtPlaylists}" Content="{DynamicResource LOC_PLAYNITESOUNDS_YtPlaylists}"/>
+                        <CheckBox Margin="0,0,0,10" Name="ChkAutoDownload" IsChecked="{Binding Settings.AutoDownload}" Content="{DynamicResource LOC_PLAYNITESOUNDS_ChkAutoDownload}"/>
+                        <CheckBox Margin="0,0,0,10" Name="ChkNormalize" IsChecked="{Binding Settings.NormalizeMusic}" Content="{DynamicResource LOC_PLAYNITESOUNDS_Normalize}"/>
+                        <CheckBox Margin="0,0,0,10" Name="ChkPlaylists" IsChecked="{Binding Settings.YtPlaylists}" Content="{DynamicResource LOC_PLAYNITESOUNDS_YtPlaylists}"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+        </ScrollViewer>
         </TabItem>
     </TabControl>
 </UserControl>

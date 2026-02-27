@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace PlayniteSounds.Models
 {
-    internal class Song : DownloadItem
+    public class Song : DownloadItem
     {
         public string Description { get; set; }
         public string SizeInMb { get; set; }

@@ -17,18 +17,24 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeFilter">Filter</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Skip first 'select' sound on startup</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Pause music when Playnite deactivates or minimizes</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnTrailer">Pause music during video trailer with sound</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseNotInLibrary">Desktop mode: Pause music when not in Library</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectMusic">Do not play music on startup</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Tag titles that fail to download</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Automatically download music for newly added games on library update</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Randomize music every loop</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Randomize music upon selection</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackup">Play backup music when default cannot be found</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_RestartBackupMusic">Restart backup music upon selection</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Stop music when</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Automatically normalize music when downloading</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize_Tag">Tag Normalized Games</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">FFmpeg Path</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkUseWMPLegacyApp">Use Windows Media Player Legacy (if available)</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">ffmpeg path:</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Hint">FFmpeg is required for audio normalization and downloading</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">FFmpeg-Normalize Path</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">ffmpeg-normalize Path</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">Normalizing audio allows consistent volume between tracks without compromising quality</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Doc">FFmpeg-Normalize Documentation</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Cust">(Optional) FFmpeg-Normalize Custom Arguments</sys:String>
@@ -39,6 +45,9 @@
     <sys:String x:Key="LOC_PLAYNITESOUNDS_YtPlaylists">Youtube: Search for Playlists</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_ManParDown">Manual: Display Results Side-By-Side</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_AutoParDown">Auto: Select Results Side-By-Side</sys:String>
+
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_YtDLp_Path">yt-dlp path:</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_YtDLp_Hint">yt-dlp is required for downloading audio from Youtube</sys:String>
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Never</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Desktop</sys:String>
@@ -116,5 +125,10 @@
 
     <sys:String x:Key="LOC_PLAYNITESOUNDS_Migrate">It appears the Playnite Sounds file layout is outdated. These files must be moved for Sounds to function. Would you like to migrate them?</sys:String>
     <sys:String x:Key="LOC_PLAYNITESOUNDS_CreateBackup">This process may fail. Would you like to select a backup location for the Sounds files?</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_InstallWMP">Turn Windows features on or off</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_InstallWMHint">Playnite Sounds may use legacy media player: "Media Features &gt; Windows Media Player Legacy (App)"</sys:String>
+    <sys:String x:Key="LOC_PLAYNITESOUNDS_Legacy_WMP_NotInstalled" xml:space="preserve">Windows Media Player legacy is required for Playnite Sounds.
+
+Would you like to Install it now?</sys:String>
 
 </ResourceDictionary>

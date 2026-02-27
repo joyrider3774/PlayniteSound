@@ -1,11 +1,12 @@
 ﻿using System.Windows.Media;
 using System.Media;
+using PlayniteSounds.Players;
 
-namespace PlayniteSounds
+namespace PlayniteSounds.Models
 {
     class PlayerEntry
     {
-        public MediaPlayer MediaPlayer { get; set; }
+        public IMusicPlayer MusicPlayer { get; set; }
         public SoundPlayer SoundPlayer { get; set; }
     }
 }

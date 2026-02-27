@@ -5,6 +5,7 @@
         Default,
         Platform,
         Game,
-        Filter
+        Filter,
+        Same
     }
 }

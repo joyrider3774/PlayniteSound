@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
+using Playnite.SDK.Models;
 using PlayniteSounds.Models;
 
 namespace PlayniteSounds.Downloaders
 {
-    internal interface IDownloadManager
+    public interface IDownloadManager
     {
-        Album BestAlbumPick(IEnumerable<Album> albums, string gameName, string regexGameName);
+        Album BestAlbumPick(IEnumerable<Album> albums, Game game);
         Song BestSongPick(IEnumerable<Song> songs, string regexGameName);
-        IEnumerable<Album> GetAlbumsForGame(string gameName, Source source, bool auto = false);
-        IEnumerable<Song> GetSongsFromAlbum(Album album);
-        bool DownloadSong(Song song, string path);
+        IEnumerable<Album> GetAlbumsForGame(string gameName, Source source, CancellationToken cancellationToken, bool auto = false);
+        int GetAlbumRelevance(Album album, Game game);
+        IEnumerable<Song> GetSongsFromAlbum(Album album, CancellationToken cancellationToken);
+        bool DownloadSong(Song song, string path, CancellationToken cancellationToken);
+        void Cleanup();
     }
 }

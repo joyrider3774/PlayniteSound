@@ -9,7 +9,7 @@ namespace PlayniteSounds
 
 {
 
-    //based on code from lacro59 from 
+    //based on code from lacro59 from
     //https://github.com/Lacro59/playnite-plugincommon/blob/master/Localization.cs
     //
     public class Localization
@@ -17,6 +17,14 @@ namespace PlayniteSounds
         private static readonly ILogger Logger = LogManager.GetLogger();
 
         public static void SetPluginLanguage(string pluginFolder, string language = SoundFile.LocalizationSource)
+        {
+            LoadPluginLanguage(pluginFolder, SoundFile.LocalizationSource);
+            if (language != SoundFile.LocalizationSource)
+            {
+                LoadPluginLanguage(pluginFolder, language);
+            }
+        }
+        private static void LoadPluginLanguage(string pluginFolder, string language = SoundFile.LocalizationSource)
         {
             var dictionaries = Application.Current.Resources.MergedDictionaries;
             var langFile = Path.Combine(pluginFolder, SoundDirectory.Localization, language + ".xaml");
@@ -32,7 +40,7 @@ namespace PlayniteSounds
                         res = (ResourceDictionary)XamlReader.Load(stream.BaseStream);
                         res.Source = new Uri(langFile, UriKind.Absolute);
                     }
-                    
+
                     foreach (var key in res.Keys)
                     {
                         if (res[key] is string locString && string.IsNullOrEmpty(locString))

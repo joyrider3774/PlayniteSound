@@ -2,88 +2,125 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
 
-<!-- Settings Resources -->
+	<!-- Ressources des paramètres -->
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">Jouer le son où:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">Jouer la musique où:</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Type de musique:</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_SoundWhere">État de lecture des sons :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MusicWhere">État de lecture de la musique :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MusicType">Type de musique :</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Une seule musique pour tous les jeux et toutes les plateformes</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Une musique par plateforme</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Une musique par plateforme et par jeu</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Ignorer le premier 'son select' après le démarrage de Playnite</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Mettre en pause la musique lorsque Playnite désactive ou minimise</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Tag titles that fail to download</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Télécharger automatiquement la musique pour les nouveaux jeux ajoutés à la mise à jour de la bibliothèque</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Aléatoire des fichiers musicaux à la fin de la musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Aléatoire des fichiers musicaux sur chaque sélection de 'Type de musique'</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackgroundNone">Play background music when no games are selected</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Arrêter la musique quand</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Music">Musique</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Sound">Son</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Jamais</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureau</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Plein écran</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Bureau + Plein écran</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusic">Défaut</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatform">Plateforme</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeOneMusicPlatformGame">Jeu</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbMusicTypeFilter">Filtre</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkSkipFirstSelectSound">Passer le premier son de "sélection" au démarrage</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkPauseOnDeactivate">Mettre en pause la musique lorsque Playnite est désactivé ou réduit</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkTagMissing">Taguer les titres qui échouent à se télécharger</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkAutoDownload">Télécharger automatiquement de la musique pour les nouveaux jeux ajoutés lors de la mise à jour de la bibliothèque</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnMusicEnd">Mélanger la musique à chaque boucle</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkRandomizeOnEverySelect">Mélanger la musique lors de chaque sélection</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_RestartBackupMusic">Redémarrer la musique de sauvegarde lors de la sélection</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkBackup">Lire une musique de secours lorsque la musique par défaut ne peut pas être trouvée</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_StopMusic">Arrêter la musique lorsque</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Le jeu commence</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Le jeu a commencé</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize">Normaliser automatiquement la musique lors du téléchargement</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Normalize_Tag">Taguer les jeux normalisés</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ChkUseWMPLegacyApp">Utilisez l'application Windows Media Player Legacy (si disponible)</sys:String>
 
-<!-- Settings Resources -->
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Path">Chemin de FFmpeg :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FF_Hint">FFmpeg est requis pour la normalisation audio et le téléchargement</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Path">Chemin de ffmpeg-normalize :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Hint">La normalisation audio permet d'avoir un volume constant entre les pistes sans compromettre la qualité</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Doc">Documentation de FFmpeg-Normalize</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Cust">(Optionnel) Arguments personnalisés de FFmpeg-Normalize</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_FFNorm_Cust_Hint">Les arguments fournis si cela n'est pas défini sont "-lrt 16 -c:a libmp3lame". Un encodeur doit être défini via la commande "-c:a". "input_file -o input_file -f" est toujours fourni</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Browse">Parcourir...</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Help">Aide</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Musique de fond manquant</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Télécharger les fichiers</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles">Téléchargement de fichiers...</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect">Voulez-vous sélectionner manuellement les albums ?</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageSongSelect">Voulez-vous sélectionner manuellement les chansons ?</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum">Veuillez sélectionner un album pour le jeu {0}</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionSong">Veuillez choisir une chanson pour l'album {0}</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect">Voulez-vous écraser les fichiers existants ?</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Sélectionnez l'option</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Terminé</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Téléchargement automatique des fichiers...</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_YtPlaylists">Youtube : Rechercher des playlists</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManParDown">Manuel : Afficher les résultats côte à côte</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_AutoParDown">Auto : Sélectionner les résultats côte à côte</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Paramètres</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Recharger fichiers audio</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Ouvrir dossier Sons</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir dossier Musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSelected">Open Selected Music Directories</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDeleteSelected">Delete Selected Music Directories</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom du fichier musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Sélectionnez le fichier de musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Supprimer le fichier musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Jouer le fichier de musique</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Songs</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsUpdateLegacy">Update Legacy Directory</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Platforms</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Default</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Are you sure you want to delete these directories? This action cannot be undone.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Are you sure you want to delete {0}? This action cannot be undone</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">While converting a legacy music directory, orphaned files were found. These files have been moved to: {0}. Would you like to view them?</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_YtDLp_Path">Chemin de yt-dlp :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_YtDLp_Hint">yt-dlp est requis pour le téléchargement audio depuis Youtube</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Fichiers audio rechargés!</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Veuillez sélectionner un seule jeu!</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Paths to files:</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemNever">Jamais</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktop">Bureau</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemFullscreen">Plein écran</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbItemDesktopFullscreen">Bureau + Plein écran</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds est une extension permettant de jouer des fichiers audio pendant les événements Playnite.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Il ne peut jouer que des fichiers audio WAV, des fichiers MP3 pour la musique et rien d'autre.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">Il y a 2 fichiers audio séparés commençant par 'D_' et les fichiers commençant par 'F_'.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">Les fichiers 'D_' sont les fichiers audio pour le mode bureau, les fichiers 'F_' pour le mode plein écran.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">Si vous ne voulez pas entendre un certain fichier, vous pouvez simplement supprimer le fichier wav de l'événement que vous ne voulez pas entendre. Vous pouvez modifier les fichiers avec vos propres fichiers. Assurez-vous d'utiliser le menu 'Ouvrir le dossier Sons' pour ce faire. Il s'assurera que les fichiers audio chargés sont fermés afin que vous puissiez les écraser. Assurez-vous que playnite ne joue plus d'audio après l'ouverture du dossier ou il est possible que vous ne puissiez pas écraser ce fichier spécifique. Avec mes tests, il semblait que vous pouviez d'abord effacer les fichiers. Après avoir changé les fichiers audio, utilisez le menu 'Recharger les fichiers audio' pour effacer tous les fichiers chargés et utiliser vos nouveaux fichiers, ou juste redémarrer Playnite. N'utilisez PAS de fichier audio long pour l'événement&quot; Application arreter&quot; car Playnite ne quittera pas avant que le fichier audio n'ait fini de jouer. Il en va de même pour le basculement entre le bureau et le mode plein écran.</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">Ces fichiers audio peuvent être utilisés</sys:String>
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Les fichiers musicaux doivent être des fichiers mp3, selon les paramètres nommés &quot;_music_.mp3&quot; ou avoir le nom du jeu avec des caractères invalides supprimés et être placés dans un dossier par plateforme. Si vous n'êtes pas exactement sûr du nom du fichier et de son emplacement, vous pouvez faire un clic droit sur un jeu et choisir l'option &quot;Afficher le nom du fichier musique&quot;. Le nom de fichier et l'emplacement des fichiers musicaux changent selon les paramètres choisis!</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemIsStarting">Le jeu démarre</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CmbStopItemHasStarted">Le jeu a démarré</sys:String>
 
-    <sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Volume musical:</sys:String>
+	<!-- Ressources des paramètres -->
 
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Gestionnaire de sons</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Charger</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Sauvegarder</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Pack de son sauvegardé avec succès:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Pack de son chargé avec succès:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Pack de son supprimé avec succès:</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Supprimer</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importer</sys:String>
-  <sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Ouvrir le dossier du gestionnaire de sons</sys:String>
-    
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Youtube">Youtube</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_YoutubeSearch">Recherche Youtube</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Actions_Normalize">Normaliser les fichiers musicaux</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageNormalizingFiles">Normalisation des fichiers musicaux en cours...</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_NormTag">[PS] Normalisé</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MissingTag">[PS] Musique de fond manquante</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDownloadMusicForGames">Télécharger des fichiers</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDownloadingFiles">Téléchargement des fichiers en cours...</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageAlbumSelect">Voulez-vous sélectionner manuellement des albums ?</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageSongSelect">Voulez-vous sélectionner manuellement des chansons ?</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionAlbum">Veuillez sélectionner un album pour le jeu {0}</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageCaptionSong">Veuillez sélectionner une chanson pour l'album {0}</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageOverwriteSelect">Voulez-vous écraser les fichiers existants ?</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogCaptionSelectOption">Sélectionner une option</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageDone">Terminé</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogMessageLibUpdateAutomaticDownload">Téléchargement automatique des fichiers en cours...</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Settings">Paramètres</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Actions">Actions</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsReloadAudioFiles">Recharger les fichiers audio</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSoundsFolder">Ouvrir le dossier des sons</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenMusicFolder">Ouvrir le dossier de musique</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsOpenSelected">Ouvrir les répertoires de musique sélectionnés</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDeleteSelected">Supprimer les répertoires de musique sélectionnés</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsHelp">Aide</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsShowMusicFilename">Afficher le nom de fichier de musique</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopySelectMusicFile">Sélectionner le fichier musical</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Actions_Download">Télécharger</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyDeleteMusicFile">Supprimer</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsCopyPlayMusicFile">Jouer</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsSubMenuSongs">Chansons</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsPlatform">Plateformes</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsFilter">Filtres</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ActionsDefault">Défaut</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicDirectory">Êtes-vous sûr de vouloir supprimer ces répertoires ? Cette action est irréversible.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogDeleteMusicFile">Êtes-vous sûr de vouloir supprimer {0} ? Cette action est irréversible.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_DialogUpdateLegacyOrphans">En convertissant un répertoire musical hérité, des fichiers orphelins ont été trouvés. Ces fichiers ont été déplacés vers : {0}. Voulez-vous les afficher ?</sys:String>
+
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgAudioFilesReloaded">Fichiers audio rechargés !</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgSelectSingleGame">Veuillez sélectionner un seul jeu !</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgMusicPath">Chemins des fichiers :</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp1">Playnite Sounds est une extension permettant de jouer des fichiers audio lors des événements Playnite.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp2">Elle ne peut lire que des fichiers audio WAV, des fichiers mp3 pour la musique et rien d'autre.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp3">Il existe deux ensembles distincts de fichiers audio. Les fichiers audio commençant par 'D_' et les fichiers commençant par 'F_'.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp4">Les fichiers commençant par 'D_' sont les fichiers audio pour le mode bureau, les fichiers commençant par 'F_' pour le mode plein écran.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp5">Si vous ne voulez pas entendre un certain fichier, vous pouvez simplement supprimer le fichier wav de l'événement que vous ne voulez pas entendre. Vous pouvez changer les fichiers avec vos propres fichiers. Assurez-vous d'utiliser le menu "Ouvrir le dossier des fichiers audio" pour le faire. Cela garantira que les fichiers audio chargés seront fermés afin que vous puissiez les écraser. Assurez-vous que Playnite ne joue plus aucun son après avoir ouvert le dossier, sinon il est possible que vous ne puissiez pas écraser ce fichier spécifique. D'après mes tests, il semble que vous puissiez toujours d'abord effacer les fichiers. Après avoir modifié les fichiers audio, utilisez le menu "Recharger les fichiers audio" pour effacer les fichiers chargés et utiliser vos nouveaux fichiers, ou redémarrez simplement Playnite. N'utilisez PAS un fichier audio long pour ApplicationStopped car Playnite ne se fermera pas tant que ce fichier audio n'aura pas fini de jouer. Il en va de même pour le passage entre le mode bureau et le mode plein écran.</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp6">Voici les fichiers audio qui peuvent être utilisés</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MsgHelp7">Les fichiers musicaux doivent être des fichiers mp3, selon les paramètres, ils doivent être nommés "_music_.mp3" ou avoir le nom du jeu avec les caractères invalides supprimés et être placés dans un dossier par plateforme. Si vous n'êtes pas sûr du nom du fichier et de son emplacement, vous pouvez faire un clic droit sur un jeu et choisir l'option "Afficher le nom de fichier de musique". Attention, les noms de fichiers et les emplacements des fichiers musicaux changent en fonction des paramètres choisis !</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_MusicVolume">Volume de la musique :</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Manager">Gestionnaire de sons</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoad">Charger</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSave">Sauvegarder</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerSaveConfirm">Pack de sons sauvegardé avec succès :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerLoadConfirm">Pack de sons chargé avec succès :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerDeleteConfirm">Pack de sons supprimé avec succès :</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerRemove">Supprimer</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerImport">Importer</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_ManagerOpenManagerFolder">Ouvrir le dossier du gestionnaire de sons</sys:String>
+
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_Migrate">Il semble que la disposition des fichiers Playnite Sounds soit obsolète. Ces fichiers doivent être déplacés pour que les Sons fonctionnent. Voulez-vous les migrer ?</sys:String>
+	<sys:String x:Key="LOC_PLAYNITESOUNDS_CreateBackup">Ce processus peut échouer. Voulez-vous sélectionner un emplacement de sauvegarde pour les fichiers Sons ?</sys:String>
+
 </ResourceDictionary>

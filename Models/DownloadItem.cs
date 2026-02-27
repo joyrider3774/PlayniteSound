@@ -11,7 +11,6 @@ namespace PlayniteSounds.Models
         public string IconUrl { get; set; }
         public Source Source { get; set; }
 
-
         protected abstract IEnumerable<PropertyInfo> Properties { get; }
 
         protected static readonly IEnumerable<string> IgnoredFields = new[]
